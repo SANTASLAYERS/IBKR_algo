@@ -2,7 +2,7 @@
 
 ## Test Suite Overview
 
-The test suite provides comprehensive coverage for both the IBKR connection system and the Multi-Ticker Options Flow Monitor API client, verifying normal operation, edge cases, and error handling for all components.
+The test suite provides comprehensive coverage for the IBKR connection system, Multi-Ticker Options Flow Monitor API client, and the Order and Position Management System, verifying normal operation, edge cases, and error handling for all components.
 
 ### Test Files Structure
 
@@ -20,6 +20,12 @@ The test suite provides comprehensive coverage for both the IBKR connection syst
 - **`test_api_endpoints.py`**: Tests for all API endpoint classes
 - **`test_api_fixed.py`**: Fixed API test scenarios
 - **`test_api_live.py`**: Live API connectivity testing
+
+#### Order and Position Management Tests
+- **`event_system/test_events.py`**: Tests for the event system foundation
+- **`event_system/test_position.py`**: Tests for position management functionality
+- **`order_system/test_order.py`**: Tests for order management functionality
+- See [ORDER_POSITION_TESTS.md](ORDER_POSITION_TESTS.md) for detailed documentation
 
 #### Shared Test Components
 - **`mocks.py`**: Mock objects used across tests
@@ -81,6 +87,12 @@ pytest tests/test_api_client.py tests/test_api_endpoints.py
 
 # Run with coverage
 pytest --cov=api_client tests/test_api_client.py tests/test_api_endpoints.py
+
+# Run all order and position management tests
+pytest tests/event_system/ tests/order_system/
+
+# Run with coverage
+pytest --cov=src.event --cov=src.position --cov=src.order tests/event_system/ tests/order_system/
 ```
 
 ### Live Testing
@@ -118,6 +130,14 @@ python tests/test_api_live.py
 - Authentication and error management
 - Endpoint-specific functionality
 - Parameter validation and formatting
+
+#### Order and Position Management Tests
+- Event system (subscription, emission, inheritance)
+- Position lifecycle (planning, opening, adjusting, closing)
+- Position risk management (stop loss, take profit, trailing stops) 
+- Order lifecycle (creation, submission, fills, cancellation)
+- Order groups (bracket orders, OCO orders)
+- Integration between event, position, and order components
 
 ### Test Fixtures
 

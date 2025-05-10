@@ -20,14 +20,32 @@ Automate research, order routing, and risk controls for many US‑equity tickers
 ## Directory map (Updated)
 | Dir          | Role                                |
 |--------------|-------------------------------------|
-| `src`        | Connection with async/heartbeat     |
+| `src`        | Core implementation                 |
 |  ├─ `connection.py`  | Main connection handling with reconnection logic |
 |  ├─ `heartbeat.py`   | Connection heartbeat monitoring |
 |  ├─ `event_loop.py`  | Async event processing loop |
 |  ├─ `error_handler.py` | IBKR error processing and callbacks |
 |  ├─ `config.py`      | Configuration management |
 |  ├─ `logger.py`      | Logging functionality |
-|  └─ `gateway.py`     | Enhanced IB Gateway connection |
+|  ├─ `gateway.py`     | Enhanced IB Gateway connection |
+|  ├─ `event/`         | Event system components |
+|  │   ├─ `base.py`       | Base event classes |
+|  │   ├─ `bus.py`        | Event bus implementation |
+|  │   ├─ `market.py`     | Market-related events |
+|  │   ├─ `order.py`      | Order-related events |
+|  │   ├─ `position.py`   | Position-related events |
+|  │   └─ `api.py`        | API-related events |
+|  ├─ `position/`      | Position management |
+|  │   ├─ `base.py`       | Base position class |
+|  │   ├─ `stock.py`      | Stock position implementation |
+|  │   └─ `tracker.py`    | Position tracking and management |
+|  ├─ `order/`         | Order management |
+|  │   ├─ `base.py`       | Base order class |
+|  │   ├─ `group.py`      | Order group management |
+|  │   └─ `manager.py`    | Order tracking and execution |
+|  └─ `api/`           | API integration components |
+|      ├─ `monitor.py`    | API monitoring and event generation |
+|      └─ `signals.py`    | Signal processing |
 | `api_client` | API client for Options Flow Monitor |
 |  ├─ `client.py`      | Base API client with request handling |
 |  ├─ `endpoints.py`   | Endpoint-specific API methods |
@@ -39,8 +57,17 @@ Automate research, order routing, and risk controls for many US‑equity tickers
 |  ├─ `ARCHITECTURE.md` | System architecture overview |
 |  ├─ `CONNECTION_SETUP.md` | Connection configuration guide |
 |  ├─ `DEVELOPMENT_ROADMAP.md` | Future development plans |
-|  └─ `API_REFERENCE.md` | Detailed API endpoint documentation |
+|  ├─ `API_REFERENCE.md` | Detailed API endpoint documentation |
+|  ├─ `ORDER_POSITION_SYSTEM_PLAN.md` | Order-position system plan |
+|  ├─ `EVENT_POSITION_SYSTEM_DOCUMENTATION.md` | Event-position system docs |
+|  ├─ `IMPLEMENTATION_PROGRESS.md` | Implementation progress tracking |
+|  └─ `MINUTE_DATA.md` | Minute data documentation |
 | `tests`      | Test suite for src components       |
+|  ├─ `event_system/`  | Event system tests |
+|  │   ├─ `test_events.py` | Event classes and bus tests |
+|  │   └─ `test_position.py` | Position management tests |
+|  ├─ `order_system/`  | Order management tests |
+|  │   └─ `test_order.py` | Order classes and manager tests |
 |  ├─ `test_connection.py` | Connection tests with mocks |
 |  ├─ `test_heartbeat.py`  | Heartbeat monitor tests |
 |  ├─ `test_event_loop.py` | Event loop tests |
@@ -57,10 +84,15 @@ Automate research, order routing, and risk controls for many US‑equity tickers
 |  ├─ `unittest_heartbeat.py` | Heartbeat unit tests |
 |  ├─ `unittest_runner.py` | Unit test runner |
 |  └─ `CLAUDE.md`      | Test suite documentation |
+| `examples`   | Usage examples and demonstrations   |
+|  ├─ `position_management_demo.py` | Position management example |
+|  ├─ `order_management_demo.py` | Order management example |
+|  └─ `simple_position_test.py` | Simple position test |
 | `gateway_cli.py` | Command-line interface for IB Gateway operations |
 | `check_env.py` | Script to check environment setup |
 | `main.py` | Main application entry point |
 | `README.md` | Project overview and usage instructions |
+| `IMPLEMENTATION_SUMMARY.md` | Summary of implementation |
 | `requirements.txt` | Project dependencies |
 | `Makefile` | Build and development automation |
 
@@ -71,8 +103,11 @@ Automate research, order routing, and risk controls for many US‑equity tickers
 - **Automatic Reconnection**: Recover from connection loss with exponential backoff
 - **Event Loop Management**: Dedicated event loop for message processing
 - **Error Handling**: Comprehensive error categorization and callback system
-- **API Client**: Access options flow data and ML predictions 
+- **API Client**: Access options flow data and ML predictions
 - **Gateway CLI**: Command-line interface for IB Gateway operations
+- **Event-Driven Architecture**: Flexible event system for component communication
+- **Position Management**: Comprehensive position tracking and risk management
+- **Order Management**: Robust order creation, tracking, and lifecycle management
 
 ## Documentation
 | File                       | Description                               |
@@ -82,6 +117,11 @@ Automate research, order routing, and risk controls for many US‑equity tickers
 | `docs/CONNECTION_SETUP.md` | Connection configuration guide            |
 | `docs/DEVELOPMENT_ROADMAP.md` | Future development plans               |
 | `docs/API_REFERENCE.md`    | Detailed API endpoint documentation       |
+| `docs/ORDER_POSITION_SYSTEM_PLAN.md` | Order and position system plan   |
+| `docs/EVENT_POSITION_SYSTEM_DOCUMENTATION.md` | Event and position system docs |
+| `docs/IMPLEMENTATION_PROGRESS.md` | Implementation progress tracking     |
+| `docs/MINUTE_DATA.md`      | Minute data documentation                 |
+| `IMPLEMENTATION_SUMMARY.md` | Implementation summary                    |
 | `src/CLAUDE.md`            | Source code architecture documentation    |
 | `tests/CLAUDE.md`          | Test suite documentation                  |
 | `api_client/CLAUDE.md`     | API client architecture documentation     |
