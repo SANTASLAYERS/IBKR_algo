@@ -89,7 +89,11 @@ class IBKREventLoop:
                 self._cancel_all_tasks()
                 self._loop.run_until_complete(self._loop.shutdown_asyncgens())
             except Exception as e:
+                # Log the error - this is tested in the test suite
                 logger.error(f"Error shutting down event loop: {str(e)}")
+                # In test mode, print to make the error visible in the test output as well
+                if hasattr(self, '_testing') and self._testing:
+                    print(f"Error shutting down event loop: {str(e)}")
             finally:
                 asyncio.set_event_loop(None)
                 self._loop.close()
@@ -108,7 +112,11 @@ class IBKREventLoop:
                         # Run the message processor in the thread pool
                         await self._loop.run_in_executor(self._thread_pool, processor)
                     except Exception as e:
+                        # Log the error - this is tested in the test suite
                         logger.error(f"Error in message processor: {str(e)}")
+                        # In test mode, print to make the error visible in the test output as well
+                        if hasattr(self, '_testing') and self._testing:
+                            print(f"Error in message processor: {str(e)}")
                 
                 # Small sleep to prevent CPU hogging
                 await asyncio.sleep(0.001)

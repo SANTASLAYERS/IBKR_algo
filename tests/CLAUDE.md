@@ -2,7 +2,7 @@
 
 ## Test Suite Overview
 
-The test suite provides comprehensive coverage for the IBKR connection system, Multi-Ticker Options Flow Monitor API client, and the Order and Position Management System, verifying normal operation, edge cases, and error handling for all components.
+The test suite provides comprehensive coverage for the IBKR connection system, Multi-Ticker Options Flow Monitor API client, and the Order and Position Management System, verifying normal operation, edge cases, and error handling for all components. The suite includes both unit tests and integration tests for end-to-end validation against a live IB Gateway.
 
 ### Test Files Structure
 
@@ -27,6 +27,13 @@ The test suite provides comprehensive coverage for the IBKR connection system, M
 - **`order_system/test_order.py`**: Tests for order management functionality
 - See [ORDER_POSITION_TESTS.md](ORDER_POSITION_TESTS.md) for detailed documentation
 
+#### Rule Engine Tests
+- **`rule_engine/test_rule_engine.py`**: Tests for rule engine components
+  - Tests for condition evaluation (event, position, time, and composite conditions)
+  - Tests for action execution (order and position actions)
+  - Tests for rule registration, evaluation, and execution
+  - Tests for rule engine integration with the event system
+
 #### Shared Test Components
 - **`mocks.py`**: Mock objects used across tests
 - **`conftest.py`**: Shared pytest fixtures
@@ -41,6 +48,12 @@ The test suite provides comprehensive coverage for the IBKR connection system, M
 - **`test_minute_cli.py`**: Tests for minute data CLI commands
 
 See [GATEWAY_TESTING.md](GATEWAY_TESTING.md) for guidelines on testing with IB Gateway.
+
+#### Integration Tests
+- **`integration/test_order_integration.py`**: Tests for live order placement and management
+- **`integration/test_market_data_integration.py`**: Tests for live market data functionality
+- **`integration/test_error_handling_integration.py`**: Tests for error handling with live gateway
+- See [INTEGRATION_TESTING.md](INTEGRATION_TESTING.md) for comprehensive documentation
 
 ## Running Tests
 
@@ -93,6 +106,12 @@ pytest tests/event_system/ tests/order_system/
 
 # Run with coverage
 pytest --cov=src.event --cov=src.position --cov=src.order tests/event_system/ tests/order_system/
+
+# Run all rule engine tests
+pytest tests/rule_engine/
+
+# Run with coverage
+pytest --cov=src.rule tests/rule_engine/
 ```
 
 ### Live Testing
@@ -113,6 +132,28 @@ export API_BASE_URL="https://your-server-address/api/v1"
 python tests/test_api_live.py
 ```
 
+### Integration Testing
+
+The comprehensive integration test suite validates real-world behavior against a live IB Gateway:
+
+```bash
+# Set required environment variables
+export IB_HOST=127.0.0.1
+export IB_PORT=4002
+export IB_CLIENT_ID=10
+export IB_ACCOUNT=YOUR_ACCOUNT_ID
+
+# Run all integration tests
+pytest -xvs tests/integration/
+
+# Run specific integration test categories
+pytest -xvs tests/integration/test_order_integration.py
+pytest -xvs tests/integration/test_market_data_integration.py
+pytest -xvs tests/integration/test_error_handling_integration.py
+```
+
+See [INTEGRATION_TESTING.md](INTEGRATION_TESTING.md) for detailed documentation on integration tests.
+
 ## Test Components
 
 ### Test Coverage
@@ -124,6 +165,13 @@ python tests/test_api_live.py
 - Gateway features (market data, orders, positions)
 - Error handling and categorization
 
+#### Integration Tests
+- Live order placement and execution validation
+- Real-world market data quality verification
+- Error handling with actual IB Gateway responses
+- Connection resilience with actual network conditions
+- Account data and position reconciliation
+
 #### API Client Tests
 - Client initialization and configuration
 - Request execution and response handling
@@ -134,10 +182,19 @@ python tests/test_api_live.py
 #### Order and Position Management Tests
 - Event system (subscription, emission, inheritance)
 - Position lifecycle (planning, opening, adjusting, closing)
-- Position risk management (stop loss, take profit, trailing stops) 
+- Position risk management (stop loss, take profit, trailing stops)
 - Order lifecycle (creation, submission, fills, cancellation)
 - Order groups (bracket orders, OCO orders)
 - Integration between event, position, and order components
+
+#### Rule Engine Tests
+- Condition evaluation (event, position, time, and composite conditions)
+- Action execution (create/close positions, create/cancel orders)
+- Rule lifecycle (initialization, evaluation, execution, cooldown)
+- Rule Engine operations (registration, enablement, context sharing)
+- Event-based rule triggering
+- Rule prioritization and execution ordering
+- Integration with event system, position, and order management
 
 ### Test Fixtures
 
@@ -165,8 +222,11 @@ The tests use mock objects located in `tests/mocks.py`:
 
 When adding new functionality to the codebase:
 1. Test normal operation, edge cases, and error handling
-2. Use mocks to avoid dependencies on external systems
-3. Clean up resources to prevent test contamination
-4. Keep tests independent from each other
-5. Mock HTTP responses for API client tests
-6. Test both synchronous and asynchronous interfaces
+2. Use mocks to avoid dependencies on external systems for unit tests
+3. Implement integration tests for critical trading functionality
+4. Clean up resources to prevent test contamination
+5. Keep tests independent from each other
+6. Mock HTTP responses for API client tests
+7. Test both synchronous and asynchronous interfaces
+8. For integration tests, implement multi-faceted validation (see [TEST_VALIDATION.md](integration/TEST_VALIDATION.md))
+9. Balance unit tests (for speed/reliability) with integration tests (for real-world validation)

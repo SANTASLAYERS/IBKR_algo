@@ -35,6 +35,20 @@ class OrderType(Enum):
     TRAIL_LIMIT = "trail_limit"
 
 
+class TimeInForce(Enum):
+    """Time in force for orders."""
+    DAY = "day"
+    GTC = "gtc"  # Good Till Cancelled
+    IOC = "ioc"  # Immediate or Cancel
+    FOK = "fok"  # Fill or Kill
+
+
+class OrderSide(Enum):
+    """Order side."""
+    BUY = "buy"
+    SELL = "sell"
+
+
 @dataclass
 class OrderEvent(BaseEvent):
     """Base class for all order-related events."""

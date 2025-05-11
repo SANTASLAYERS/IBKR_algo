@@ -100,17 +100,18 @@ class TestMinuteDataFetching(unittest.TestCase):
         """Test cancelling a historical data request."""
         # Set up a pending request
         req_id = 123
-        self.manager._data_futures[req_id] = MagicMock()
-        
+        future_mock = MagicMock()
+        self.manager._data_futures[req_id] = future_mock
+
         # Call the method under test
         self.manager.cancel_historical_data_request(req_id)
-        
+
         # Assert the gateway's cancelHistoricalData was called
         self.gateway.cancelHistoricalData.assert_called_once_with(req_id)
-        
+
         # Assert the future was completed with a cancellation
-        self.manager._data_futures[req_id].cancel.assert_called_once()
-        
+        future_mock.cancel.assert_called_once()
+
         # Assert the request was removed from pending requests
         self.assertNotIn(req_id, self.manager._data_futures)
     

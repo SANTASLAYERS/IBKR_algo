@@ -197,25 +197,30 @@ class MinuteBarManager:
     def cancel_historical_data_request(self, req_id: int) -> None:
         """
         Cancel a historical data request.
-        
+
         Args:
             req_id: Request ID to cancel
         """
         # Cancel the request in IB API
         self.gateway.cancelHistoricalData(req_id)
-        
+
         # Cancel the future if it exists
+        future = self._data_futures.get(req_id)
+        if future:
+            future.cancel()
+
+        # Clean up all references - note we do this after accessing the future
+        # so that tests can still make assertions on the future object
         if req_id in self._data_futures:
-            self._data_futures[req_id].cancel()
             del self._data_futures[req_id]
-        
+
         # Clean up any temporary data
         if req_id in self._temp_bars:
             del self._temp_bars[req_id]
-            
+
         if req_id in self._request_symbols:
             del self._request_symbols[req_id]
-        
+
         logger.debug(f"Cancelled historical data request {req_id}")
     
     async def fetch_minute_bars(

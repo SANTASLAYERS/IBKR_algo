@@ -216,12 +216,11 @@ class TestMinuteDataCLI(unittest.TestCase):
             parser = argparse.ArgumentParser()
             gateway_cli.add_minute_data_arguments(parser)
             return parser.parse_args(args_list)
-        
+
         # Test basic usage
         args = parse_args(['--fetch-minutes', 'AAPL'])
-        self.assertTrue(args.fetch_minutes)
-        self.assertEqual(args.symbol, 'AAPL')
-        
+        self.assertEqual(args.fetch_minutes, 'AAPL')
+
         # Test with options
         args = parse_args([
             '--fetch-minutes', 'AAPL',
@@ -230,7 +229,7 @@ class TestMinuteDataCLI(unittest.TestCase):
             '--output-format', 'json',
             '--output-file', 'output.json'
         ])
-        
+
         self.assertEqual(args.duration, '2 D')
         self.assertEqual(args.bar_size, '5 mins')
         self.assertEqual(args.output_format, 'json')

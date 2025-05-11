@@ -96,14 +96,25 @@ The tests use simple in-memory implementations rather than complex mocks. This a
 
 The actual IB Gateway integration will be tested separately in integration tests.
 
+## Integration Tests
+
+The order and position management system can now be tested against a live IB Gateway using the integration test suite in `/tests/integration/`. These tests validate real-world order placement, execution, and position management:
+
+- **`test_order_integration.py`**: Tests for order placement and management
+  - Market order submission and validation
+  - Limit order placement and cancellation
+  - Bracket order creation and status tracking
+  - Position query and validation
+
+See [INTEGRATION_TESTING.md](INTEGRATION_TESTING.md) for comprehensive documentation on running and interpreting these tests.
+
 ## Future Test Enhancements
 
-Planned enhancements to the test suite include:
+Additional planned enhancements to the test suite include:
 
-1. **Integration Tests** - Tests that verify the interaction between the order/position management system and the IB Gateway
-2. **Performance Tests** - Tests that verify system performance under load
-3. **Stress Tests** - Tests that verify system behavior under extreme conditions
-4. **Scenario Tests** - Tests that verify system behavior in real-world trading scenarios
+1. **Performance Tests** - Tests that verify system performance under load
+2. **Stress Tests** - Tests that verify system behavior under extreme conditions
+3. **Scenario Tests** - Tests that verify system behavior in real-world trading scenarios
 
 ## Best Practices for Extending Tests
 

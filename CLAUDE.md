@@ -43,6 +43,11 @@ Automate research, order routing, and risk controls for many US‑equity tickers
 |  │   ├─ `base.py`       | Base order class |
 |  │   ├─ `group.py`      | Order group management |
 |  │   └─ `manager.py`    | Order tracking and execution |
+|  ├─ `rule/`          | Rule engine for trading automation |
+|  │   ├─ `base.py`       | Base rule, condition, and action classes |
+|  │   ├─ `condition.py`  | Condition implementations (event, position, time, etc.) |
+|  │   ├─ `action.py`     | Action implementations (orders, positions, etc.) |
+|  │   └─ `engine.py`     | Rule engine for managing rules |
 |  └─ `api/`           | API integration components |
 |      ├─ `monitor.py`    | API monitoring and event generation |
 |      └─ `signals.py`    | Signal processing |
@@ -58,7 +63,6 @@ Automate research, order routing, and risk controls for many US‑equity tickers
 |  ├─ `CONNECTION_SETUP.md` | Connection configuration guide |
 |  ├─ `DEVELOPMENT_ROADMAP.md` | Future development plans |
 |  ├─ `API_REFERENCE.md` | Detailed API endpoint documentation |
-|  ├─ `ORDER_POSITION_SYSTEM_PLAN.md` | Order-position system plan |
 |  ├─ `EVENT_POSITION_SYSTEM_DOCUMENTATION.md` | Event-position system docs |
 |  ├─ `IMPLEMENTATION_PROGRESS.md` | Implementation progress tracking |
 |  └─ `MINUTE_DATA.md` | Minute data documentation |
@@ -68,6 +72,8 @@ Automate research, order routing, and risk controls for many US‑equity tickers
 |  │   └─ `test_position.py` | Position management tests |
 |  ├─ `order_system/`  | Order management tests |
 |  │   └─ `test_order.py` | Order classes and manager tests |
+|  ├─ `rule_engine/`   | Rule engine tests |
+|  │   └─ `test_rule_engine.py` | Rule engine component tests |
 |  ├─ `test_connection.py` | Connection tests with mocks |
 |  ├─ `test_heartbeat.py`  | Heartbeat monitor tests |
 |  ├─ `test_event_loop.py` | Event loop tests |
@@ -108,6 +114,7 @@ Automate research, order routing, and risk controls for many US‑equity tickers
 - **Event-Driven Architecture**: Flexible event system for component communication
 - **Position Management**: Comprehensive position tracking and risk management
 - **Order Management**: Robust order creation, tracking, and lifecycle management
+- **Rule Engine**: Configurable rule-based trading strategies without code changes
 
 ## Documentation
 | File                       | Description                               |
@@ -117,13 +124,14 @@ Automate research, order routing, and risk controls for many US‑equity tickers
 | `docs/CONNECTION_SETUP.md` | Connection configuration guide            |
 | `docs/DEVELOPMENT_ROADMAP.md` | Future development plans               |
 | `docs/API_REFERENCE.md`    | Detailed API endpoint documentation       |
-| `docs/ORDER_POSITION_SYSTEM_PLAN.md` | Order and position system plan   |
-| `docs/EVENT_POSITION_SYSTEM_DOCUMENTATION.md` | Event and position system docs |
+| `docs/EVENT_POSITION_SYSTEM_DOCUMENTATION.md` | Order and position system documentation |
+| `docs/RULE_ENGINE_SPECIFICATION.md` | Rule engine design and specification |
 | `docs/IMPLEMENTATION_PROGRESS.md` | Implementation progress tracking     |
 | `docs/MINUTE_DATA.md`      | Minute data documentation                 |
-| `IMPLEMENTATION_SUMMARY.md` | Implementation summary                    |
 | `src/CLAUDE.md`            | Source code architecture documentation    |
 | `tests/CLAUDE.md`          | Test suite documentation                  |
+| `tests/RULE_ENGINE_TESTS.md` | Rule engine test documentation         |
+| `src/rule/CLAUDE.md`      | Rule engine architecture documentation    |
 | `api_client/CLAUDE.md`     | API client architecture documentation     |
 | `api_client/README.md`     | API client usage guide                    |
 

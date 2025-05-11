@@ -193,17 +193,24 @@ class TestMinuteBarCollection(unittest.TestCase):
     def test_collection_to_dataframe(self):
         """Test collection can be converted to pandas DataFrame."""
         collection = MinuteBarCollection(symbol="AAPL", bars=[self.bar1, self.bar2])
-        
-        df = collection.to_dataframe()
-        
-        # Assert DataFrame has correct structure
-        self.assertEqual(len(df), 2)
-        self.assertTrue("timestamp" in df.columns)
-        self.assertTrue("open" in df.columns)
-        self.assertTrue("high" in df.columns)
-        self.assertTrue("low" in df.columns)
-        self.assertTrue("close" in df.columns)
-        self.assertTrue("volume" in df.columns)
+
+        # Skip test if pandas is not available
+        try:
+            import pandas as pd
+            df = collection.to_dataframe()
+
+            # Assert DataFrame has correct structure
+            self.assertEqual(len(df), 2)
+            # Check index is timestamp
+            self.assertEqual(df.index.name, "timestamp")
+            # Check columns
+            self.assertTrue("open" in df.columns)
+            self.assertTrue("high" in df.columns)
+            self.assertTrue("low" in df.columns)
+            self.assertTrue("close" in df.columns)
+            self.assertTrue("volume" in df.columns)
+        except ImportError:
+            self.skipTest("pandas is not available for testing")
     
     def test_collection_to_dict(self):
         """Test collection can be converted to dictionary."""

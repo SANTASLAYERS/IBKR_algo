@@ -72,6 +72,8 @@ def heartbeat_monitor():
 def event_loop_instance():
     """Create an event loop instance for testing."""
     loop = IBKREventLoop(max_workers=2)
+    # Mark this as a test instance
+    loop._testing = True
     yield loop
     # Ensure loop is stopped after test
     if loop.is_running():

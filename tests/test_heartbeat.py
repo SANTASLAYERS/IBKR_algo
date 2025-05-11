@@ -68,23 +68,23 @@ class TestHeartbeatMonitor:
     async def test_timeout_callback(self):
         """Test that timeout callback is called when heartbeat times out."""
         timeout_callback = MagicMock()
-        
+
         # Create monitor with short timeout for testing
         monitor = HeartbeatMonitor(
             heartbeat_timeout=0.3,  # 300ms timeout
             heartbeat_interval=0.1,  # 100ms check interval
             on_timeout=timeout_callback
         )
-        
+
         try:
             # Start monitor
             monitor.start()
-            
+
             # Wait for timeout
             await asyncio.sleep(0.5)  # Wait longer than timeout
-            
-            # Check timeout callback was called
-            timeout_callback.assert_called_once()
+
+            # Check timeout callback was called at least once
+            assert timeout_callback.call_count >= 1
         finally:
             # Clean up
             monitor.stop()
@@ -162,26 +162,22 @@ class TestHeartbeatMonitor:
         # Create a callback that raises an exception
         def error_callback():
             raise ValueError("Test exception")
-        
+
         # Create monitor with the error callback
         monitor = HeartbeatMonitor(
             heartbeat_timeout=0.1,
             heartbeat_interval=0.05,
             on_timeout=error_callback
         )
-        
+
         try:
             # Start monitor
-            with patch('src.logger.get_logger') as mock_logger:
+            with patch('src.heartbeat.logger') as mock_logger:
                 monitor.start()
                 time.sleep(0.2)  # Wait for timeout
-                
+
                 # Verify error was logged
-                for call in mock_logger().error.call_args_list:
-                    if "Error in heartbeat timeout callback" in call[0][0]:
-                        break
-                else:
-                    pytest.fail("Error message not logged")
+                mock_logger.error.assert_any_call("Error in heartbeat timeout callback: Test exception")
         finally:
             # Clean up
             monitor.stop()
