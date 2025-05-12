@@ -229,10 +229,10 @@ class OrderManager:
     async def submit_order(self, order_id: str) -> bool:
         """
         Submit an order to the broker.
-        
+
         Args:
             order_id: The order ID to submit
-            
+
         Returns:
             bool: True if the order was submitted successfully
         """
@@ -240,15 +240,15 @@ class OrderManager:
         if not order:
             logger.warning(f"Cannot submit unknown order {order_id}")
             return False
-        
+
         if order.status != OrderStatus.CREATED:
             logger.warning(f"Cannot submit order {order_id} with status {order.status.value}")
             return False
-        
+
         # Update the order status
         order.update_status(OrderStatus.PENDING_SUBMIT, "Submitting to broker")
         self._pending_orders.add(order_id)
-        
+
         # Create and emit the order status event
         event = OrderStatusEvent(
             order_id=order.order_id,
@@ -258,31 +258,55 @@ class OrderManager:
             status_time=order.status_time
         )
         await self.event_bus.emit(event)
-        
+
         # If we have a gateway, submit the order
         if self.gateway:
-            # Placeholder for actual gateway integration
-            # This would transform our Order to the broker's format and submit it
             logger.info(f"Submitting order {order_id} to gateway")
-            
+
             try:
-                # Use the gateway to submit the order
-                # This is a placeholder - in a real implementation, we would call:
-                # broker_order_id = await self.gateway.place_order(order)
-                
-                # For demonstration, just simulate success
-                broker_order_id = f"B{order_id[-6:]}"
-                order.set_broker_order_id(broker_order_id)
-                self._broker_order_map[broker_order_id] = order_id
-                
+                # Convert our order to IB's order format
+                ib_contract = self._create_ib_contract(order)
+                ib_order = self._create_ib_order(order)
+
+                # Submit the order to IB Gateway
+                broker_order_id = self.gateway.submit_order(ib_contract, ib_order)
+
+                if broker_order_id <= 0:
+                    # Gateway rejected the order
+                    error_msg = "Gateway rejected order submission"
+                    logger.error(f"{error_msg} for {order_id}")
+
+                    # Update the order status
+                    order.reject(error_msg)
+
+                    # Move to completed orders
+                    self._pending_orders.discard(order_id)
+                    self._completed_orders.add(order_id)
+
+                    # Create and emit the reject event
+                    event = RejectEvent(
+                        order_id=order.order_id,
+                        symbol=order.symbol,
+                        status=order.status,
+                        reject_time=order.status_time,
+                        reason=error_msg
+                    )
+                    await self.event_bus.emit(event)
+
+                    return False
+
+                # Store broker order ID mapping
+                broker_order_id_str = str(broker_order_id)
+                order.set_broker_order_id(broker_order_id_str)
+                self._broker_order_map[broker_order_id_str] = order_id
+
                 # Update the order status
                 order.update_status(OrderStatus.SUBMITTED, "Submitted to broker")
-                self._pending_orders.add(order_id)
-                
+
                 # Move the order to active
                 self._pending_orders.discard(order_id)
                 self._active_orders.add(order_id)
-                
+
                 # Create and emit the order status event
                 event = OrderStatusEvent(
                     order_id=order.order_id,
@@ -292,19 +316,19 @@ class OrderManager:
                     status_time=order.status_time
                 )
                 await self.event_bus.emit(event)
-                
+
                 return True
-                
+
             except Exception as e:
                 logger.error(f"Error submitting order {order_id}: {e}")
-                
+
                 # Update the order status
                 order.reject(str(e))
-                
+
                 # Move to completed orders
                 self._pending_orders.discard(order_id)
                 self._completed_orders.add(order_id)
-                
+
                 # Create and emit the reject event
                 event = RejectEvent(
                     order_id=order.order_id,
@@ -314,24 +338,24 @@ class OrderManager:
                     reason=str(e)
                 )
                 await self.event_bus.emit(event)
-                
+
                 return False
         else:
             # No gateway, simulate order submission
             logger.info(f"No gateway, simulating order submission for {order_id}")
-            
+
             # Simulate a broker order ID
             broker_order_id = f"SIM{order_id[-6:]}"
             order.set_broker_order_id(broker_order_id)
             self._broker_order_map[broker_order_id] = order_id
-            
+
             # Update the order status
             order.update_status(OrderStatus.SUBMITTED, "Simulated submission")
-            
+
             # Move the order to active
             self._pending_orders.discard(order_id)
             self._active_orders.add(order_id)
-            
+
             # Create and emit the order status event
             event = OrderStatusEvent(
                 order_id=order.order_id,
@@ -341,13 +365,13 @@ class OrderManager:
                 status_time=order.status_time
             )
             await self.event_bus.emit(event)
-            
+
             # Simulate later acceptance by the broker
             await asyncio.sleep(0.1)
-            
+
             # Update the order status
             order.update_status(OrderStatus.ACCEPTED, "Simulated acceptance")
-            
+
             # Create and emit the order status event
             event = OrderStatusEvent(
                 order_id=order.order_id,
@@ -357,17 +381,17 @@ class OrderManager:
                 status_time=order.status_time
             )
             await self.event_bus.emit(event)
-            
+
             return True
     
     async def cancel_order(self, order_id: str, reason: Optional[str] = None) -> bool:
         """
         Cancel an order.
-        
+
         Args:
             order_id: The order ID to cancel
             reason: Optional reason for cancellation
-            
+
         Returns:
             bool: True if the cancellation was initiated
         """
@@ -375,15 +399,15 @@ class OrderManager:
         if not order:
             logger.warning(f"Cannot cancel unknown order {order_id}")
             return False
-        
+
         if not order.is_active:
             logger.warning(f"Cannot cancel inactive order {order_id} with status {order.status.value}")
             return False
-        
+
         # Try to cancel the order
         if not order.cancel(reason or "User cancelled"):
             return False
-        
+
         # Create and emit the cancel event
         event = CancelEvent(
             order_id=order.order_id,
@@ -393,57 +417,48 @@ class OrderManager:
             reason=reason or "User cancelled"
         )
         await self.event_bus.emit(event)
-        
-        # If we have a gateway, cancel the order
+
+        # If we have a gateway and a broker order ID, send cancellation to IB
         if self.gateway and order.broker_order_id:
-            # Placeholder for actual gateway integration
             logger.info(f"Cancelling order {order_id} with broker ID {order.broker_order_id}")
-            
+
             try:
-                # Use the gateway to cancel the order
-                # This is a placeholder - in a real implementation, we would call:
-                # success = await self.gateway.cancel_order(order.broker_order_id)
-                
-                # For demonstration, just simulate success
-                success = True
-                
-                if success:
-                    # Wait for the broker to confirm cancellation
-                    # In a real implementation, this would be done via callbacks
-                    await asyncio.sleep(0.1)
-                    
-                    # Update the order status
-                    order.update_status(OrderStatus.CANCELLED, reason or "User cancelled")
-                    
-                    # Move to completed orders
-                    self._active_orders.discard(order_id)
-                    self._completed_orders.add(order_id)
-                    
-                    # Handle OCO orders
-                    await self._handle_cancelled_order(order)
-                    
+                # Convert to int if possible
+                try:
+                    broker_order_id_int = int(order.broker_order_id)
+                except ValueError:
+                    broker_order_id_int = 0
+
+                if broker_order_id_int > 0:
+                    # Use the gateway to cancel the order
+                    self.gateway.cancel_order(broker_order_id_int)
+
+                    # Update order status to pending cancel
+                    # Final cancellation will be confirmed by IB callbacks
+                    order.update_status(OrderStatus.PENDING_CANCEL, reason or "User requested cancellation")
+
                     return True
                 else:
-                    logger.error(f"Failed to cancel order {order_id}")
+                    logger.error(f"Invalid broker order ID format: {order.broker_order_id}")
                     return False
-                
+
             except Exception as e:
                 logger.error(f"Error cancelling order {order_id}: {e}")
                 return False
         else:
-            # No gateway, simulate cancellation
-            logger.info(f"No gateway, simulating order cancellation for {order_id}")
-            
+            # No gateway or broker order ID, simulate cancellation
+            logger.info(f"No gateway or broker ID, simulating order cancellation for {order_id}")
+
             # Update the order status
             order.update_status(OrderStatus.CANCELLED, reason or "User cancelled")
-            
+
             # Move to completed orders
             self._active_orders.discard(order_id)
             self._completed_orders.add(order_id)
-            
+
             # Handle OCO orders
             await self._handle_cancelled_order(order)
-            
+
             return True
     
     async def cancel_all_orders(self, symbol: Optional[str] = None, reason: Optional[str] = None) -> int:
@@ -720,7 +735,7 @@ class OrderManager:
     async def _handle_cancelled_order(self, order: Order) -> None:
         """
         Handle special processing for cancelled orders.
-        
+
         Args:
             order: The cancelled order
         """
@@ -730,20 +745,247 @@ class OrderManager:
             oco_id = order.metadata["oco_order_id"]
             if oco_id in self._orders:
                 logger.debug(f"Cancelled order {order.order_id} has OCO order {oco_id}")
-        
+
         # Check if this is part of an OCO group with multiple orders
         if "oco_order_ids" in order.metadata:
             # For multiple OCO relationships
             for oco_id in order.metadata["oco_order_ids"]:
                 if oco_id in self._orders:
                     logger.debug(f"Cancelled order {order.order_id} has OCO order {oco_id}")
-        
+
         # Check if this is a parent order with children
         child_orders = [o for o in self._orders.values() if o.parent_id == order.order_id]
         if child_orders:
             logger.debug(f"Cancelled order {order.order_id} has {len(child_orders)} child orders")
-            
+
             # Cancel all child orders
             for child in child_orders:
                 if child.is_active:
                     await self.cancel_order(child.order_id, f"Parent order {order.order_id} cancelled")
+
+    def _create_ib_contract(self, order: Order) -> 'Contract':
+        """
+        Create an IB Contract object from our order.
+
+        Args:
+            order: Our internal order object
+
+        Returns:
+            Contract: IB API Contract object
+        """
+        from ibapi.contract import Contract
+
+        contract = Contract()
+        contract.symbol = order.symbol
+        contract.secType = "STK"  # Default to stock
+        contract.exchange = "SMART"  # Default to SMART routing
+        contract.currency = "USD"  # Default to USD
+
+        # Apply any contract overrides from order metadata
+        if "contract" in order.metadata:
+            contract_data = order.metadata["contract"]
+            for key, value in contract_data.items():
+                if hasattr(contract, key):
+                    setattr(contract, key, value)
+
+        return contract
+
+    def _create_ib_order(self, order: Order) -> 'ibapi.order.Order':
+        """
+        Create an IB Order object from our order.
+
+        Args:
+            order: Our internal order object
+
+        Returns:
+            ibapi.order.Order: IB API Order object
+        """
+        from ibapi.order import Order as IBOrder
+
+        # Create the IB order
+        ib_order = IBOrder()
+
+        # Use our order ID as the IB order ID if possible
+        try:
+            ib_order.orderId = int(order.order_id.split('-')[-1])
+        except (ValueError, IndexError):
+            # Let the gateway assign an order ID
+            ib_order.orderId = 0
+
+        # Set the parent ID if this is a child order
+        if order.parent_id:
+            try:
+                parent_order = self._orders.get(order.parent_id)
+                if parent_order and parent_order.broker_order_id:
+                    ib_order.parentId = int(parent_order.broker_order_id)
+            except (ValueError, TypeError):
+                logger.warning(f"Could not set parent ID for order {order.order_id}")
+
+        # Set core order properties
+        ib_order.action = "BUY" if order.is_buy else "SELL"
+        ib_order.totalQuantity = abs(order.quantity)
+
+        # Set order type and related properties
+        if order.order_type == OrderType.MARKET:
+            ib_order.orderType = "MKT"
+        elif order.order_type == OrderType.LIMIT:
+            ib_order.orderType = "LMT"
+            ib_order.lmtPrice = order.limit_price
+        elif order.order_type == OrderType.STOP:
+            ib_order.orderType = "STP"
+            ib_order.auxPrice = order.stop_price
+        elif order.order_type == OrderType.STOP_LIMIT:
+            ib_order.orderType = "STP LMT"
+            ib_order.lmtPrice = order.limit_price
+            ib_order.auxPrice = order.stop_price
+
+        # Set time in force
+        if order.time_in_force == TimeInForce.DAY:
+            ib_order.tif = "DAY"
+        elif order.time_in_force == TimeInForce.GTC:
+            ib_order.tif = "GTC"
+        elif order.time_in_force == TimeInForce.IOC:
+            ib_order.tif = "IOC"
+        elif order.time_in_force == TimeInForce.FOK:
+            ib_order.tif = "FOK"
+
+        # Apply any order overrides from metadata
+        if "ib_order_params" in order.metadata:
+            ib_params = order.metadata["ib_order_params"]
+            for key, value in ib_params.items():
+                if hasattr(ib_order, key):
+                    setattr(ib_order, key, value)
+
+        return ib_order
+
+    async def handle_order_status_update(self,
+                                      broker_order_id: str,
+                                      status: str,
+                                      filled: float,
+                                      remaining: float,
+                                      avg_fill_price: float,
+                                      last_fill_price: float) -> None:
+        """
+        Handle an order status update from IB Gateway.
+
+        Args:
+            broker_order_id: The broker's order ID
+            status: Current status string
+            filled: Filled quantity
+            remaining: Remaining quantity
+            avg_fill_price: Average fill price
+            last_fill_price: Last fill price
+        """
+        # Find our internal order
+        order_id = self._broker_order_map.get(broker_order_id)
+        if not order_id or order_id not in self._orders:
+            logger.warning(f"Received status update for unknown order: {broker_order_id}")
+            return
+
+        order = self._orders[order_id]
+        previous_status = order.status
+
+        # Map IB status to our status
+        if status == "Submitted":
+            new_status = OrderStatus.SUBMITTED
+        elif status == "Cancelled":
+            new_status = OrderStatus.CANCELLED
+        elif status == "Filled":
+            new_status = OrderStatus.FILLED
+        elif status == "Partially Filled":
+            new_status = OrderStatus.PARTIALLY_FILLED
+        elif status == "PendingCancel":
+            new_status = OrderStatus.PENDING_CANCEL
+        elif status == "PendingSubmit":
+            new_status = OrderStatus.PENDING_SUBMIT
+        elif status == "PreSubmitted" or status == "ApiPending":
+            new_status = OrderStatus.ACCEPTED
+        elif status == "Inactive":
+            new_status = OrderStatus.INACTIVE
+        else:
+            logger.warning(f"Unknown IB order status: {status} for order {order_id}")
+            return
+
+        # Update order status if changed
+        if order.status != new_status:
+            order.update_status(new_status, f"IB status: {status}")
+
+            # Update order tracking
+            if new_status.is_active:
+                self._pending_orders.discard(order_id)
+                self._active_orders.add(order_id)
+            elif new_status.is_complete:
+                self._active_orders.discard(order_id)
+                self._pending_orders.discard(order_id)
+                self._completed_orders.add(order_id)
+
+            # Emit status change event
+            event = OrderStatusEvent(
+                order_id=order_id,
+                symbol=order.symbol,
+                status=new_status,
+                previous_status=previous_status,
+                status_time=datetime.now()
+            )
+            asyncio.create_task(self.event_bus.emit(event))
+
+        # Check if we need to handle a new fill
+        if filled > order.filled_quantity:
+            new_fill_quantity = filled - order.filled_quantity
+
+            # Process the fill
+            asyncio.create_task(
+                self.process_fill(
+                    order_id=order_id,
+                    quantity=new_fill_quantity,
+                    price=last_fill_price or avg_fill_price
+                )
+            )
+
+    async def handle_execution_update(self,
+                                   broker_order_id: str,
+                                   exec_id: str,
+                                   symbol: str,
+                                   side: str,
+                                   quantity: float,
+                                   price: float,
+                                   commission: Optional[float] = None) -> None:
+        """
+        Handle an execution update from IB Gateway.
+
+        Args:
+            broker_order_id: The broker's order ID
+            exec_id: Execution ID
+            symbol: Symbol that was traded
+            side: Side of the execution (BUY/SELL)
+            quantity: Executed quantity
+            price: Execution price
+            commission: Optional commission amount
+        """
+        # Find our internal order
+        order_id = self._broker_order_map.get(broker_order_id)
+        if not order_id or order_id not in self._orders:
+            logger.warning(f"Received execution for unknown order: {broker_order_id}")
+            return
+
+        order = self._orders[order_id]
+
+        # Check if this execution is already processed
+        if f"exec_{exec_id}" in order.metadata:
+            logger.debug(f"Ignoring duplicate execution {exec_id} for order {order_id}")
+            return
+
+        # Store execution ID to prevent duplicates
+        order.metadata[f"exec_{exec_id}"] = {
+            "quantity": quantity,
+            "price": price,
+            "commission": commission
+        }
+
+        # Process the fill
+        await self.process_fill(
+            order_id=order_id,
+            quantity=quantity,
+            price=price,
+            commission=commission
+        )

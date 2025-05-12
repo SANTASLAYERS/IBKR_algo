@@ -17,7 +17,7 @@ Automate research, order routing, and risk controls for many US‑equity tickers
 | DB migrate            | `alembic upgrade head` |
 | Gateway CLI           | `python gateway_cli.py` |
 
-## Directory map (Updated)
+## Directory map
 | Dir          | Role                                |
 |--------------|-------------------------------------|
 | `src`        | Core implementation                 |
@@ -28,79 +28,23 @@ Automate research, order routing, and risk controls for many US‑equity tickers
 |  ├─ `config.py`      | Configuration management |
 |  ├─ `logger.py`      | Logging functionality |
 |  ├─ `gateway.py`     | Enhanced IB Gateway connection |
+|  ├─ `subscription_manager.py` | Market data subscription management |
 |  ├─ `event/`         | Event system components |
-|  │   ├─ `base.py`       | Base event classes |
-|  │   ├─ `bus.py`        | Event bus implementation |
-|  │   ├─ `market.py`     | Market-related events |
-|  │   ├─ `order.py`      | Order-related events |
-|  │   ├─ `position.py`   | Position-related events |
-|  │   └─ `api.py`        | API-related events |
 |  ├─ `position/`      | Position management |
-|  │   ├─ `base.py`       | Base position class |
-|  │   ├─ `stock.py`      | Stock position implementation |
-|  │   └─ `tracker.py`    | Position tracking and management |
 |  ├─ `order/`         | Order management |
-|  │   ├─ `base.py`       | Base order class |
-|  │   ├─ `group.py`      | Order group management |
-|  │   └─ `manager.py`    | Order tracking and execution |
 |  ├─ `rule/`          | Rule engine for trading automation |
-|  │   ├─ `base.py`       | Base rule, condition, and action classes |
-|  │   ├─ `condition.py`  | Condition implementations (event, position, time, etc.) |
-|  │   ├─ `action.py`     | Action implementations (orders, positions, etc.) |
-|  │   └─ `engine.py`     | Rule engine for managing rules |
-|  └─ `api/`           | API integration components |
-|      ├─ `monitor.py`    | API monitoring and event generation |
-|      └─ `signals.py`    | Signal processing |
+|  ├─ `api/`           | API integration components |
+|  └─ `minute_data/`   | Historical minute bar data |
 | `api_client` | API client for Options Flow Monitor |
-|  ├─ `client.py`      | Base API client with request handling |
-|  ├─ `endpoints.py`   | Endpoint-specific API methods |
-|  ├─ `utils.py`       | Utility functions for the API client |
-|  └─ `README.md`      | API client usage documentation |
 | `connection` | IB auth, heartbeat, rate‑limit      |
-|  └─ `__init__.py`    | Package initialization |
 | `docs`       | Documentation files                 |
-|  ├─ `ARCHITECTURE.md` | System architecture overview |
-|  ├─ `CONNECTION_SETUP.md` | Connection configuration guide |
-|  ├─ `DEVELOPMENT_ROADMAP.md` | Future development plans |
-|  ├─ `API_REFERENCE.md` | Detailed API endpoint documentation |
-|  ├─ `EVENT_POSITION_SYSTEM_DOCUMENTATION.md` | Event-position system docs |
-|  ├─ `IMPLEMENTATION_PROGRESS.md` | Implementation progress tracking |
-|  └─ `MINUTE_DATA.md` | Minute data documentation |
 | `tests`      | Test suite for src components       |
 |  ├─ `event_system/`  | Event system tests |
-|  │   ├─ `test_events.py` | Event classes and bus tests |
-|  │   └─ `test_position.py` | Position management tests |
 |  ├─ `order_system/`  | Order management tests |
-|  │   └─ `test_order.py` | Order classes and manager tests |
 |  ├─ `rule_engine/`   | Rule engine tests |
-|  │   └─ `test_rule_engine.py` | Rule engine component tests |
-|  ├─ `test_connection.py` | Connection tests with mocks |
-|  ├─ `test_heartbeat.py`  | Heartbeat monitor tests |
-|  ├─ `test_event_loop.py` | Event loop tests |
-|  ├─ `test_gateway.py`    | Gateway connection tests |
-|  ├─ `test_live_connection.py` | Live IBKR Gateway connectivity tests |
-|  ├─ `test_gateway_connectivity.py` | Gateway connectivity test script |
-|  ├─ `test_reconnection.py` | Reconnection capability test script |
-|  ├─ `test_api_client.py` | API client tests |
-|  ├─ `test_api_endpoints.py` | API endpoint tests |
-|  ├─ `test_api_fixed.py` | API fixed tests |
-|  ├─ `test_api_live.py` | Live API connectivity tests |
-|  ├─ `conftest.py`    | Pytest fixtures and setup |
-|  ├─ `mocks.py`       | Mock objects for testing |
-|  ├─ `unittest_heartbeat.py` | Heartbeat unit tests |
-|  ├─ `unittest_runner.py` | Unit test runner |
-|  └─ `CLAUDE.md`      | Test suite documentation |
+|  ├─ `minute_data/`   | Minute data tests |
+|  └─ `integration/`   | Integration tests |
 | `examples`   | Usage examples and demonstrations   |
-|  ├─ `position_management_demo.py` | Position management example |
-|  ├─ `order_management_demo.py` | Order management example |
-|  └─ `simple_position_test.py` | Simple position test |
-| `gateway_cli.py` | Command-line interface for IB Gateway operations |
-| `check_env.py` | Script to check environment setup |
-| `main.py` | Main application entry point |
-| `README.md` | Project overview and usage instructions |
-| `IMPLEMENTATION_SUMMARY.md` | Summary of implementation |
-| `requirements.txt` | Project dependencies |
-| `Makefile` | Build and development automation |
 
 ## Features
 
@@ -115,34 +59,36 @@ Automate research, order routing, and risk controls for many US‑equity tickers
 - **Position Management**: Comprehensive position tracking and risk management
 - **Order Management**: Robust order creation, tracking, and lifecycle management
 - **Rule Engine**: Configurable rule-based trading strategies without code changes
+- **Minute Data**: Historical minute bar data retrieval and caching
 
-## Documentation
-| File                       | Description                               |
-|----------------------------|-------------------------------------------|
-| `README.md`                | Project overview and usage instructions    |
-| `docs/ARCHITECTURE.md`     | System architecture overview              |
-| `docs/CONNECTION_SETUP.md` | Connection configuration guide            |
-| `docs/DEVELOPMENT_ROADMAP.md` | Future development plans               |
-| `docs/API_REFERENCE.md`    | Detailed API endpoint documentation       |
-| `docs/EVENT_POSITION_SYSTEM_DOCUMENTATION.md` | Order and position system documentation |
-| `docs/RULE_ENGINE_SPECIFICATION.md` | Rule engine design and specification |
-| `docs/IMPLEMENTATION_PROGRESS.md` | Implementation progress tracking     |
-| `docs/MINUTE_DATA.md`      | Minute data documentation                 |
-| `src/CLAUDE.md`            | Source code architecture documentation    |
-| `tests/CLAUDE.md`          | Test suite documentation                  |
-| `tests/RULE_ENGINE_TESTS.md` | Rule engine test documentation         |
-| `src/rule/CLAUDE.md`      | Rule engine architecture documentation    |
-| `api_client/CLAUDE.md`     | API client architecture documentation     |
-| `api_client/README.md`     | API client usage guide                    |
+## Key Documentation
+| Component             | Documentation Location                  |
+|-----------------------|----------------------------------------|
+| Core Architecture     | `docs/ARCHITECTURE.md`                 |
+| Connection System     | `src/CLAUDE.md`, `connection/CLAUDE.md` |
+| Order & Position System | `docs/ORDER_POSITION_SYSTEM.md`          |
+| Order-IBKR Integration | `docs/ORDER_IBKR_INTEGRATION.md`        |
+| Rule Engine           | `src/rule/CLAUDE.md`, `docs/RULE_ENGINE_SPECIFICATION.md`, `docs/RULE_ENGINE_ATR_INTEGRATION.md` |
+| API Client            | `api_client/CLAUDE.md`, `api_client/README.md` |
+| API Integration       | `src/api/CLAUDE.md`                    |
+| Minute Data           | `src/minute_data/CLAUDE.md`, `docs/MINUTE_DATA.md` |
+| Testing               | `tests/CLAUDE.md`                      |
+| Integration Tests     | `tests/integration/README.md`, `tests/INTEGRATION_TESTING.md` |
+| Gateway Testing       | `tests/GATEWAY_TESTING.md`            |
+| Order & Position Tests| `tests/ORDER_POSITION_TESTS.md`       |
+| Rule Engine Tests     | `tests/RULE_ENGINE_TESTS.md`          |
 
 ## Shared constraints
 * Async first (`asyncio`, `httpx`); avoid blocking calls.
 * All event handlers inherit from `BaseEvent`.
-* Use dependency‑injection via `container.py`.
+* Each component has clear responsibilities with minimal dependencies.
+* Code quality enforced with `mypy`, `ruff`, and `black` (run `make lint` to check).
+* Comprehensive test coverage required for all components.
+* Production code should never contain debugging print statements (use the logger).
 
 ## Testing
 
-The test suite provides comprehensive coverage for both the IBKR connection system and the API client. Tests are designed to run without an actual IB API key or connection.
+The test suite provides comprehensive coverage for all system components. Tests are designed to run without an actual IB API key or connection.
 
 ```bash
 # Run all tests
@@ -151,18 +97,19 @@ pytest
 # Run tests with coverage report
 pytest --cov=src tests/
 
-# Run specific test files
+# Run specific component tests
 pytest tests/test_heartbeat.py
-pytest tests/test_connection.py
+pytest tests/event_system/
+pytest tests/rule_engine/
 
-# Component-specific tests
-pytest tests/test_api_client.py tests/test_api_endpoints.py
+# Run integration tests
+pytest tests/integration/
 ```
 
 See `tests/CLAUDE.md` for detailed testing documentation.
 
 ## Gateway Usage
-The IB Gateway connection provides enhanced functionality for interacting with Interactive Brokers:
+The IB Gateway connection provides functionality for interacting with Interactive Brokers:
 
 ```bash
 # Check Gateway connection
@@ -186,52 +133,6 @@ Configuration options can be provided via command line or config file:
 python gateway_cli.py --config config.ini --trading-mode paper
 ```
 
-_For external predictions see **docs/API_REFERENCE.md**._
-
 ## API Client Usage
 
-The API client provides access to the Multi-Ticker Options Flow Monitor API:
-
-```python
-from api_client import ApiClient, TradesEndpoint, PredictionEndpoint
-
-# Create API client (environment variables API_KEY and API_BASE_URL must be set)
-client = ApiClient()
-
-# Or specify directly
-client = ApiClient(
-    base_url="https://your-server-address/api/v1",
-    api_key="your-api-key"
-)
-
-# Get recent trades for a ticker
-trades_endpoint = TradesEndpoint(client)
-recent_trades = trades_endpoint.get_trades('SLV', recent=True, limit=10)
-print(f"Recent SLV trades: {recent_trades['trades']}")
-
-# Get latest ML prediction
-prediction_endpoint = PredictionEndpoint(client)
-latest_prediction = prediction_endpoint.get_latest_prediction('GLD')
-print(f"GLD prediction: {latest_prediction['prediction']['signal']}")
-print(f"Confidence: {latest_prediction['prediction']['confidence']}")
-
-# Close client when done
-client.close()
-```
-
-For asynchronous usage:
-
-```python
-import asyncio
-from api_client import ApiClient, PredictionEndpoint
-
-async def main():
-    async with ApiClient(base_url="...", api_key="...") as client:
-        prediction = PredictionEndpoint(client)
-        latest = await prediction.get_latest_prediction_async('SLV')
-        print(f"Latest prediction: {latest['prediction']['signal']}")
-
-asyncio.run(main())
-```
-
-See `api_client/README.md` for detailed usage examples.
+The API client provides access to the Multi-Ticker Options Flow Monitor API. See `api_client/README.md` for detailed usage examples.
