@@ -52,6 +52,7 @@ The test suite provides comprehensive coverage for the IBKR connection system, M
 - **`integration/README.md`**: Overview of the integration test suite
 - **`integration/RUNNING_INTEGRATION_TESTS.md`**: Guidelines for running integration tests
 - **`integration/TEST_VALIDATION.md`**: Validation methodology for integration tests
+- **`direct_test.py`**: Direct test script for verifying gateway connectivity
 
 #### Shared Test Components
 - **`mocks.py`**: Mock objects used across tests
@@ -127,15 +128,20 @@ pytest --cov=src.minute_data tests/minute_data/
 
 ### Live Testing
 
+For WSL2, use the correct IP address (172.28.64.1) for Windows host:
+
 ```bash
+# Direct test script (recommended first test)
+python tests/direct_test.py
+
 # IBKR Gateway Live Testing
-python tests/test_live_connection.py --host 127.0.0.1 --port 4002 --client-id 1
+python tests/test_live_connection.py --host 172.28.64.1 --port 4002 --client-id 1
 
 # Gateway Connectivity Test
-python tests/test_gateway_connectivity.py --host 127.0.0.1 --port 4002
+python tests/test_gateway_connectivity.py --host 172.28.64.1 --port 4002
 
 # Reconnection Test
-python tests/test_reconnection.py --host 127.0.0.1 --port 4002
+python tests/test_reconnection.py --host 172.28.64.1 --port 4002
 
 # API Client Live Testing (requires environment variables)
 export API_KEY="your-api-key"
@@ -148,9 +154,9 @@ python tests/test_api_live.py
 The comprehensive integration test suite validates real-world behavior against a live IB Gateway:
 
 ```bash
-# Set required environment variables
-export IB_HOST=127.0.0.1
-export IB_PORT=4002
+# Set required environment variables for WSL2
+export IB_HOST=172.28.64.1  # WSL2 to Windows host IP
+export IB_PORT=4002         # Paper trading port
 export IB_CLIENT_ID=10
 export IB_ACCOUNT=YOUR_ACCOUNT_ID
 
@@ -168,6 +174,8 @@ See the following files for detailed documentation on integration tests:
 - `tests/integration/RUNNING_INTEGRATION_TESTS.md`: How to run integration tests
 - `tests/integration/TEST_VALIDATION.md`: Validation methodology
 - `tests/INTEGRATION_TESTING.md`: Comprehensive integration testing guidelines
+- `docs/WSL_CONNECTIVITY.md`: Guide for connecting from WSL2 to Windows IB Gateway
+- `docs/WSL_CONNECTIVITY_AND_TESTING.md`: Detailed testing architecture for WSL2
 
 ## Test Components
 
@@ -228,6 +236,11 @@ The tests use fixtures defined in `conftest.py` to set up mock objects and testi
 - Testing utilities: Async contexts, HTTP mocks
 - Integration test setups: Configured testing environments
 
+For integration tests, special pytest fixtures are used to:
+- Create a session-wide event loop
+- Maintain a single connection to IB Gateway
+- Inject the gateway into each test class automatically
+
 ### Understanding Mocks
 
 The tests use mock objects located in `tests/mocks.py`:
@@ -244,6 +257,16 @@ The tests use mock objects located in `tests/mocks.py`:
 2. **Event loop issues**: If you encounter asyncio errors, check that you're using pytest-asyncio
 3. **Test freezes**: If tests hang, check that asyncio tasks and threads are properly cleaned up
 4. **Integration test failures**: Live tests may fail due to market conditions, timing, or API rate limits
+5. **WSL2 connection issues**: If running in Windows Subsystem for Linux (WSL2), you cannot use localhost/127.0.0.1 to connect to IB Gateway running on Windows. You must use the WSL2-to-Windows IP address 172.28.64.1 instead. Verify connectivity with `nc -vz 172.28.64.1 4002`. Additional considerations:
+   - Ensure IB Gateway API settings allow connections from WSL2 IP range
+   - Check Windows Firewall allows connections from 172.16.0.0/12 to port 4002
+   - Use `python tests/direct_test.py` to verify basic connectivity
+   - See `docs/WSL_CONNECTIVITY.md` for complete configuration instructions
+6. **Integration test fixture failures**: If you see "Gateway not initialized" errors, check:
+   - The _inject_gateway fixture in conftest.py is working properly
+   - Test classes are accessing the gateway via self.gateway
+   - Event loop scope matches between fixtures and tests
+   - See `docs/WSL_CONNECTIVITY_AND_TESTING.md` for detailed fixture documentation
 
 ## Best Practices for Extending Tests
 
@@ -257,3 +280,4 @@ When adding new functionality to the codebase:
 7. Test both synchronous and asynchronous interfaces
 8. For integration tests, implement multi-faceted validation (see `tests/integration/TEST_VALIDATION.md`)
 9. Balance unit tests (for speed/reliability) with integration tests (for real-world validation)
+10. For pytest fixtures that inject into classes, use the `_inject_gateway` pattern to ensure proper injection

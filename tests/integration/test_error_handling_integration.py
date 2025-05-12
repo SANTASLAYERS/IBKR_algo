@@ -23,25 +23,47 @@ from src.error_handler import ErrorHandler
 logger = logging.getLogger("error_handling_integration_tests")
 
 
-@pytest.mark.usefixtures("ib_gateway")
 class TestErrorHandlingIntegration:
     """
     Integration tests for error handling and recovery.
-    
+
     These tests validate behavior when errors occur during normal operations.
+
+    The gateway will be automatically injected via the _inject_gateway fixture.
     """
-    
-    # Class variable to receive the gateway from the fixture
-    gateway: IBGateway = None
+
+    # This will be populated by the _inject_gateway fixture
+    gateway = None
     
     @classmethod
     def setup_class(cls):
         """Set up test class."""
         logger.info("Setting up ErrorHandlingIntegration test class")
-        
+
         # Track resources for cleanup
         cls.test_orders = []
         cls.market_data_requests = []
+
+        # Debug: Check if we have a gateway yet
+        if hasattr(cls, "gateway") and cls.gateway is not None:
+            logger.info(f"Gateway assigned during setup: {cls.gateway}")
+            logger.info(f"Gateway connection state: {cls.gateway.connection_state}")
+        else:
+            logger.warning("Gateway not assigned during setup")
+
+    def setup_method(self, method):
+        """Set up before each test method."""
+        logger.info(f"Setting up test method: {method.__name__}")
+        # Debug gateway information at the method level
+        if hasattr(self, "gateway") and self.gateway is not None:
+            logger.info(f"Gateway available for test: {self.gateway}")
+            logger.info(f"Gateway connection state: {self.gateway.connection_state}")
+        else:
+            logger.error(f"No gateway available for test method: {method.__name__}")
+
+    def teardown_method(self, method):
+        """Clean up after each test method."""
+        logger.info(f"Tearing down test method: {method.__name__}")
     
     @classmethod
     def teardown_class(cls):
@@ -77,15 +99,22 @@ class TestErrorHandlingIntegration:
     async def test_invalid_contract_handling(self):
         """
         Test handling of invalid contract specifications.
-        
+
         This test verifies that:
         1. Requests for invalid contracts generate appropriate errors
         2. The error is captured and handled properly
         3. The error doesn't crash the connection
         """
         # Skip test if gateway not available
-        if not self.gateway or not self.gateway.is_connected():
-            pytest.skip("IB Gateway not available")
+        if not hasattr(self, "gateway") or self.gateway is None:
+            logger.error("Gateway not initialized")
+            pytest.skip("Gateway not initialized")
+            return
+
+        # Skip if not connected
+        if not self.gateway.is_connected():
+            logger.error("IB Gateway not connected")
+            pytest.skip("IB Gateway not connected")
         
         # Create an invalid contract (non-existent symbol)
         invalid_symbol = "INVALID123XYZ"  # This symbol should not exist
@@ -170,15 +199,22 @@ class TestErrorHandlingIntegration:
     async def test_invalid_order_handling(self):
         """
         Test handling of invalid order specifications.
-        
+
         This test verifies that:
         1. Invalid orders are properly rejected
         2. The error is captured and handled correctly
         3. The system remains operational after an order error
         """
         # Skip test if gateway not available
-        if not self.gateway or not self.gateway.is_connected():
-            pytest.skip("IB Gateway not available")
+        if not hasattr(self, "gateway") or self.gateway is None:
+            logger.error("Gateway not initialized")
+            pytest.skip("Gateway not initialized")
+            return
+
+        # Skip if not connected
+        if not self.gateway.is_connected():
+            logger.error("IB Gateway not connected")
+            pytest.skip("IB Gateway not connected")
         
         # Create a valid contract
         symbol = "SPY"
@@ -266,15 +302,22 @@ class TestErrorHandlingIntegration:
     async def test_multiple_errors_handling(self):
         """
         Test handling of multiple errors in sequence.
-        
+
         This test verifies that:
         1. The system can handle multiple errors in quick succession
         2. Error handling remains consistent
         3. The connection remains stable
         """
         # Skip test if gateway not available
-        if not self.gateway or not self.gateway.is_connected():
-            pytest.skip("IB Gateway not available")
+        if not hasattr(self, "gateway") or self.gateway is None:
+            logger.error("Gateway not initialized")
+            pytest.skip("Gateway not initialized")
+            return
+
+        # Skip if not connected
+        if not self.gateway.is_connected():
+            logger.error("IB Gateway not connected")
+            pytest.skip("IB Gateway not connected")
         
         # Create several invalid contracts with different issues
         invalid_contracts = [
@@ -370,36 +413,65 @@ class TestErrorHandlingIntegration:
                     logger.warning(f"Error cancelling market data request {req_id}: {str(e)}")
 
 
-@pytest.mark.usefixtures("ib_gateway")
 class TestReconnectionIntegration:
     """
     Integration tests for connection loss and reconnection.
-    
+
     These tests validate connection recovery behavior.
     Note: Some tests require manual intervention or may not be
     fully automatable due to the nature of connection testing.
+
+    The gateway will be automatically injected via the _inject_gateway fixture.
     """
-    
-    # Class variable to receive the gateway from the fixture
-    gateway: IBGateway = None
+
+    # This will be populated by the _inject_gateway fixture
+    gateway = None
     
     @classmethod
     def setup_class(cls):
         """Set up test class."""
         logger.info("Setting up ReconnectionIntegration test class")
+
+        # Debug: Check if we have a gateway yet
+        if hasattr(cls, "gateway") and cls.gateway is not None:
+            logger.info(f"Gateway assigned during setup: {cls.gateway}")
+            logger.info(f"Gateway connection state: {cls.gateway.connection_state}")
+        else:
+            logger.warning("Gateway not assigned during setup")
+
+    def setup_method(self, method):
+        """Set up before each test method."""
+        logger.info(f"Setting up test method: {method.__name__}")
+        # Debug gateway information at the method level
+        if hasattr(self, "gateway") and self.gateway is not None:
+            logger.info(f"Gateway available for test: {self.gateway}")
+            logger.info(f"Gateway connection state: {self.gateway.connection_state}")
+        else:
+            logger.error(f"No gateway available for test method: {method.__name__}")
+
+    def teardown_method(self, method):
+        """Clean up after each test method."""
+        logger.info(f"Tearing down test method: {method.__name__}")
     
     @pytest.mark.asyncio
     async def test_heartbeat_monitoring(self):
         """
         Test heartbeat monitoring functionality.
-        
+
         This test verifies that:
         1. Heartbeat requests are sent and processed
         2. The system correctly identifies active connections
         """
         # Skip test if gateway not available
-        if not self.gateway or not self.gateway.is_connected():
-            pytest.skip("IB Gateway not available")
+        if not hasattr(self, "gateway") or self.gateway is None:
+            logger.error("Gateway not initialized")
+            pytest.skip("Gateway not initialized")
+            return
+
+        # Skip if not connected
+        if not self.gateway.is_connected():
+            logger.error("IB Gateway not connected")
+            pytest.skip("IB Gateway not connected")
         
         try:
             # Verify initial connection state
@@ -424,15 +496,22 @@ class TestReconnectionIntegration:
     async def test_normal_disconnect_reconnect(self):
         """
         Test normal disconnection and reconnection.
-        
+
         This test verifies that:
         1. The system can gracefully disconnect
         2. The system can reconnect after a normal disconnection
         3. All functionality is restored after reconnection
         """
         # Skip test if gateway not available
-        if not self.gateway or not self.gateway.is_connected():
-            pytest.skip("IB Gateway not available")
+        if not hasattr(self, "gateway") or self.gateway is None:
+            logger.error("Gateway not initialized")
+            pytest.skip("Gateway not initialized")
+            return
+
+        # Skip if not connected
+        if not self.gateway.is_connected():
+            logger.error("IB Gateway not connected")
+            pytest.skip("IB Gateway not connected")
         
         # Create a valid contract for testing
         symbol = "SPY"

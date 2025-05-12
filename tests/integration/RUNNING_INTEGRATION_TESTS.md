@@ -20,7 +20,17 @@ Set up the following environment variables before running tests:
 
 ```bash
 # Required environment variables
-export IB_HOST=127.0.0.1               # IB Gateway host (default: localhost)
+
+## Standard setup (native Linux/MacOS/Windows)
+export IB_HOST=127.0.0.1               # IB Gateway host
+export IB_PORT=4002                    # 4002 for paper trading, 4001 for live
+export IB_CLIENT_ID=10                 # Unique client ID for this connection
+export IB_ACCOUNT=DU123456             # Your IB account number
+
+## WSL2 setup (when IB Gateway runs on Windows host)
+# IMPORTANT: For WSL2, you MUST use 172.28.64.1 instead of localhost
+# Verify connectivity first: nc -vz 172.28.64.1 4002
+export IB_HOST=172.28.64.1             # Fixed WSL2 to Windows host IP
 export IB_PORT=4002                    # 4002 for paper trading, 4001 for live
 export IB_CLIENT_ID=10                 # Unique client ID for this connection
 export IB_ACCOUNT=DU123456             # Your IB account number

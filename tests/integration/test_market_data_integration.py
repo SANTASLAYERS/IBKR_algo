@@ -20,28 +20,50 @@ from src.gateway import IBGateway
 logger = logging.getLogger("market_data_integration_tests")
 
 
-@pytest.mark.usefixtures("ib_gateway")
 class TestMarketDataIntegration:
     """
     Integration tests for market data retrieval.
-    
+
     These tests validate real-time market data subscriptions and historical
     data retrieval from a live IB Gateway.
+
+    The gateway will be automatically injected via the _inject_gateway fixture.
     """
-    
-    # Class variable to receive the gateway from the fixture
-    gateway: IBGateway = None
+
+    # This will be populated by the _inject_gateway fixture
+    gateway = None
     
     @classmethod
     def setup_class(cls):
         """Set up test class."""
         logger.info("Setting up MarketDataIntegration test class")
-        
+
         # Define test symbols (liquid ETFs that are always available)
         cls.test_symbols = ["SPY", "QQQ", "IWM"]
-        
+
         # Track market data subscriptions for cleanup
         cls.market_data_requests = []
+
+        # Debug: Check if we have a gateway yet
+        if hasattr(cls, "gateway") and cls.gateway is not None:
+            logger.info(f"Gateway assigned during setup: {cls.gateway}")
+            logger.info(f"Gateway connection state: {cls.gateway.connection_state}")
+        else:
+            logger.warning("Gateway not assigned during setup")
+
+    def setup_method(self, method):
+        """Set up before each test method."""
+        logger.info(f"Setting up test method: {method.__name__}")
+        # Debug gateway information at the method level
+        if hasattr(self, "gateway") and self.gateway is not None:
+            logger.info(f"Gateway available for test: {self.gateway}")
+            logger.info(f"Gateway connection state: {self.gateway.connection_state}")
+        else:
+            logger.error(f"No gateway available for test method: {method.__name__}")
+
+    def teardown_method(self, method):
+        """Clean up after each test method."""
+        logger.info(f"Tearing down test method: {method.__name__}")
     
     @classmethod
     def teardown_class(cls):
@@ -70,15 +92,22 @@ class TestMarketDataIntegration:
     async def test_market_data_subscription(self):
         """
         Test market data subscription and data reception.
-        
+
         This test verifies that:
         1. Market data can be requested for a symbol
         2. The subscription generates market data updates
         3. The data contains expected fields (bid, ask, last, etc.)
         """
         # Skip test if gateway not available
-        if not self.gateway or not self.gateway.is_connected():
-            pytest.skip("IB Gateway not available")
+        if not hasattr(self, "gateway") or self.gateway is None:
+            logger.error("Gateway not initialized")
+            pytest.skip("Gateway not initialized")
+            return
+
+        # Skip if not connected
+        if not self.gateway.is_connected():
+            logger.error("IB Gateway not connected")
+            pytest.skip("IB Gateway not connected")
         
         # Select test symbol
         symbol = self.test_symbols[0]
@@ -146,15 +175,22 @@ class TestMarketDataIntegration:
     async def test_historical_data_request(self):
         """
         Test historical data request functionality.
-        
+
         This test verifies that:
         1. Historical bar data can be requested for a symbol
         2. The data is returned in the expected format
         3. The data contains valid OHLC price information
         """
         # Skip test if gateway not available
-        if not self.gateway or not self.gateway.is_connected():
-            pytest.skip("IB Gateway not available")
+        if not hasattr(self, "gateway") or self.gateway is None:
+            logger.error("Gateway not initialized")
+            pytest.skip("Gateway not initialized")
+            return
+
+        # Skip if not connected
+        if not self.gateway.is_connected():
+            logger.error("IB Gateway not connected")
+            pytest.skip("IB Gateway not connected")
         
         # Select test symbol
         symbol = self.test_symbols[1]
@@ -239,34 +275,63 @@ class TestMarketDataIntegration:
             raise
 
 
-@pytest.mark.usefixtures("ib_gateway")
 class TestAccountIntegration:
     """
     Integration tests for account information retrieval.
-    
+
     These tests validate account data retrieval capabilities.
+
+    The gateway will be automatically injected via the _inject_gateway fixture.
     """
-    
-    # Class variable to receive the gateway from the fixture
-    gateway: IBGateway = None
+
+    # This will be populated by the _inject_gateway fixture
+    gateway = None
     
     @classmethod
     def setup_class(cls):
         """Set up test class."""
         logger.info("Setting up AccountIntegration test class")
+
+        # Debug: Check if we have a gateway yet
+        if hasattr(cls, "gateway") and cls.gateway is not None:
+            logger.info(f"Gateway assigned during setup: {cls.gateway}")
+            logger.info(f"Gateway connection state: {cls.gateway.connection_state}")
+        else:
+            logger.warning("Gateway not assigned during setup")
+
+    def setup_method(self, method):
+        """Set up before each test method."""
+        logger.info(f"Setting up test method: {method.__name__}")
+        # Debug gateway information at the method level
+        if hasattr(self, "gateway") and self.gateway is not None:
+            logger.info(f"Gateway available for test: {self.gateway}")
+            logger.info(f"Gateway connection state: {self.gateway.connection_state}")
+        else:
+            logger.error(f"No gateway available for test method: {method.__name__}")
+
+    def teardown_method(self, method):
+        """Clean up after each test method."""
+        logger.info(f"Tearing down test method: {method.__name__}")
     
     @pytest.mark.asyncio
     async def test_account_summary(self):
         """
         Test account summary retrieval.
-        
+
         This test verifies that:
         1. Account summary can be requested
         2. The response contains expected account information fields
         """
         # Skip test if gateway not available
-        if not self.gateway or not self.gateway.is_connected():
-            pytest.skip("IB Gateway not available")
+        if not hasattr(self, "gateway") or self.gateway is None:
+            logger.error("Gateway not initialized")
+            pytest.skip("Gateway not initialized")
+            return
+
+        # Skip if not connected
+        if not self.gateway.is_connected():
+            logger.error("IB Gateway not connected")
+            pytest.skip("IB Gateway not connected")
         
         # Initialize account data
         account_values = {}
