@@ -1,172 +1,262 @@
-# Multi-Ticker IB Trading Framework
+# TWS Trading Framework
 
-An asynchronous Python framework for automated trading with Interactive Brokers (IB), designed to handle research, order routing, and risk controls for multiple US equity tickers.
+A Python framework for automated trading with Interactive Brokers Trader Workstation (TWS), featuring async connectivity, event-driven architecture, and comprehensive testing.
 
 ## Features
 
-- **Async Connection Handling**: Connect to IBKR using modern async/await patterns
-- **Heartbeat Monitoring**: Detect connection issues quickly with customizable heartbeat
-- **Automatic Reconnection**: Recover from connection loss with exponential backoff
-- **Event Loop Management**: Dedicated event loop for message processing
-- **Error Handling**: Comprehensive error categorization and callback system
-- **API Client**: Access options flow data and ML predictions 
-- **Gateway CLI**: Command-line interface for IB Gateway operations
+- **Direct TWS Integration**: Native connection to Trader Workstation (no IB Gateway required)
+- **Async Architecture**: Modern async/await patterns for non-blocking operations
+- **Event-Driven System**: Robust event bus for order management and position tracking
+- **Real-Time Market Data**: Live price feeds and market data processing
+- **Order Management**: Complete order lifecycle with fills, cancellations, and status tracking
+- **Position Tracking**: Real-time position monitoring with P&L calculations
+- **Risk Management**: Built-in controls for position limits and stop losses
+- **Comprehensive Testing**: Integration tests with real TWS connections
 
 ## Requirements
 
-- Python 3.6+
-- Interactive Brokers API (ibapi)
-- Additional requirements in `requirements.txt`
+- Python 3.8+
+- Interactive Brokers Trader Workstation (TWS)
+- Windows 10/11 (native Windows support)
+- Paper trading account (recommended for testing)
 
-## Installation
+## Quick Start
 
-1. Clone this repository:
-   ```
-   git clone https://github.com/yourusername/ibkr-multi-ticker.git
-   cd ibkr-multi-ticker
-   ```
+### 1. Installation
 
-2. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
+```bash
+git clone <repository-url>
+cd ibkr-tws-framework
+pip install -r requirements.txt
+```
 
-3. Make sure Interactive Brokers Trader Workstation (TWS) or IB Gateway is running
+### 2. Setup TWS
 
-## Documentation
+1. **Start TWS** in paper trading mode
+2. **Enable API**: Go to Global Configuration → API → Settings
+   - Check "Enable ActiveX and Socket Clients"
+   - Set Socket port to `7497` (paper trading)
+   - Check "Allow connections from localhost only"
 
-| Document | Description |
-|----------|-------------|
-| [Connection Setup Guide](docs/CONNECTION_SETUP.md) | Configure IB Gateway, WSL connectivity, and Docker deployment |
-| [Architecture Documentation](docs/ARCHITECTURE.md) | System design, components, and patterns |
-| [Development Roadmap](docs/DEVELOPMENT_ROADMAP.md) | Planned features and enhancements |
-| [API Reference](docs/API_REFERENCE.md) | Options Flow Monitor API documentation |
+### 3. Configuration
+
+Set environment variables:
+```bash
+export TWS_HOST=127.0.0.1
+export TWS_PORT=7497
+export TWS_CLIENT_ID=10
+export TWS_ACCOUNT=your_paper_account
+```
+
+### 4. Test Connection
+
+```bash
+# Run basic connectivity tests
+python run_integration_tests.py basic
+
+# Test market data (safe - read only)
+python run_integration_tests.py market_data
+```
 
 ## Basic Usage
 
+### Simple TWS Connection
+
 ```python
 import asyncio
-from src.connection import IBKRConnection
-from src.event_loop import IBKREventLoop
-from src.config import Config
+from src.tws_config import TWSConfig
+from src.tws_connection import TWSConnection
 
 async def main():
     # Create configuration
-    config = Config(
-        host="127.0.0.1",  # For WSL2 to Windows, use your WSL gateway IP
-        port=4002,         # Paper trading port (7497 for TWS)
+    config = TWSConfig(
+        host="127.0.0.1",
+        port=7497,  # TWS paper trading port
         client_id=1
     )
     
-    # Set up event loop
-    event_loop = IBKREventLoop()
-    event_loop.start()
-    
     # Create connection
-    connection = IBKRConnection(config)
+    connection = TWSConnection(config)
     
-    # Add message processor
-    event_loop.add_message_processor(connection.run)
-    
-    # Connect
-    connected = await connection.connect_async()
+    # Connect to TWS
+    connected = await connection.connect()
     
     if connected:
-        print("Connected to IBKR!")
+        print("Connected to TWS!")
         
-        # Do something with the connection
+        # Request current time
+        connection.request_current_time()
         
         # Disconnect when done
         connection.disconnect()
-    
-    # Stop event loop
-    event_loop.stop()
+    else:
+        print("Failed to connect to TWS")
 
 if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-## Gateway CLI
-
-The system provides a command-line interface for IB Gateway operations:
-
-```bash
-# Check Gateway connection
-python gateway_cli.py --check
-
-# Start Gateway process
-python gateway_cli.py --start --gateway-path /path/to/ibgateway
-
-# Subscribe to market data for a symbol
-python gateway_cli.py --subscribe AAPL
-
-# Show current positions
-python gateway_cli.py --positions
-
-# Show account information
-python gateway_cli.py --account
-```
-
-## API Client
-
-The API client provides access to the Multi-Ticker Options Flow Monitor API:
+### Event-Driven Trading System
 
 ```python
-from api_client import ApiClient, TradesEndpoint, PredictionEndpoint
+import asyncio
+from src.tws_config import TWSConfig
+from src.tws_connection import TWSConnection
+from src.event.bus import EventBus
+from src.event.market import PriceEvent
+from src.position.tracker import PositionTracker
+from src.order.manager import OrderManager
 
-# Create API client (environment variables API_KEY and API_BASE_URL must be set)
-client = ApiClient()
+async def main():
+    # Initialize components
+    config = TWSConfig.from_env()
+    tws_connection = TWSConnection(config)
+    event_bus = EventBus()
+    position_tracker = PositionTracker(event_bus)
+    order_manager = OrderManager(event_bus)
+    
+    # Connect to TWS
+    await tws_connection.connect()
+    
+    # Initialize trading components
+    await position_tracker.initialize()
+    await order_manager.initialize()
+    
+    # Your trading logic here...
+    
+    # Cleanup
+    tws_connection.disconnect()
 
-# Get recent trades for a ticker
-trades_endpoint = TradesEndpoint(client)
-recent_trades = trades_endpoint.get_trades('SLV', recent=True, limit=10)
-
-# Get latest ML prediction
-prediction_endpoint = PredictionEndpoint(client)
-latest_prediction = prediction_endpoint.get_latest_prediction('GLD')
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
-
-See [API Client Documentation](api_client/README.md) for detailed usage examples.
-
-## Directory Structure
-
-| Directory | Description |
-|-----------|-------------|
-| `src/` | Core connection and event handling code |
-| `api_client/` | API client for Options Flow Monitor |
-| `tests/` | Test suite for components and integrations |
-| `docs/` | Comprehensive documentation |
-| `connection/` | IB auth, heartbeat, rate-limit |
 
 ## Testing
 
-Run the test suite with:
+The framework includes comprehensive testing at multiple levels:
+
+### Integration Tests (Real TWS)
 
 ```bash
-# Run the full test suite
-pytest
+# Show available test levels
+python run_integration_tests.py --list
 
-# Run unit tests only
-pytest tests/unittest_*.py
+# Safe connectivity tests
+python run_integration_tests.py basic
 
-# Run a specific test file
-pytest tests/test_connection.py
+# Market data tests (read-only)
+python run_integration_tests.py market_data
+
+# Order placement tests (CAUTION - places real orders!)
+export TWS_ENABLE_ORDER_TESTS=true
+python run_integration_tests.py orders
+
+# Complete system tests
+python run_integration_tests.py e2e
 ```
 
-## Development
+### Unit Tests
 
-For development and contribution, follow these steps:
+```bash
+# Run all unit tests
+pytest tests/
 
-1. Run linting checks:
+# Run specific test categories
+pytest tests/event_system/
+pytest tests/position/
+pytest tests/order/
+```
+
+## Project Structure
+
+```
+├── src/
+│   ├── tws_config.py        # TWS configuration management
+│   ├── tws_connection.py    # Direct TWS connection
+│   ├── event/               # Event-driven architecture
+│   ├── order/               # Order management system
+│   ├── position/            # Position tracking
+│   └── ...
+├── tests/
+│   ├── integration/         # Real TWS integration tests
+│   ├── event_system/        # Event system unit tests
+│   ├── position/            # Position management tests
+│   └── order/               # Order management tests
+├── docs/                    # Documentation
+└── run_integration_tests.py # Safe test runner
+```
+
+## Safety Guidelines
+
+### For Development:
+- **Always use paper trading accounts**
+- **Never run against live money during development**
+- **Test incrementally** (basic → market_data → orders)
+- **Monitor order placement tests manually**
+
+### For Production:
+- **Implement comprehensive risk controls**
+- **Use position limits and stop losses**
+- **Monitor system health continuously**
+- **Have emergency stop procedures**
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [TWS Setup Guide](docs/TWS_SETUP_GUIDE.md) | Complete TWS configuration and setup guide |
+| [Architecture](docs/TWS_ARCHITECTURE.md) | System architecture and component design |
+| [Testing Strategy](tests/COMPREHENSIVE_TESTING_STRATEGY.md) | Complete testing approach and roadmap |
+| [Integration Tests](tests/integration/README.md) | How to run integration tests safely |
+| [Order System](docs/ORDER_POSITION_SYSTEM.md) | Order and position management details |
+| [Event System](docs/EVENT_POSITION_SYSTEM_DOCUMENTATION.md) | Event-driven architecture guide |
+
+## Key Components
+
+### TWS Connection (`src/tws_connection.py`)
+- Direct connection to Trader Workstation
+- Async connection management with timeouts
+- Automatic reconnection handling
+- Basic API operations (time, accounts, order IDs)
+
+### Event System (`src/event/`)
+- Event bus for component communication
+- Market data events, order events, position events
+- Async event processing with subscriptions
+
+### Order Management (`src/order/`)
+- Complete order lifecycle management
+- Order groups and bracket orders
+- Fill processing and execution tracking
+
+### Position Tracking (`src/position/`)
+- Real-time position monitoring
+- P&L calculations (realized and unrealized)
+- Risk management integration
+
+## Contributing
+
+1. **Setup development environment**:
    ```bash
-   make lint
+   pip install -r requirements.txt
+   pip install -r requirements-dev.txt
    ```
 
-2. Start the development server:
+2. **Run tests before committing**:
    ```bash
-   make run-dev
+   pytest tests/
+   python run_integration_tests.py basic
    ```
+
+3. **Follow safety guidelines**:
+   - Use paper trading only
+   - Test incrementally
+   - Document changes thoroughly
 
 ## License
 
-MIT License
+MIT License - see LICENSE file for details
+
+---
+
+**⚠️ Important**: This framework is designed for educational and development purposes. Always use paper trading accounts for testing and development. Never risk real money without thorough testing and proper risk management procedures.

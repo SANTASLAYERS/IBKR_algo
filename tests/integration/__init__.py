@@ -1,5 +1,5 @@
 """
-Integration test package for IB Gateway connection and trading.
+Integration test package for TWS connection and trading.
 
-These tests validate actual behavior with IB Gateway rather than relying on mocks.
-"""
+These tests validate actual behavior with TWS rather than relying on mocks.
+""" 

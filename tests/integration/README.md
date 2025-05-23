@@ -1,82 +1,134 @@
-# Integration Tests for IB Gateway
+# TWS Integration Tests
 
-This directory contains integration tests that validate the trading system against a live Interactive Brokers (IB) Gateway. These tests require:
+This directory contains integration tests that actually connect to and interact with TWS (Trader Workstation).
 
-1. A running IB Gateway instance (either paper trading or live)
-2. Valid credentials and connection parameters
-3. Appropriate permissions to execute trades in the testing environment
+## ⚠️ Safety First
 
-## Test Validation Approach
+**CRITICAL**: These tests interact with real TWS instances. Always ensure:
+- You are using **PAPER TRADING ONLY** 
+- Never run against live trading accounts
+- Monitor order placement tests manually
+- Start with basic tests and work your way up
 
-Unlike unit tests that rely on mocks, these integration tests validate actual responses from the IB Gateway. Each test follows this pattern:
+## Quick Start
 
-1. **Setup**: Connect to IB Gateway with credentials and prepare test state
-2. **Action**: Execute trading operation (e.g., place order, modify order, etc.)
-3. **Validation**: Verify the operation was successful through multiple mechanisms:
-   - Validate response codes from IB Gateway
-   - Verify operation via secondary queries (e.g., check positions after order)
-   - Confirm expected callbacks were received
-   - Reconcile local state with IB Gateway state
-4. **Cleanup**: Return the system to its original state (cancel orders, close positions)
+1. **Start TWS** in paper trading mode
+2. **Enable API** in Global Configuration → API Settings
+3. **Set up environment**:
+   ```bash
+   export TWS_HOST=127.0.0.1
+   export TWS_PORT=7497
+   export TWS_CLIENT_ID=10
+   export TWS_ACCOUNT=your_paper_account
+   ```
+
+4. **Run basic tests first**:
+   ```bash
+   python run_integration_tests.py basic
+   ```
+
+## Test Levels
+
+### 🟢 SAFE Tests
+- **Basic Connectivity**: Socket connections, API handshake
+- **Market Data**: Real-time price feeds (read-only)
+- **End-to-End**: System integration without trading
+
+### 🟡 CAUTION Tests  
+- **Order Placement**: Places real orders (immediately cancelled)
 
 ## Running Tests
 
-These tests require environment variables for connection parameters:
-
+Use the test runner for safety:
 ```bash
-# Set environment variables
-export IB_HOST=127.0.0.1  # IB Gateway host
-export IB_PORT=4002       # 4002 for paper trading, 4001 for live
-export IB_CLIENT_ID=10    # Client ID for this connection
-export IB_ACCOUNT=YOUR_ACCOUNT_ID  # Your IB account ID
+# Show available test levels
+python run_integration_tests.py --list
 
-# Run all integration tests
-pytest -xvs tests/integration/
+# Run safe connectivity tests
+python run_integration_tests.py basic
 
-# Run specific test category
-pytest -xvs tests/integration/test_order_integration.py
+# Run market data tests
+python run_integration_tests.py market_data
+
+# Enable and run order tests (CAUTION!)
+export TWS_ENABLE_ORDER_TESTS=true
+python run_integration_tests.py orders
+
+# Run all tests (includes order placement!)
+python run_integration_tests.py all
 ```
 
-## Skipping Tests
+## Manual Test Execution
 
-If IB Gateway is not available, these tests will be automatically skipped with a message indicating the reason. To force test execution even when expected to fail (for development purposes):
-
+If you prefer to run tests manually:
 ```bash
-pytest -xvs tests/integration/ --force-ib-gateway
+# Basic tests (always safe)
+pytest tests/integration/test_basic_tws_connection.py -v
+pytest tests/integration/test_tws_connection.py -v
+
+# Market data tests (safe - read only)
+pytest tests/integration/test_market_data_tws.py -v
+
+# Order tests (CAUTION - places real orders)
+export TWS_ENABLE_ORDER_TESTS=true
+pytest tests/integration/test_order_placement_tws.py -v
+
+# End-to-end tests
+pytest tests/integration/test_e2e_trading_workflow.py -v
 ```
 
-## Critical Path Scenarios Tested
+## What Gets Tested
 
-1. **Basic Connectivity**
-   - Test connection establishment and management
-   - Validate error handling for invalid credentials
+### Basic Connectivity
+- TWS socket connection
+- API handshake and authentication
+- Basic API calls (time, accounts, order IDs)
+- Connection timeout behavior
 
-2. **Order Placement and Lifecycle**
-   - Market order submission and execution
-   - Limit order submission and modification
-   - Order cancellation and verification
+### Market Data
+- Real-time price subscriptions
+- Multiple symbol handling
+- Market data validation
+- Error handling for invalid symbols
 
-3. **Position Management**
-   - Open position creation
-   - Position reconciliation with IB Gateway
-   - Position closure verification
+### Order Placement (⚠️ CAUTION)
+- Market order placement/cancellation
+- Limit order lifecycle
+- Order rejection handling
+- Multiple order management
+- **Safety**: Uses 1-share quantities, immediate cancellation
 
-4. **Order Strategies**
-   - Bracket order (entry, stop loss, take profit)
-   - OCO (One-Cancels-Other) order groups
-   - Complex multi-leg orders
+### End-to-End Workflows
+- Complete system integration
+- Event-driven architecture testing
+- Error handling workflows
+- Reconnection testing
+- Basic performance metrics
 
-5. **Error Handling and Recovery**
-   - Connection interruption recovery
-   - Invalid order handling
-   - Network issue resilience
+## Troubleshooting
 
-## Adding New Tests
+### Tests Skip with "TWS not available"
+- Ensure TWS is running
+- Check TWS is on port 7497 (paper trading)
+- Verify API is enabled in TWS settings
+- Check firewall isn't blocking connections
 
-When adding new integration tests, follow these guidelines:
+### Order tests are skipped
+- Set `TWS_ENABLE_ORDER_TESTS=true` environment variable
+- Ensure you're using paper trading account
+- Never run against live accounts
 
-1. Each test must have clear pass/fail criteria
-2. Include proper cleanup procedures in `finally` blocks
-3. Use paper trading environment for test development
-4. Document expected behavior and validation approach
-5. Ensure tests are idempotent and can run repeatedly
+### Connection timeouts
+- TWS may be busy or overloaded
+- Try increasing timeout in test configuration
+- Restart TWS and try again
+
+## Next Steps
+
+After basic integration tests pass, consider:
+1. **Real Trading Validation**: Test with actual order fills
+2. **Risk Management Testing**: Validate stop losses, position limits
+3. **Performance Testing**: Load testing with multiple symbols
+4. **Extended Runtime Testing**: 24+ hour stability tests
+
+See `tests/COMPREHENSIVE_TESTING_STRATEGY.md` for complete testing roadmap. 

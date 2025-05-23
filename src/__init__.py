@@ -2,17 +2,16 @@
 # -*- coding: utf-8 -*-
 
 """
-IBKR Async Connection Module
+TWS Trading Module
 
-This module provides async-friendly connection handling for Interactive Brokers API,
-including heartbeat monitoring and event loop management.
+This module provides TWS connection handling and trading functionality.
 """
 
 __version__ = '0.1.0'
 
-from .connection import IBKRConnection
+from .tws_config import TWSConfig
+from .tws_connection import TWSConnection
 from .heartbeat import HeartbeatMonitor
 from .event_loop import IBKREventLoop
 from .error_handler import ErrorHandler
-from .config import Config, create_default_config
 from .logger import get_logger, configure_logging_from_config

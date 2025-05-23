@@ -15,7 +15,6 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from tests.mocks import MockIBKRAPI, MockConfig, MockErrorHandler, AsyncMock
 
 # Import modules to test
-from src.config import Config
 from src.heartbeat import HeartbeatMonitor
 from src.event_loop import IBKREventLoop
 from src.error_handler import ErrorHandler
