@@ -42,6 +42,8 @@ class TWSConnection(EWrapper, EClient):
         
         self.config = config
         self._connected = False
+        self._connection_ack_received = False
+        self._api_started = False
         self._connection_thread: Optional[threading.Thread] = None
         self._next_order_id: Optional[int] = None
         self._start_time: Optional[float] = None
@@ -80,60 +82,110 @@ class TWSConnection(EWrapper, EClient):
             
         logger.info(f"Connecting to TWS at {self.config.host}:{self.config.port}")
         
+        # Reset state
+        self._connected = False
+        self._connection_ack_received = False
+        self._api_started = False
+        self._next_order_id = None
+        self._start_time = time.time()
+        
+        # Simple connection event (like working MinimalTWS and direct test)
+        connection_event = threading.Event()
+        
+        # Simple callback to detect connection success
+        original_nextValidId = self.nextValidId
+        def signal_connection_success(orderId: int):
+            """Signal that connection is successful."""
+            original_nextValidId(orderId)  # Call original method
+            connection_event.set()
+        
+        # Temporarily override nextValidId (like working test)
+        self.nextValidId = signal_connection_success
+        
         try:
-            # Reset connection state
-            self._connected = False
-            self._start_time = time.time()
+            # Use the EXACT working pattern from direct test
+            def run_connection():
+                try:
+                    logger.info(f"Connection thread: Connecting to {self.config.host}:{self.config.port} (client ID: {self.config.client_id})")
+                    
+                    # Direct call to base IBAPI (EXACT copy of working approach)
+                    from ibapi.client import EClient
+                    EClient.connect(self, self.config.host, self.config.port, self.config.client_id)
+                    logger.info("Connection thread: Socket connected, starting message loop")
+                    
+                    # Start message loop (EXACT copy of working approach)  
+                    EClient.run(self)
+                    logger.info("Connection thread: Message loop ended")
+                    
+                except Exception as e:
+                    logger.error(f"Connection thread: Error - {e}")
             
-            # Start connection in separate thread
-            self._connection_thread = threading.Thread(target=self._run_connection)
-            self._connection_thread.daemon = True
+            # Start connection thread (EXACT working pattern)
+            self._connection_thread = threading.Thread(target=run_connection, daemon=True)
             self._connection_thread.start()
             
-            # Wait for connection with timeout
+            # Simple async wait (EXACT copy of working approach)
+            loop = asyncio.get_event_loop()
             timeout = self.config.connection_timeout
-            start_time = time.time()
             
-            while not self._connected and (time.time() - start_time) < timeout:
-                await asyncio.sleep(0.1)
+            success = await loop.run_in_executor(
+                None, 
+                lambda: connection_event.wait(timeout)
+            )
             
-            if self._connected:
-                logger.info("Successfully connected to TWS")
+            if success and self._connected:
+                logger.info("✅ Successfully connected to TWS")
                 return True
             else:
-                logger.error("Failed to connect to TWS within timeout")
+                logger.error("❌ Connection failed or timed out")
+                logger.error(f"Connected: {self._connected}, Next ID: {self._next_order_id}")
+                self._force_cleanup()
                 return False
                 
         except Exception as e:
-            logger.error(f"Error connecting to TWS: {e}")
+            logger.error(f"❌ Connection error: {e}")
+            self._force_cleanup()
             return False
+        finally:
+            # Restore original callback
+            self.nextValidId = original_nextValidId
     
-    def _run_connection(self):
-        """Run the connection in a separate thread."""
+    def _force_cleanup(self):
+        """Force cleanup of connection resources."""
+        logger.info("Forcing connection cleanup")
+        self._connected = False
+        self._connection_ack_received = False
+        self._api_started = False
+        
         try:
-            # Connect to TWS
-            logger.debug(f"Starting connection to {self.config.host}:{self.config.port}")
-            super().connect(self.config.host, self.config.port, self.config.client_id)
+            super().disconnect()
+        except Exception as e:
+            logger.debug(f"Error during forced disconnect: {e}")
+    
+    def disconnect(self) -> None:
+        """Disconnect from TWS safely without joining threads."""
+        if not self._connected:
+            logger.warning("Not connected to TWS")
+            return
             
-            # Start the message loop - this will block until disconnected
-            self.run()
+        logger.info("Disconnecting from TWS")
+        
+        try:
+            # Reset connection state first
+            self._connected = False
+            self._connection_ack_received = False
+            self._api_started = False
+            
+            # Call IBAPI disconnect (this triggers connectionClosed)
+            EClient.disconnect(self)
+            
+            # DON'T JOIN THE THREAD - let it clean up naturally
+            # The daemon thread will exit when the main process exits
+            
+            logger.info("✅ Disconnect request sent")
             
         except Exception as e:
-            logger.error(f"Connection thread error: {e}")
-        finally:
-            self._connected = False
-            if self._on_disconnected:
-                try:
-                    self._on_disconnected()
-                except Exception as e:
-                    logger.error(f"Error in disconnected callback: {e}")
-    
-    def disconnect(self):
-        """Disconnect from TWS."""
-        if self._connected:
-            logger.info("Disconnecting from TWS")
-            self._connected = False
-            super().disconnect()
+            logger.error(f"Error during disconnect: {e}")
     
     def is_connected(self) -> bool:
         """
@@ -156,19 +208,23 @@ class TWSConnection(EWrapper, EClient):
     # EWrapper callback implementations
     def connectAck(self):
         """Called when connection is acknowledged."""
-        logger.debug("Connection acknowledged by TWS")
-        # Start the API
+        logger.info("✅ Connection acknowledged by TWS")
+        self._connection_ack_received = True
+        # Start API like MinimalTWS
         self.startApi()
+        self._api_started = True
     
     def nextValidId(self, orderId: int):
         """Called when TWS sends the next valid order ID."""
-        logger.debug(f"Next valid order ID: {orderId}")
+        logger.info(f"✅ Next valid order ID received: {orderId}")
         self._next_order_id = orderId
         
-        # Mark as connected when we receive the first valid ID
+        # Mark as connected when we receive the first valid ID (like MinimalTWS)
         if not self._connected:
             self._connected = True
-            logger.info("TWS connection established")
+            logger.info("✅ TWS connection fully established")
+            
+            # Call user callback if set
             if self._on_connected:
                 try:
                     self._on_connected()
@@ -177,8 +233,10 @@ class TWSConnection(EWrapper, EClient):
     
     def connectionClosed(self):
         """Called when connection is closed."""
-        logger.info("Connection to TWS closed")
+        logger.info("⚠️ Connection to TWS closed")
         self._connected = False
+        self._connection_ack_received = False
+        self._api_started = False
         if self._on_disconnected:
             try:
                 self._on_disconnected()
@@ -187,21 +245,28 @@ class TWSConnection(EWrapper, EClient):
     
     def error(self, reqId: int, errorCode: int, errorString: str, advancedOrderRejectJson: str = ""):
         """Handle errors from TWS."""
-        logger.error(f"TWS Error {errorCode}: {errorString} (reqId: {reqId})")
-        
         # Handle connection-related errors
         if errorCode in [502, 503, 504]:
-            logger.error("TWS connection error - check if TWS is running and API is enabled")
+            logger.error(f"❌ TWS connection error {errorCode}: {errorString}")
             self._connected = False
+            self._connection_ack_received = False
+            self._api_started = False
         elif errorCode == 2104:
             # Market data farm connection is OK - this is normal
-            logger.debug("Market data farm connection is OK")
+            logger.debug("✅ Market data farm connection is OK")
             return
         elif errorCode == 2106:
             # Historical data farm connection is OK - this is normal
-            logger.debug("Historical data farm connection is OK")
+            logger.debug("✅ Historical data farm connection is OK")
             return
+        elif errorCode == 2158:
+            # Sec-def data farm connection is OK - this is normal  
+            logger.debug("✅ Sec-def data farm connection is OK")
+            return
+        else:
+            logger.warning(f"⚠️ TWS Error {errorCode}: {errorString} (reqId: {reqId})")
         
+        # Call user error callback if set
         if self._on_error:
             try:
                 self._on_error(reqId, errorCode, errorString)
@@ -210,7 +275,7 @@ class TWSConnection(EWrapper, EClient):
     
     def managedAccounts(self, accountsList: str):
         """Called when TWS sends the list of managed accounts."""
-        logger.info(f"Managed accounts: {accountsList}")
+        logger.debug(f"Managed accounts: {accountsList}")
     
     def currentTime(self, time: int):
         """Called when TWS sends current time."""

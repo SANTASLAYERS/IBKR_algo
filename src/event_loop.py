@@ -149,12 +149,9 @@ class IBKREventLoop:
             except Exception as e:
                 logger.error(f"Error stopping event loop: {str(e)}")
         
-        # Wait for the thread to finish
-        if self._thread is not None and self._thread.is_alive():
-            self._thread.join(timeout=5.0)
-            if self._thread.is_alive():
-                logger.warning("Event loop thread did not terminate within timeout")
-            
+        # Don't join the thread - use safe pattern like TWSConnection
+        # DON'T JOIN THE THREAD - let daemon thread clean up naturally
+        # This prevents potential blocking and timing issues
         self._thread = None
         logger.info("IBKR event loop stopped")
         

@@ -189,6 +189,11 @@ class Order:
         )
     
     @property
+    def is_buy(self) -> bool:
+        """Check if this is a buy order."""
+        return self.side == OrderSide.BUY
+    
+    @property
     def fill_percentage(self) -> float:
         """Get the percentage of the order that has been filled."""
         if abs(self.quantity) == 0:

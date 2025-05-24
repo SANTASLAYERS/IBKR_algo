@@ -116,10 +116,11 @@ class HeartbeatMonitor:
             self._monitor_task.cancel()
             self._monitor_task = None
             
-        # Stop the thread if it exists
+        # Stop the thread if it exists - use safe pattern
         if self._monitor_thread:
             self._thread_stop_event.set()
-            self._monitor_thread.join(timeout=1.0)
+            # DON'T JOIN THE THREAD - let daemon thread clean up naturally
+            # This prevents potential blocking and timing issues
             self._monitor_thread = None
             
         logger.debug("Heartbeat monitor stopped")

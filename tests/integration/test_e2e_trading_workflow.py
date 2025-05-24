@@ -78,7 +78,7 @@ class TestE2ETradingWorkflow:
         config = TWSConfig(
             host=credentials["host"],
             port=credentials["port"],
-            client_id=credentials["client_id"] + 20,  # Different client ID
+            client_id=credentials["client_id"],  # Use consistent client ID
             connection_timeout=10.0
         )
         
@@ -162,7 +162,7 @@ class TestE2ETradingWorkflow:
         config = TWSConfig(
             host=credentials["host"],
             port=credentials["port"],
-            client_id=credentials["client_id"] + 21,  # Different client ID
+            client_id=credentials["client_id"],  # Use consistent client ID
             connection_timeout=10.0
         )
         
@@ -203,7 +203,7 @@ class TestE2ETradingWorkflow:
         config = TWSConfig(
             host=credentials["host"],
             port=credentials["port"],
-            client_id=credentials["client_id"] + 22,  # Different client ID
+            client_id=credentials["client_id"],  # Use consistent client ID
             connection_timeout=5.0
         )
         
@@ -245,11 +245,12 @@ class TestE2ETradingWorkflow:
         credentials = get_tws_credentials()
         
         # Create multiple configurations with different client IDs
+        # Note: This test specifically needs different client IDs
         configs = [
             TWSConfig(
                 host=credentials["host"],
                 port=credentials["port"],
-                client_id=credentials["client_id"] + 30 + i,
+                client_id=credentials["client_id"] + 100 + i,  # Offset by 100 to avoid conflicts
                 connection_timeout=10.0
             )
             for i in range(3)
@@ -264,7 +265,7 @@ class TestE2ETradingWorkflow:
                 logger.info(f"Connecting client {i + 1}...")
                 connected = await connection.connect()
                 connect_results.append(connected)
-                await asyncio.sleep(1)  # Small delay between connections
+                await asyncio.sleep(2)  # Longer delay between connections
             
             # Verify connections
             successful_connections = sum(connect_results)
@@ -288,7 +289,7 @@ class TestE2ETradingWorkflow:
                 if connection.is_connected():
                     logger.info(f"Disconnecting client {i + 1}...")
                     connection.disconnect()
-                    await asyncio.sleep(0.5)
+                    await asyncio.sleep(1)
 
     @pytest.mark.usefixtures("check_tws")
     @pytest.mark.asyncio
@@ -298,7 +299,7 @@ class TestE2ETradingWorkflow:
         config = TWSConfig(
             host=credentials["host"],
             port=credentials["port"],
-            client_id=credentials["client_id"] + 25,  # Different client ID
+            client_id=credentials["client_id"],  # Use consistent client ID
             connection_timeout=10.0
         )
         

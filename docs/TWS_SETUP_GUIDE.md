@@ -28,43 +28,81 @@ This guide covers setting up Interactive Brokers Trader Workstation (TWS) for us
 
 4. **Click "OK"** to save settings
 
-### 3. Test API Configuration
+### 3. Test TWS Configuration
 
-Create a simple test to verify TWS is properly configured:
+**⚠️ IMPORTANT: Do NOT use raw socket tests against TWS!**
+
+Raw socket connections can corrupt TWS internal state and cause connection failures. Instead, use proper IBAPI connections for testing.
+
+**Recommended Testing Approach:**
 
 ```python
-# test_tws_setup.py
-import socket
+# test_tws_proper.py
+import asyncio
+from src.tws_config import TWSConfig
+from src.tws_connection import TWSConnection
 
-def test_tws_connection():
-    """Test if TWS API is accessible."""
-    host = "127.0.0.1"
-    port = 7497  # Paper trading port
+async def test_tws_connection():
+    """Test TWS using proper IBAPI connection."""
+    config = TWSConfig(
+        host="127.0.0.1",
+        port=7497,  # Paper trading port
+        client_id=999,  # Unique test client ID
+        connection_timeout=5.0
+    )
+    
+    connection = TWSConnection(config)
     
     try:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(5)
-        result = sock.connect_ex((host, port))
-        sock.close()
+        print("Testing TWS connection...")
+        success = await connection.connect()
         
-        if result == 0:
-            print("✅ TWS API is accessible!")
+        if success:
+            print("✅ TWS API connection successful!")
+            # Test basic functionality
+            connection.request_current_time()
+            await asyncio.sleep(1)
             return True
         else:
-            print("❌ Cannot connect to TWS API")
+            print("❌ TWS API connection failed")
             return False
+            
     except Exception as e:
         print(f"❌ Error testing connection: {e}")
         return False
+    finally:
+        # Clean disconnect using our fixed disconnect method
+        if connection.is_connected():
+            connection.disconnect()
+            await asyncio.sleep(1)
 
 if __name__ == "__main__":
-    test_tws_connection()
+    asyncio.run(test_tws_connection())
 ```
 
 Run the test:
 ```bash
-python test_tws_setup.py
+python test_tws_proper.py
 ```
+
+## Connection Architecture
+
+### Threading Safety Improvements
+
+The framework includes important threading safety improvements:
+
+1. **Safe Disconnect Pattern**: The `TWSConnection.disconnect()` method uses a non-blocking pattern that prevents thread deadlocks and TWS state corruption.
+
+2. **Daemon Thread Management**: Background threads are properly managed as daemon threads that clean up naturally without requiring explicit joins.
+
+3. **Async-Safe Operations**: All connection operations are designed to work safely with asyncio event loops.
+
+### Key Safety Features
+
+- **No Raw Socket Tests**: Avoid using raw socket connections against TWS as they can corrupt internal state
+- **Proper IBAPI Usage**: Always use the IBAPI framework for TWS communication
+- **Clean Disconnects**: The disconnect method ensures TWS state remains clean for future connections
+- **Connection Timeouts**: Configurable timeouts prevent hanging connections
 
 ## Environment Configuration
 
@@ -95,11 +133,11 @@ export TWS_ACCOUNT=your_paper_account_id
 ### 2. Test Framework Connection
 
 ```bash
-# Test basic connectivity
-python run_integration_tests.py basic
+# Test basic connectivity using pytest
+python -m pytest tests/integration/test_tws_connection.py::TestTWSConnection::test_tws_connection_to_live_tws -v
 
-# Test market data (safe)
-python run_integration_tests.py market_data
+# Test connection creation (no TWS required)
+python -m pytest tests/integration/test_tws_connection.py::TestTWSConnection::test_tws_connection_creation -v
 ```
 
 ## Port Configuration
@@ -121,22 +159,24 @@ python run_integration_tests.py market_data
 - Verify API is enabled in TWS settings
 - Check that the correct port is configured
 - Restart TWS and try again
+- **Do NOT use raw socket tests** - they can corrupt TWS state
 
-#### 2. API Not Enabled
+#### 2. Connection Hangs or Times Out
+**Problem**: Connection attempts hang or timeout
+
+**Solutions**:
+- Restart TWS to clear any corrupted state
+- Use a different client ID
+- Ensure no other applications are using the same client ID
+- Check that TWS hasn't been corrupted by raw socket tests
+
+#### 3. API Not Enabled
 **Problem**: Connection times out or is rejected
 
 **Solutions**:
 - Go to TWS Global Configuration → API → Settings
 - Ensure "Enable ActiveX and Socket Clients" is checked
 - Verify socket port matches your configuration (7497 for paper trading)
-
-#### 3. Wrong Port
-**Problem**: Using wrong port number
-
-**Solutions**:
-- Paper trading: Use port `7497`
-- Live trading: Use port `7496`
-- Check TWS API settings to confirm port number
 
 #### 4. Client ID Conflicts
 **Problem**: "Client ID already in use" error
@@ -151,9 +191,6 @@ python run_integration_tests.py market_data
 Check if TWS is listening on the correct port:
 
 ```bash
-# Windows Command Prompt
-netstat -an | findstr :7497
-
 # Windows PowerShell
 netstat -an | Select-String ":7497"
 
@@ -161,14 +198,14 @@ netstat -an | Select-String ":7497"
 # TCP    127.0.0.1:7497        0.0.0.0:0              LISTENING
 ```
 
-Test socket connection:
+**⚠️ DO NOT use telnet or raw socket connections for testing:**
 ```bash
-# Using telnet (if available)
-telnet 127.0.0.1 7497
-
-# Using PowerShell
-Test-NetConnection -ComputerName 127.0.0.1 -Port 7497
+# ❌ AVOID - These can corrupt TWS state:
+# telnet 127.0.0.1 7497
+# Test-NetConnection -ComputerName 127.0.0.1 -Port 7497
 ```
+
+**✅ Instead, use proper IBAPI testing as shown above.**
 
 ### Windows Firewall
 
@@ -184,9 +221,10 @@ If you encounter connection issues, ensure Windows Firewall allows TWS:
 
 ### For Development:
 - ✅ **Always use paper trading mode**
-- ✅ **Test with small amounts**
-- ✅ **Run integration tests first**
+- ✅ **Use proper IBAPI connections for testing**
+- ✅ **Test with pytest integration tests**
 - ✅ **Monitor all trading activity**
+- ❌ **Never use raw socket tests against TWS**
 
 ### Account Settings:
 - ✅ **Set up position limits in TWS**
@@ -204,8 +242,8 @@ If you encounter connection issues, ensure Windows Firewall allows TWS:
 
 After successful TWS setup:
 
-1. **Run basic tests**: `python run_integration_tests.py basic`
-2. **Test market data**: `python run_integration_tests.py market_data`
+1. **Run basic tests**: `python -m pytest tests/integration/test_tws_connection.py -v`
+2. **Test specific functionality**: Review available tests in `tests/integration/`
 3. **Review trading framework documentation**
 4. **Start with simple examples**
 5. **Gradually add complexity**

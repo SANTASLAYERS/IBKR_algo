@@ -73,7 +73,7 @@ class TestTWSMarketData:
         config = TWSConfig(
             host=credentials["host"],
             port=credentials["port"],
-            client_id=credentials["client_id"] + 1,  # Different client ID
+            client_id=credentials["client_id"],  # Use consistent client ID
             connection_timeout=10.0
         )
         
@@ -146,7 +146,7 @@ class TestTWSMarketData:
         config = TWSConfig(
             host=credentials["host"],
             port=credentials["port"],
-            client_id=credentials["client_id"] + 2,  # Different client ID
+            client_id=credentials["client_id"],  # Use consistent client ID
             connection_timeout=10.0
         )
         
@@ -216,7 +216,7 @@ class TestTWSMarketData:
         config = TWSConfig(
             host=credentials["host"],
             port=credentials["port"],
-            client_id=credentials["client_id"] + 3,  # Different client ID
+            client_id=credentials["client_id"],  # Use consistent client ID
             connection_timeout=10.0
         )
         

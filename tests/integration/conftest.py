@@ -9,7 +9,7 @@ These fixtures manage connection to TWS for testing trading functionality.
 
 import os
 import pytest
-import socket
+import asyncio
 import logging
 
 # Configure logging
@@ -30,25 +30,83 @@ def pytest_addoption(parser):
     )
 
 
-def is_tws_available(host: str, port: int, timeout: float = 2.0) -> bool:
+async def is_tws_available_async(host: str, port: int, client_id: int, timeout: float = 5.0) -> bool:
     """
-    Check if TWS is available by attempting to connect to the specified host and port.
+    Check if TWS is available using proper IBAPI connection.
+    
+    ⚠️ IMPORTANT: This uses IBAPI instead of raw sockets to avoid corrupting TWS state.
     
     Args:
         host: TWS hostname or IP
         port: TWS port
+        client_id: Client ID to use for test connection
         timeout: Connection timeout in seconds
         
     Returns:
         bool: True if connection succeeds, False otherwise
     """
     try:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(timeout)
-        result = sock.connect_ex((host, port))
-        sock.close()
-        return result == 0
-    except Exception:
+        # Import here to avoid circular imports
+        from src.tws_config import TWSConfig
+        from src.tws_connection import TWSConnection
+        
+        # Create test configuration
+        config = TWSConfig(
+            host=host,
+            port=port,
+            client_id=client_id + 900,  # Use offset client ID for availability checks
+            connection_timeout=timeout
+        )
+        
+        # Test connection using proper IBAPI
+        test_connection = TWSConnection(config)
+        
+        try:
+            connected = await test_connection.connect()
+            if connected:
+                # Clean disconnect to avoid corrupting TWS state
+                test_connection.disconnect()
+                await asyncio.sleep(1)  # Give time for clean disconnect
+                return True
+            return False
+            
+        except Exception as e:
+            logger.debug(f"TWS availability check failed: {e}")
+            return False
+        finally:
+            # Ensure clean disconnect
+            if test_connection.is_connected():
+                test_connection.disconnect()
+                await asyncio.sleep(1)
+            
+    except Exception as e:
+        logger.debug(f"Error during TWS availability check: {e}")
+        return False
+
+
+def is_tws_available(host: str, port: int, client_id: int, timeout: float = 5.0) -> bool:
+    """
+    Synchronous wrapper for TWS availability check.
+    
+    Args:
+        host: TWS hostname or IP
+        port: TWS port
+        client_id: Client ID to use for test connection
+        timeout: Connection timeout in seconds
+        
+    Returns:
+        bool: True if connection succeeds, False otherwise
+    """
+    try:
+        # Run the async check
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            return loop.run_until_complete(is_tws_available_async(host, port, client_id, timeout))
+        finally:
+            loop.close()
+    except Exception as e:
+        logger.debug(f"Error in TWS availability check: {e}")
         return False
 
 
@@ -72,13 +130,20 @@ def check_tws(request) -> bool:
     """
     Check if TWS is available and decide whether to skip integration tests.
     
+    Uses proper IBAPI connection instead of raw sockets to avoid corrupting TWS state.
+    
     Returns:
         bool: True if TWS is available, False otherwise
     """
     credentials = get_tws_credentials()
     force_tests = request.config.getoption("--force-tws")
     
-    tws_available = is_tws_available(credentials["host"], credentials["port"])
+    # Use proper IBAPI check instead of raw socket check
+    tws_available = is_tws_available(
+        credentials["host"], 
+        credentials["port"], 
+        credentials["client_id"]
+    )
     
     if not tws_available and not force_tests:
         pytest.skip(

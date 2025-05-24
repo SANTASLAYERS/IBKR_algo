@@ -24,26 +24,26 @@ logger = logging.getLogger(__name__)
 
 class OrderManager:
     """
-    Manages orders and integrates with the IBKR Gateway.
+    Manages orders and integrates with TWS Connection.
     
     The OrderManager is responsible for:
     1. Tracking all orders and order groups
-    2. Submitting orders to the broker
+    2. Submitting orders to TWS via TWSConnection
     3. Handling order status updates and fills
     4. Managing order relationships (parent-child, OCO)
     5. Generating order events
     """
     
-    def __init__(self, event_bus: EventBus, gateway=None):
+    def __init__(self, event_bus: EventBus, tws_connection=None):
         """
         Initialize the order manager.
         
         Args:
             event_bus: Event bus for publishing order events
-            gateway: Optional IBGateway instance for order execution
+            tws_connection: Optional TWSConnection instance for order execution
         """
         self.event_bus = event_bus
-        self.gateway = gateway
+        self.gateway = tws_connection  # Keep 'gateway' name for backward compatibility
         
         # Order tracking
         self._orders: Dict[str, Order] = {}  # order_id -> Order
@@ -59,6 +59,47 @@ class OrderManager:
         self._orders_by_symbol: Dict[str, Set[str]] = {}  # symbol -> set(order_ids)
         
         logger.debug("OrderManager initialized")
+    
+    async def initialize(self):
+        """Initialize the OrderManager and set up TWS callbacks if available."""
+        if self.gateway and hasattr(self.gateway, 'set_callbacks'):
+            # Set up callbacks for order status updates
+            def on_order_status(orderId, status, filled, remaining, avgFillPrice, permId, parentId, lastFillPrice, clientId, whyHeld, mktCapPrice):
+                """Handle order status updates from TWS."""
+                asyncio.create_task(
+                    self.handle_order_status_update(
+                        broker_order_id=str(orderId),
+                        status=status,
+                        filled=filled,
+                        remaining=remaining,
+                        avg_fill_price=avgFillPrice,
+                        last_fill_price=lastFillPrice
+                    )
+                )
+            
+            def on_exec_details(reqId, contract, execution):
+                """Handle execution details from TWS."""
+                asyncio.create_task(
+                    self.handle_execution_update(
+                        broker_order_id=str(execution.orderId),
+                        exec_id=execution.execId,
+                        symbol=contract.symbol,
+                        side=execution.side,
+                        quantity=execution.shares,
+                        price=execution.price,
+                        commission=None  # Commission comes in separate callback
+                    )
+                )
+            
+            # Override TWS callbacks to route to our handlers
+            if hasattr(self.gateway, 'orderStatus'):
+                self.gateway.orderStatus = on_order_status
+            if hasattr(self.gateway, 'execDetails'):
+                self.gateway.execDetails = on_exec_details
+                
+            logger.info("OrderManager callbacks set up with TWSConnection")
+        else:
+            logger.info("OrderManager initialized without TWS connection")
     
     async def create_order(self, 
                         symbol: str,
@@ -259,21 +300,25 @@ class OrderManager:
         )
         await self.event_bus.emit(event)
 
-        # If we have a gateway, submit the order
-        if self.gateway:
-            logger.info(f"Submitting order {order_id} to gateway")
+        # If we have a TWS connection, submit the order
+        if self.gateway and hasattr(self.gateway, 'placeOrder'):
+            logger.info(f"Submitting order {order_id} to TWS")
 
             try:
                 # Convert our order to IB's order format
                 ib_contract = self._create_ib_contract(order)
                 ib_order = self._create_ib_order(order)
 
-                # Submit the order to IB Gateway
-                broker_order_id = self.gateway.submit_order(ib_contract, ib_order)
+                # Get next valid order ID from TWS
+                broker_order_id = self.gateway.get_next_order_id()
+                if not broker_order_id:
+                    # If no order ID available, try to get one
+                    self.gateway.request_next_order_id()
+                    await asyncio.sleep(1)  # Wait for order ID
+                    broker_order_id = self.gateway.get_next_order_id()
 
-                if broker_order_id <= 0:
-                    # Gateway rejected the order
-                    error_msg = "Gateway rejected order submission"
+                if not broker_order_id:
+                    error_msg = "Could not get valid order ID from TWS"
                     logger.error(f"{error_msg} for {order_id}")
 
                     # Update the order status
@@ -294,6 +339,9 @@ class OrderManager:
                     await self.event_bus.emit(event)
 
                     return False
+
+                # Submit the order to TWS using IBAPI
+                self.gateway.placeOrder(broker_order_id, ib_contract, ib_order)
 
                 # Store broker order ID mapping
                 broker_order_id_str = str(broker_order_id)
@@ -341,8 +389,8 @@ class OrderManager:
 
                 return False
         else:
-            # No gateway, simulate order submission
-            logger.info(f"No gateway, simulating order submission for {order_id}")
+            # No TWS connection, simulate order submission
+            logger.info(f"No TWS connection, simulating order submission for {order_id}")
 
             # Simulate a broker order ID
             broker_order_id = f"SIM{order_id[-6:]}"
@@ -418,8 +466,8 @@ class OrderManager:
         )
         await self.event_bus.emit(event)
 
-        # If we have a gateway and a broker order ID, send cancellation to IB
-        if self.gateway and order.broker_order_id:
+        # If we have a TWS connection and a broker order ID, send cancellation to IB
+        if self.gateway and hasattr(self.gateway, 'cancelOrder') and order.broker_order_id:
             logger.info(f"Cancelling order {order_id} with broker ID {order.broker_order_id}")
 
             try:
@@ -430,8 +478,8 @@ class OrderManager:
                     broker_order_id_int = 0
 
                 if broker_order_id_int > 0:
-                    # Use the gateway to cancel the order
-                    self.gateway.cancel_order(broker_order_id_int)
+                    # Use TWS connection to cancel the order
+                    self.gateway.cancelOrder(broker_order_id_int, reason or "User requested cancellation")
 
                     # Update order status to pending cancel
                     # Final cancellation will be confirmed by IB callbacks
@@ -446,8 +494,8 @@ class OrderManager:
                 logger.error(f"Error cancelling order {order_id}: {e}")
                 return False
         else:
-            # No gateway or broker order ID, simulate cancellation
-            logger.info(f"No gateway or broker ID, simulating order cancellation for {order_id}")
+            # No TWS connection or broker order ID, simulate cancellation
+            logger.info(f"No TWS connection or broker ID, simulating order cancellation for {order_id}")
 
             # Update the order status
             order.update_status(OrderStatus.CANCELLED, reason or "User cancelled")

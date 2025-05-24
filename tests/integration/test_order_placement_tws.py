@@ -100,7 +100,7 @@ class TestTWSOrderPlacement:
         config = TWSConfig(
             host=credentials["host"],
             port=credentials["port"],
-            client_id=credentials["client_id"] + 10,  # Different client ID
+            client_id=credentials["client_id"],  # Use consistent client ID
             connection_timeout=10.0
         )
         
@@ -180,7 +180,7 @@ class TestTWSOrderPlacement:
         config = TWSConfig(
             host=credentials["host"],
             port=credentials["port"],
-            client_id=credentials["client_id"] + 11,  # Different client ID
+            client_id=credentials["client_id"],  # Use consistent client ID
             connection_timeout=10.0
         )
         
@@ -267,7 +267,7 @@ class TestTWSOrderPlacement:
         config = TWSConfig(
             host=credentials["host"],
             port=credentials["port"],
-            client_id=credentials["client_id"] + 12,  # Different client ID
+            client_id=credentials["client_id"],  # Use consistent client ID
             connection_timeout=10.0
         )
         
@@ -335,7 +335,7 @@ class TestTWSOrderPlacement:
         config = TWSConfig(
             host=credentials["host"],
             port=credentials["port"],
-            client_id=credentials["client_id"] + 13,  # Different client ID
+            client_id=credentials["client_id"],  # Use consistent client ID
             connection_timeout=10.0
         )
         

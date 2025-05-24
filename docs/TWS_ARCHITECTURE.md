@@ -183,6 +183,8 @@ config = TWSConfig(
 - **Connection timeouts and retries**
 - **Graceful disconnection handling**
 - **Connection state validation**
+- **Thread-safe disconnect pattern**: The disconnect method uses a non-blocking approach that prevents thread deadlocks and TWS state corruption
+- **No raw socket interference**: The framework avoids raw socket tests that can corrupt TWS internal state
 
 ### Trading Safety
 - **Position size limits**
