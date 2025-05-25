@@ -4,21 +4,28 @@
 
 The Order and Position Management System is a core component of the Multi-Ticker IB Trading Framework. It provides a comprehensive solution for managing stock trading positions and orders with an event-driven architecture. The system integrates with external data sources, including the Options Flow Monitor API, to enable automated trading strategies based on prediction signals.
 
+**🆕 Recent Enhancement**: Full BUY/SELL side support with automatic order linking, context-based management, and intelligent short position handling.
+
 Key features include:
+- **🆕 Explicit BUY/SELL side management** for long and short positions
+- **🆕 Automatic order linking** (stop loss, take profit, scale-ins) by symbol  
+- **🆕 Smart protective order placement** based on position side
+- **🆕 Event-driven context reset** when positions conclude
 - Event-driven architecture for responsive trade execution
 - Comprehensive position lifecycle management
 - Integration with options flow prediction signals
 - Support for rule-based trading strategies
 - Risk management with stop-loss, take-profit, and trailing stops
 
-## Architecture
+## Enhanced Architecture
 
 The system follows an event-driven architecture with these key components:
 
 1. **Event System**: A publish-subscribe pattern for decoupled communication between components
-2. **Position Management**: Tracking and risk management for stock positions
-3. **Order Management**: Creation, tracking, and lifecycle management of orders
-4. **API Integration**: Processing prediction signals from external sources
+2. **🆕 Linked Order Management**: Automatic linking and management of related orders by symbol
+3. **Position Management**: Tracking and risk management for stock positions with side awareness
+4. **Order Management**: Creation, tracking, and lifecycle management of orders
+5. **API Integration**: Processing prediction signals from external sources
 
 ### Component Relationships
 
@@ -26,23 +33,112 @@ The system follows an event-driven architecture with these key components:
 ┌────────────────────┐     ┌───────────────────┐
 │                    │     │                   │
 │   API Monitor      │────▶│   Event System    │◀───┐
-│                    │     │      (Bus)        │    │
+│  (BUY/SELL/SHORT)  │     │      (Bus)        │    │
 └────────────────────┘     └───────────┬───────┘    │
                                        │            │
                                        ▼            │
-                           ┌───────────────────┐    │
-                           │                   │    │
-                           │ Position Tracker  │────┤
-                           │                   │    │
-                           └─────────┬─────────┘    │
-                                     │              │
-                                     ▼              │
-                           ┌───────────────────┐    │
-                           │                   │    │
-                           │  Order Manager    │────┘
+                         ┌─────────────────────────┐ │
+                         │                         │ │
+                         │ Linked Order Manager    │ │
+                         │ (Context + Side Track)  │ │
+                         └─────────┬───────────────┘ │
+                                   │                 │
+                                   ▼                 │
+                           ┌───────────────────┐     │
+                           │                   │     │
+                           │ Position Tracker  │─────┤
+                           │  (Side Aware)     │     │
+                           └─────────┬─────────┘     │
+                                     │               │
+                                     ▼               │
+                           ┌───────────────────┐     │
+                           │                   │     │
+                           │  Order Manager    │─────┘
                            │                   │
                            └───────────────────┘
 ```
+
+## 🆕 Linked Order Management
+
+The new linked order management system provides automatic order relationship management:
+
+### LinkedOrderManager
+
+```python
+class LinkedOrderManager:
+    """Helper class for managing linked orders in context."""
+    
+    @staticmethod
+    def get_order_group(context: Dict[str, Any], symbol: str, side: str) -> Dict[str, Any]:
+        """Get or create order group for symbol with side tracking."""
+        
+    @staticmethod
+    def add_order(context: Dict[str, Any], symbol: str, order_id: str, order_type: str, side: str):
+        """Add an order to the appropriate group with side tracking."""
+        
+    @staticmethod
+    async def find_active_position_side(context: Dict[str, Any], symbol: str) -> Optional[str]:
+        """Find the side of active position for a symbol."""
+```
+
+### Context Structure
+
+Each symbol's context now stores side information and related orders:
+
+```python
+context[symbol] = {
+    "side": "BUY",              # or "SELL" for short positions
+    "main_orders": [],          # Entry order IDs
+    "stop_orders": [],          # Stop loss order IDs
+    "target_orders": [],        # Take profit order IDs  
+    "scale_orders": [],         # Scale-in order IDs
+    "status": "active"          # or "closed"
+}
+```
+
+### LinkedCreateOrderAction
+
+Enhanced order creation with automatic linking and side-aware protective orders:
+
+```python
+# Long position with automatic stops/targets
+action = LinkedCreateOrderAction(
+    symbol="AAPL",
+    quantity=100,
+    side="BUY",                    # Explicit side
+    auto_create_stops=True,
+    stop_loss_pct=0.03,           # Stop BELOW entry price
+    take_profit_pct=0.08          # Target ABOVE entry price
+)
+
+# Short position with correctly positioned stops/targets  
+action = LinkedCreateOrderAction(
+    symbol="AAPL",
+    quantity=100, 
+    side="SELL",                  # Short position
+    auto_create_stops=True,
+    stop_loss_pct=0.03,          # Stop ABOVE entry price
+    take_profit_pct=0.08         # Target BELOW entry price
+)
+```
+
+### LinkedScaleInAction
+
+Intelligent scale-in with automatic stop/target adjustment:
+
+```python
+action = LinkedScaleInAction(
+    symbol="AAPL",
+    scale_quantity=50,
+    trigger_profit_pct=0.02       # Only scale if 2%+ profitable
+)
+```
+
+**Features:**
+- Automatically detects existing position side
+- Validates context consistency  
+- Updates stop/target orders for new total position size
+- Maintains correct quantity signs for both long and short positions
 
 ## Event System
 
@@ -79,15 +175,30 @@ Key event types include:
 
 - **Market Events**: `PriceEvent`, `VolumeEvent`
 - **Position Events**: `PositionOpenEvent`, `PositionUpdateEvent`, `PositionCloseEvent`
-- **Order Events**: `OrderCreatedEvent`, `OrderSubmittedEvent`, `OrderFilledEvent`
-- **API Events**: `PredictionSignalEvent`
+- **Order Events**: `OrderCreatedEvent`, `OrderSubmittedEvent`, `OrderFilledEvent`, `FillEvent`
+- **API Events**: `PredictionSignalEvent` (supports BUY, SELL, SHORT signals)
+
+### 🆕 Automatic Context Reset
+
+The `LinkedOrderConclusionManager` monitors fill events to automatically reset context:
+
+```python
+class LinkedOrderConclusionManager:
+    """Manages automatic context reset when positions are concluded via stops/targets."""
+    
+    async def on_order_fill(self, event):
+        """Handle order fill events to detect position conclusions."""
+        # Detects when stop/target orders fill
+        # Automatically marks symbol status as "closed"
+        # Enables fresh context on next trade
+```
 
 ## Position Management
 
 The position management system tracks and manages stock positions with risk controls. It is implemented in the `src/position` directory with these key files:
 
 - `base.py`: Base position class
-- `stock.py`: Stock position implementation
+- `stock.py`: Stock position implementation  
 - `tracker.py`: Position tracking and management
 
 ### Position Class
@@ -104,12 +215,17 @@ class Position:
         self.position_id = position_id or str(uuid.uuid4())
         self.status = PositionStatus.PLANNED
         self.entry_price = None
-        self.quantity = 0
+        self.quantity = 0                    # Positive for long, negative for short
         self.unrealized_pnl = 0.0
         # Risk management parameters
         self.stop_loss = None
         self.take_profit = None
         self.trailing_stop = None
+        
+    @property
+    def is_long(self) -> bool:
+        """Check if position is long (positive quantity)."""
+        return self.quantity > 0
         
     async def open(self, quantity: int, entry_price: float):
         """Open a position with a specified quantity and entry price."""
@@ -140,6 +256,9 @@ class PositionTracker:
     async def get_position(self, position_id: str) -> Optional[Position]:
         """Get a position by ID."""
         
+    async def get_positions_for_symbol(self, symbol: str) -> List[Position]:
+        """Get all positions for a symbol."""
+        
     async def update_positions(self, market_data: Dict[str, float]):
         """Update all positions with latest market data."""
         
@@ -166,7 +285,7 @@ class Order:
     def __init__(
         self,
         symbol: str,
-        quantity: int,
+        quantity: int,              # Positive for buy, negative for sell
         order_type: OrderType,
         order_id: Optional[str] = None
     ):
@@ -196,10 +315,10 @@ The `OrderManager` class coordinates order execution:
 class OrderManager:
     """Manages order creation, submission, and tracking."""
     
-    def __init__(self, gateway: IBGateway, event_bus: EventBus):
-        """Initialize with Gateway and event bus."""
-        self.gateway = gateway
+    def __init__(self, event_bus: EventBus, tws_connection: TWSConnection):
+        """Initialize with event bus and TWS connection."""
         self.event_bus = event_bus
+        self.tws_connection = tws_connection
         self.orders = {}
         
     async def create_order(self, symbol: str, quantity: int, **kwargs) -> Order:
@@ -208,10 +327,10 @@ class OrderManager:
     async def submit_order(self, order_id: str):
         """Submit an order to the broker."""
         
-    async def create_and_submit(self, symbol: str, quantity: int, **kwargs) -> Order:
+    async def create_and_submit_order(self, symbol: str, quantity: int, **kwargs) -> Order:
         """Create and immediately submit an order."""
         
-    async def cancel_order(self, order_id: str):
+    async def cancel_order(self, order_id: str, reason: str = "manual"):
         """Cancel an order."""
 ```
 
@@ -219,24 +338,25 @@ class OrderManager:
 
 The system provides comprehensive risk management features:
 
-- **Stop Loss**: Automatic exit when price falls below specified threshold
-- **Take Profit**: Automatic exit when price rises above specified threshold
+- **🆕 Side-Aware Stop Loss**: Positioned correctly for both long and short positions
+- **🆕 Side-Aware Take Profit**: Positioned correctly for both long and short positions  
 - **Trailing Stop**: Dynamic stop loss that follows price movements
 - **Position Sizing**: Calculation of appropriate position size based on risk parameters
 - **Exposure Limits**: Prevention of overexposure to specific symbols or sectors
+- **🆕 Order Mixing Prevention**: Context side tracking prevents mixing long/short orders
 
 ## Integration with Rule Engine
 
 The order and position system integrates with the rule engine to enable automated trading strategies:
 
 ```python
-# Example rule for automated position creation
+# Example: Long position entry rule
 from src.rule.condition import EventCondition
-from src.rule.action import CreatePositionAction
+from src.rule.linked_order_actions import LinkedCreateOrderAction
 from src.event.api import PredictionSignalEvent
 
 # Condition: When a BUY prediction arrives with high confidence
-condition = EventCondition(
+buy_condition = EventCondition(
     event_type=PredictionSignalEvent,
     field_conditions={
         "signal": "BUY",
@@ -244,25 +364,100 @@ condition = EventCondition(
     }
 )
 
-# Action: Create a position with risk management
-action = CreatePositionAction(
+# Action: Create long position with automatic protective orders
+buy_action = LinkedCreateOrderAction(
     symbol=lambda ctx: ctx["event"].symbol,
     quantity=100,
+    side="BUY",                    # Explicit long side
+    auto_create_stops=True,
     stop_loss_pct=0.03,
     take_profit_pct=0.08
 )
 
-# Register rule with rule engine
-rule = Rule(
-    rule_id="prediction_entry",
-    name="Enter Position on High Confidence Buy Signal",
-    condition=condition,
-    action=action
+# Example: Short position entry rule  
+short_condition = EventCondition(
+    event_type=PredictionSignalEvent,
+    field_conditions={
+        "signal": "SHORT",
+        "confidence": lambda c: c > 0.8
+    }
 )
-rule_engine.register_rule(rule)
+
+# Action: Create short position with correctly positioned protective orders
+short_action = LinkedCreateOrderAction(
+    symbol=lambda ctx: ctx["event"].symbol,
+    quantity=100,
+    side="SELL",                   # Explicit short side
+    auto_create_stops=True,        # Stop ABOVE entry, target BELOW entry
+    stop_loss_pct=0.03,
+    take_profit_pct=0.08
+)
+
+# Register rules with rule engine
+buy_rule = Rule(
+    rule_id="prediction_buy_entry",
+    name="Enter Long Position on Buy Signal",
+    condition=buy_condition,
+    action=buy_action
+)
+
+short_rule = Rule(
+    rule_id="prediction_short_entry", 
+    name="Enter Short Position on Short Signal",
+    condition=short_condition,
+    action=short_action
+)
+
+rule_engine.register_rule(buy_rule)
+rule_engine.register_rule(short_rule)
 ```
 
 ## Usage Examples
+
+### 🆕 Enhanced Position Management with Sides
+
+```python
+from src.event.bus import EventBus
+from src.position.tracker import PositionTracker
+from src.rule.linked_order_actions import LinkedCreateOrderAction
+
+# Initialize components
+event_bus = EventBus()
+position_tracker = PositionTracker(event_bus)
+
+# Create long position with automatic linking
+buy_action = LinkedCreateOrderAction(
+    symbol="AAPL",
+    quantity=100,
+    side="BUY",
+    auto_create_stops=True,
+    stop_loss_pct=0.03,
+    take_profit_pct=0.08
+)
+
+# Create short position with automatic linking
+short_action = LinkedCreateOrderAction(
+    symbol="TSLA", 
+    quantity=50,
+    side="SELL",
+    auto_create_stops=True,
+    stop_loss_pct=0.04,
+    take_profit_pct=0.10
+)
+
+# Scale into existing position (automatically detects side)
+scale_action = LinkedScaleInAction(
+    symbol="AAPL",
+    scale_quantity=50,
+    trigger_profit_pct=0.02
+)
+
+# Close all orders and position for symbol
+close_action = LinkedCloseAllAction(
+    symbol="AAPL",
+    reason="risk management exit"
+)
+```
 
 ### Basic Position Management
 
@@ -297,19 +492,26 @@ from src.order.manager import OrderManager
 from src.order.base import OrderType
 
 # Initialize order manager
-order_manager = OrderManager(gateway, event_bus)
+order_manager = OrderManager(event_bus, tws_connection)
 
-# Create and submit a market order
-order = await order_manager.create_and_submit(
+# Create and submit a market buy order (long)
+buy_order = await order_manager.create_and_submit_order(
     symbol="AAPL",
-    quantity=100,
+    quantity=100,                 # Positive for buy
+    order_type=OrderType.MARKET
+)
+
+# Create and submit a market sell order (short)
+sell_order = await order_manager.create_and_submit_order(
+    symbol="MSFT",
+    quantity=-50,                 # Negative for sell/short
     order_type=OrderType.MARKET
 )
 
 # Create a limit order
 limit_order = await order_manager.create_order(
-    symbol="MSFT",
-    quantity=50,
+    symbol="NVDA",
+    quantity=25,
     order_type=OrderType.LIMIT,
     limit_price=280.50
 )
@@ -320,26 +522,31 @@ await order_manager.submit_order(limit_order.order_id)
 
 ## Execution Flow
 
-1. **Signal Reception**: API Monitor receives prediction signal
+1. **Signal Reception**: API Monitor receives prediction signal (BUY/SELL/SHORT)
 2. **Event Emission**: Signal converted to PredictionSignalEvent and emitted on event bus
-3. **Position Creation**: Position Tracker creates position based on signal
-4. **Order Creation**: Order Manager creates necessary orders for position
-5. **Order Execution**: Orders submitted to broker via Gateway
-6. **Position Monitoring**: Position status updated with market data and fill events
-7. **Risk Management**: Stop loss, take profit, and trailing stops monitored and executed
-8. **Position Closure**: Position closed when exit criteria met or manually
+3. **Rule Evaluation**: Rule engine evaluates conditions and triggers appropriate actions
+4. **🆕 Linked Order Creation**: LinkedCreateOrderAction creates position with explicit side
+5. **🆕 Automatic Protective Orders**: Stop and target orders created with correct positioning
+6. **Order Execution**: Orders submitted to broker via TWS connection
+7. **Position Monitoring**: Position status updated with market data and fill events
+8. **🆕 Context Management**: Related orders tracked and managed by symbol and side
+9. **Risk Management**: Stop loss, take profit monitored and executed
+10. **🆕 Automatic Context Reset**: Context cleaned when positions conclude via stops/targets
 
 ## Best Practices
 
-When working with the Order and Position Management System:
+When working with the enhanced Order and Position Management System:
 
-1. **Always Use Events**: Communicate between components using events, not direct method calls
-2. **Error Handling**: Implement comprehensive error handling, especially for broker communication
-3. **Risk First**: Always set appropriate risk parameters when creating positions
-4. **Order Grouping**: Use order groups for related orders (e.g., brackets, OCO)
-5. **Position Tracking**: Keep position and order data in sync with broker state
-6. **Event Logging**: Log all significant events for auditing and analysis
-7. **Concurrency Management**: Handle potential race conditions in async event processing
+1. **Always Specify Side**: Use explicit "BUY" or "SELL" side parameters for clarity
+2. **Use Linked Actions**: Prefer LinkedOrderActions for automatic order management  
+3. **Validate Context Consistency**: System prevents mixing long/short orders for same symbol
+4. **Monitor Context State**: Use context status to understand position lifecycle
+5. **Always Use Events**: Communicate between components using events, not direct method calls
+6. **Error Handling**: Implement comprehensive error handling, especially for broker communication
+7. **Risk First**: Always set appropriate risk parameters when creating positions
+8. **Position Tracking**: Keep position and order data in sync with broker state
+9. **Event Logging**: Log all significant events for auditing and analysis
+10. **Concurrency Management**: Handle potential race conditions in async event processing
 
 ## Future Enhancements
 
@@ -350,3 +557,5 @@ Planned enhancements for the system include:
 3. Portfolio-level risk management
 4. Integration with additional data sources
 5. Performance optimization for high-frequency trading
+6. **🆕 Advanced order types**: OCO (One-Cancels-Other), bracket orders with linked management
+7. **🆕 Multi-leg strategies**: Complex strategies spanning multiple positions with automatic linking

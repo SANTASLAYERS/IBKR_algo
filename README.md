@@ -183,6 +183,88 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
+### 🆕 Reusable Rule Templates (Simplified)
+
+```python
+import asyncio
+from src.rule.templates import create_buy_rule, create_scale_in_rule, StrategyBuilder
+from src.rule.engine import RuleEngine
+
+async def main():
+    # ... initialize components ...
+    
+    # Method 1: Individual rule templates
+    aapl_buy = create_buy_rule(
+        symbol="AAPL", 
+        quantity=100, 
+        confidence_threshold=0.85,
+        stop_loss_pct=0.03,
+        take_profit_pct=0.08
+    )
+    aapl_scale = create_scale_in_rule("AAPL", scale_quantity=50)
+    
+    # Register individual rules
+    rule_engine.register_rule(aapl_buy)
+    rule_engine.register_rule(aapl_scale)
+    
+    # Method 2: Complete strategy builder
+    tsla_strategy = StrategyBuilder.create_basic_strategy(
+        symbol="TSLA",
+        quantity=25,
+        confidence_threshold=0.90,
+        stop_loss_pct=0.04,
+        take_profit_pct=0.12,
+        enable_scale_in=True
+    )
+    
+    # Register entire strategy (multiple rules)
+    for rule in tsla_strategy:
+        rule_engine.register_rule(rule)
+    
+    # Method 3: Multiple stocks with same pattern
+    for symbol in ["AAPL", "MSFT", "NVDA"]:
+        strategy_rules = StrategyBuilder.create_basic_strategy(
+            symbol=symbol,
+            quantity=50,
+            confidence_threshold=0.80
+        )
+        for rule in strategy_rules:
+            rule_engine.register_rule(rule)
+    
+    await rule_engine.start()
+    print("🚀 Multi-stock trading system with automatic order linking!")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+### 🆕 Automatic Order Linking with BUY/SELL Support
+
+The system now automatically links related orders (stop loss, take profit, scale-ins) by symbol with explicit BUY/SELL side tracking:
+
+```python
+from src.rule.linked_order_actions import LinkedCreateOrderAction, LinkedScaleInAction, LinkedCloseAllAction
+
+# BUY (Long) Position Entry
+buy_action = LinkedCreateOrderAction(
+    symbol="AAPL",
+    quantity=100,
+    side="BUY",                  # NEW: Explicit side for long positions
+    auto_create_stops=True,      # Automatic stop & target creation
+    stop_loss_pct=0.03,
+    take_profit_pct=0.08
+)
+
+# Closing automatically cancels ALL related orders for the symbol
+close_action = LinkedCloseAllAction(symbol="AAPL", reason="Sell signal")
+```
+
+**Key Features:**
+- **Side Tracking**: Explicit BUY/SELL side storage in context prevents mixing long/short orders
+- **Smart Stop/Target Placement**: Correctly positions protective orders based on position side  
+- **Dynamic Scale-In**: Detects existing position side and validates consistency
+- **Automatic Context Reset**: Cleans up context when positions conclude via stops/targets
+
 ### Event-Driven Trading System
 
 ```python

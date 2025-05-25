@@ -4,6 +4,8 @@
 
 The Rule Engine is a powerful component of the IBKR Trading Framework that enables event-driven and time-based automated trading decisions. It provides a flexible, configurable way to define trading strategies, risk management protocols, and automated responses without requiring code changes.
 
+**🆕 Recent Enhancement**: Full BUY/SELL side support with automatic order linking, context reset, and short position management.
+
 ## Core Components
 
 ### Rule
@@ -93,24 +95,44 @@ Actions define what happens when a rule triggers:
            pass
    ```
 
-2. **Position Actions**: Manage trading positions
+2. **🆕 Linked Order Actions**: Enhanced actions with automatic order linking and BUY/SELL side support
    ```python
-   # Create a new position
-   action = CreatePositionAction(
+   # Long position entry with automatic stop/target creation
+   action = LinkedCreateOrderAction(
        symbol="AAPL",
        quantity=100,
+       side="BUY",                    # Explicit side for position tracking
+       order_type=OrderType.MARKET,
+       auto_create_stops=True,        # Auto-create stop loss and take profit
        stop_loss_pct=0.03,
-       take_profit_pct=0.09
+       take_profit_pct=0.08
    )
    
-   # Close an existing position
-   action = ClosePositionAction(reason="Take profit")
+   # Short position entry with correctly positioned stops/targets
+   action = LinkedCreateOrderAction(
+       symbol="AAPL", 
+       quantity=100,
+       side="SELL",                   # Explicit side for short position
+       auto_create_stops=True,        # Stop ABOVE entry, target BELOW entry
+       stop_loss_pct=0.03,
+       take_profit_pct=0.08
+   )
    
-   # Adjust position parameters
-   action = AdjustPositionAction(trailing_stop_pct=0.02)
+   # Scale-in with automatic stop/target adjustment
+   action = LinkedScaleInAction(
+       symbol="AAPL",
+       scale_quantity=50,
+       trigger_profit_pct=0.02        # Only scale if 2%+ profitable
+   )
+   
+   # Close all orders and position for symbol
+   action = LinkedCloseAllAction(
+       symbol="AAPL",
+       reason="Risk management exit"
+   )
    ```
 
-3. **Order Actions**: Manage trading orders
+3. **Standard Order Actions**: Basic order management
    ```python
    # Create a market order
    action = CreateOrderAction(
@@ -129,7 +151,24 @@ Actions define what happens when a rule triggers:
    )
    ```
 
-4. **Composite Actions**: Combine actions
+4. **Position Actions**: Manage trading positions
+   ```python
+   # Create a new position
+   action = CreatePositionAction(
+       symbol="AAPL",
+       quantity=100,
+       stop_loss_pct=0.03,
+       take_profit_pct=0.09
+   )
+   
+   # Close an existing position
+   action = ClosePositionAction(reason="Take profit")
+   
+   # Adjust position parameters
+   action = AdjustPositionAction(trailing_stop_pct=0.02)
+   ```
+
+5. **Composite Actions**: Combine actions
    ```python
    # Sequential execution of actions
    action = action1 + action2
@@ -137,6 +176,15 @@ Actions define what happens when a rule triggers:
    # Conditional action execution
    action = ConditionalAction(condition, action1)
    ```
+
+### 🆕 Automatic Context Management
+
+The system now includes automatic context management:
+
+- **Side Tracking**: Context stores position side ("BUY" or "SELL") to prevent order mixing
+- **Order Linking**: Related orders (main, stop, target, scale) are automatically linked by symbol
+- **Automatic Reset**: Context is automatically cleaned when positions conclude via stops/targets
+- **Event-Driven Reset**: Uses `LinkedOrderConclusionManager` to detect position conclusions
 
 ### Rule Engine
 
@@ -164,6 +212,101 @@ The Rule Engine provides:
 - Execution control (cooldowns, limits)
 
 ## Usage Examples
+
+### 🆕 Long and Short Position Management
+
+```python
+# Long position entry rule
+buy_condition = EventCondition(
+    event_type=PredictionSignalEvent,
+    field_conditions={
+        "signal": "BUY",
+        "symbol": "AAPL",
+        "confidence": lambda c: c > 0.85
+    }
+)
+
+buy_action = LinkedCreateOrderAction(
+    symbol="AAPL",
+    quantity=100,
+    side="BUY",                      # Long position
+    order_type=OrderType.MARKET,
+    auto_create_stops=True,
+    stop_loss_pct=0.03,
+    take_profit_pct=0.08
+)
+
+buy_rule = Rule(
+    rule_id="aapl_buy_rule",
+    name="AAPL Long Entry",
+    description="Enter AAPL long position on high confidence BUY signal",
+    condition=buy_condition,
+    action=buy_action,
+    priority=100,
+    cooldown_seconds=300
+)
+
+# Short position entry rule  
+short_condition = EventCondition(
+    event_type=PredictionSignalEvent,
+    field_conditions={
+        "signal": "SHORT",
+        "symbol": "AAPL", 
+        "confidence": lambda c: c > 0.85
+    }
+)
+
+short_action = LinkedCreateOrderAction(
+    symbol="AAPL",
+    quantity=100,
+    side="SELL",                     # Short position
+    order_type=OrderType.MARKET,
+    auto_create_stops=True,          # Stop ABOVE entry, target BELOW entry
+    stop_loss_pct=0.03,
+    take_profit_pct=0.08
+)
+
+short_rule = Rule(
+    rule_id="aapl_short_rule", 
+    name="AAPL Short Entry",
+    description="Enter AAPL short position on high confidence SHORT signal",
+    condition=short_condition,
+    action=short_action,
+    priority=100,
+    cooldown_seconds=300
+)
+
+# Scale-in rule (works for both long and short)
+scalein_condition = EventCondition(
+    event_type=PredictionSignalEvent,
+    field_conditions={
+        "signal": lambda s: s in ["BUY", "SHORT"],  # Matches existing position side
+        "symbol": "AAPL",
+        "confidence": lambda c: c > 0.90            # Higher threshold for scale-in
+    }
+)
+
+scalein_action = LinkedScaleInAction(
+    symbol="AAPL",
+    scale_quantity=50,                              # Half the original size
+    trigger_profit_pct=0.02                         # Only if 2%+ profitable
+)
+
+scalein_rule = Rule(
+    rule_id="aapl_scalein_rule",
+    name="AAPL Scale-In",
+    description="Scale into existing AAPL position on very high confidence",
+    condition=scalein_condition,
+    action=scalein_action,
+    priority=90,                                    # Lower than entry
+    cooldown_seconds=600                            # Longer cooldown
+)
+
+# Register all rules
+rule_engine.register_rule(buy_rule)
+rule_engine.register_rule(short_rule)
+rule_engine.register_rule(scalein_rule)
+```
 
 ### Trading Based on Prediction Signal
 
