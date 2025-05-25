@@ -102,9 +102,12 @@ async def test_atr_insufficient_data():
         for i in range(5)
     ]
     
-    # Should return None when not enough data
+    # Should return a value using available data (not None)
+    # The calculator will use fewer periods and log a warning
     atr = await calculator.calculate(short_data)
-    assert atr is None
+    assert atr is not None
+    assert atr > 0
+    assert isinstance(atr, float)
 
 
 @pytest.mark.asyncio

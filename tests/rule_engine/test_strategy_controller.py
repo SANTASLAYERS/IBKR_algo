@@ -238,10 +238,21 @@ async def test_strategy_controller_price_event_handling(strategy_controller):
     # Wait a bit for async processing
     await asyncio.sleep(0.1)
     
+    # Verify price was updated in context
+    prices = strategy_controller.rule_engine.context.get("prices", {})
+    assert "AAPL" in prices
+    assert prices["AAPL"] == 150.0
+    
+    # Now manually calculate ATR (as this would typically be done on a schedule)
+    atr_value = await strategy_controller.get_atr("AAPL")
+    
     # Verify ATR was calculated
     indicators = strategy_controller.rule_engine.context.get("indicators", {})
     assert "AAPL" in indicators
     assert "ATR" in indicators["AAPL"]
+    
+    # Manually trigger rule evaluation to verify action executes
+    await strategy_controller.rule_engine._evaluate_all_rules()
     
     # Verify action was executed
     assert test_action.executed

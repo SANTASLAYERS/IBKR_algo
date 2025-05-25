@@ -23,7 +23,7 @@ class TestBasicTWSConnection:
         credentials = get_tws_credentials()
         
         # This should not raise an exception
-        available = is_tws_available(credentials["host"], credentials["port"])
+        available = is_tws_available(credentials["host"], credentials["port"], credentials["client_id"])
         
         # The result should be a boolean
         assert isinstance(available, bool)
@@ -57,7 +57,7 @@ class TestBasicTWSConnection:
         credentials = get_tws_credentials()
         
         # This should succeed if TWS is running
-        available = is_tws_available(credentials["host"], credentials["port"], timeout=5.0)
+        available = is_tws_available(credentials["host"], credentials["port"], credentials["client_id"], timeout=5.0)
         
         assert available, f"Cannot connect to TWS at {credentials['host']}:{credentials['port']}"
         logger.info("✅ Successfully verified socket connection to TWS") 

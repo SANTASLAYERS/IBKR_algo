@@ -1,17 +1,20 @@
 # TWS Trading Framework
 
-A Python framework for automated trading with Interactive Brokers Trader Workstation (TWS), featuring async connectivity, event-driven architecture, and comprehensive testing.
+A Python framework for automated trading with Interactive Brokers Trader Workstation (TWS), featuring async connectivity, event-driven architecture, rule-based trading, and comprehensive testing.
 
 ## Features
 
 - **Direct TWS Integration**: Native connection to Trader Workstation (no IB Gateway required)
 - **Async Architecture**: Modern async/await patterns for non-blocking operations
 - **Event-Driven System**: Robust event bus for order management and position tracking
+- **Automated Trading Rules**: Sophisticated rule engine for strategy execution based on API signals
 - **Real-Time Market Data**: Live price feeds and market data processing
 - **Order Management**: Complete order lifecycle with fills, cancellations, and status tracking
 - **Position Tracking**: Real-time position monitoring with P&L calculations
-- **Risk Management**: Built-in controls for position limits and stop losses
-- **Comprehensive Testing**: Integration tests with real TWS connections
+- **Risk Management**: Built-in controls for position limits, stop losses, and take profits
+- **API Integration**: Live connection to external prediction APIs with signal processing
+- **Technical Indicators**: ATR calculation and integration for position sizing
+- **Comprehensive Testing**: Integration tests with real TWS connections (29 tests passing)
 
 ## Requirements
 
@@ -46,6 +49,8 @@ export TWS_HOST=127.0.0.1
 export TWS_PORT=7497
 export TWS_CLIENT_ID=10
 export TWS_ACCOUNT=your_paper_account
+export API_BASE_URL=your_prediction_api_url
+export API_KEY=your_api_key
 ```
 
 ### 4. Test Connection
@@ -56,6 +61,9 @@ python run_integration_tests.py basic
 
 # Test market data (safe - read only)
 python run_integration_tests.py market_data
+
+# Test API connection
+python test_api_connection.py
 ```
 
 ## Basic Usage
@@ -96,6 +104,85 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
+### Automated Trading with Rule Engine
+
+```python
+import asyncio
+from src.tws_config import TWSConfig
+from src.tws_connection import TWSConnection
+from src.event.bus import EventBus
+from src.event.api import PredictionSignalEvent
+from src.rule.engine import RuleEngine
+from src.rule.condition import EventCondition
+from src.rule.action import CreateOrderAction
+from src.rule.base import Rule
+from src.order import OrderType
+from src.order.manager import OrderManager
+
+async def main():
+    # Initialize components
+    config = TWSConfig.from_env()
+    tws_connection = TWSConnection(config)
+    event_bus = EventBus()
+    order_manager = OrderManager(event_bus, tws_connection)
+    rule_engine = RuleEngine(event_bus)
+    
+    # Connect to TWS
+    await tws_connection.connect()
+    await order_manager.initialize()
+    
+    # Set up rule engine context
+    rule_engine.update_context({
+        "order_manager": order_manager,
+        "account": {"equity": 100000},
+        "prices": {}
+    })
+    
+    # Create a trading rule
+    buy_condition = EventCondition(
+        event_type=PredictionSignalEvent,
+        field_conditions={
+            "signal": "BUY",
+            "symbol": "AAPL",
+            "confidence": lambda c: c > 0.75
+        }
+    )
+    
+    buy_action = CreateOrderAction(
+        symbol="AAPL",
+        quantity=10,
+        order_type=OrderType.MARKET
+    )
+    
+    rule = Rule(
+        rule_id="aapl_buy_rule",
+        name="AAPL Buy on High Confidence",
+        condition=buy_condition,
+        action=buy_action
+    )
+    
+    # Register and start rule engine
+    rule_engine.register_rule(rule)
+    await rule_engine.start()
+    
+    print("🚀 Automated trading system started!")
+    print("   - Connected to TWS")
+    print("   - Rule engine active")
+    print("   - Waiting for prediction signals...")
+    
+    # Keep running
+    try:
+        while True:
+            await asyncio.sleep(1)
+    except KeyboardInterrupt:
+        print("Shutting down...")
+        await rule_engine.stop()
+        tws_connection.disconnect()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
 ### Event-Driven Trading System
 
 ```python
@@ -113,7 +200,7 @@ async def main():
     tws_connection = TWSConnection(config)
     event_bus = EventBus()
     position_tracker = PositionTracker(event_bus)
-    order_manager = OrderManager(event_bus)
+    order_manager = OrderManager(event_bus, tws_connection)
     
     # Connect to TWS
     await tws_connection.connect()

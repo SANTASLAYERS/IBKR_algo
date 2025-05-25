@@ -129,6 +129,9 @@ class TestTWSOrderPlacement:
             order.totalQuantity = 1  # Minimum quantity
             order.orderType = "MKT"
             order.transmit = True
+            # Clear any problematic default attributes
+            order.eTradeOnly = False
+            order.firmQuoteOnly = False
             
             logger.info(f"Placing market order: {order.action} {order.totalQuantity} {contract.symbol}")
             
@@ -138,7 +141,7 @@ class TestTWSOrderPlacement:
             
             # Immediately cancel the order
             logger.info(f"Cancelling order {order_id}")
-            connection.cancelOrder(order_id, "")
+            connection.cancelOrder(order_id)
             
             # Wait for status updates
             timeout = 15
@@ -209,6 +212,9 @@ class TestTWSOrderPlacement:
             order.orderType = "LMT"
             order.lmtPrice = 50.00  # Far below market price
             order.transmit = True
+            # Clear any problematic default attributes
+            order.eTradeOnly = False
+            order.firmQuoteOnly = False
             
             logger.info(f"Placing limit order: {order.action} {order.totalQuantity} {contract.symbol} @ {order.lmtPrice}")
             
@@ -234,7 +240,7 @@ class TestTWSOrderPlacement:
             
             # Cancel the order
             logger.info(f"Cancelling limit order {order_id}")
-            connection.cancelOrder(order_id, "")
+            connection.cancelOrder(order_id)
             
             # Wait for cancellation
             timeout = 10
@@ -295,6 +301,9 @@ class TestTWSOrderPlacement:
             order.totalQuantity = 1
             order.orderType = "MKT"
             order.transmit = True
+            # Clear any problematic default attributes
+            order.eTradeOnly = False
+            order.firmQuoteOnly = False
             
             logger.info(f"Placing order for invalid symbol: {contract.symbol}")
             
@@ -372,6 +381,9 @@ class TestTWSOrderPlacement:
                 order.orderType = "LMT"
                 order.lmtPrice = 10.00  # Very low price
                 order.transmit = True
+                # Clear any problematic default attributes
+                order.eTradeOnly = False
+                order.firmQuoteOnly = False
                 
                 logger.info(f"Placing order {order_id} for {symbol}")
                 connection.placeOrder(order_id, contract, order)
@@ -383,7 +395,7 @@ class TestTWSOrderPlacement:
             # Cancel all orders
             for order_id in order_ids:
                 logger.info(f"Cancelling order {order_id}")
-                connection.cancelOrder(order_id, "")
+                connection.cancelOrder(order_id)
                 await asyncio.sleep(0.5)
             
             # Wait for cancellations
