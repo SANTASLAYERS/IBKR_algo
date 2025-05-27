@@ -34,7 +34,7 @@ class IndicatorManager:
         self.atr_calculator = ATRCalculator()
         self.indicator_values = {}  # Simple cache for indicator values
         
-    async def get_atr(self, symbol: str, period: int = 14, days: int = 5) -> Optional[float]:
+    async def get_atr(self, symbol: str, period: int = 14, days: int = 5, bar_size: str = "10 secs") -> Optional[float]:
         """
         Get the ATR value for a symbol.
         
@@ -42,6 +42,7 @@ class IndicatorManager:
             symbol: The ticker symbol
             period: The ATR period (default: 14)
             days: Number of days of data to fetch (default: 5)
+            bar_size: The timeframe for bars (default: "10 secs")
             
         Returns:
             float: The calculated ATR value, or None if calculation fails
@@ -50,10 +51,11 @@ class IndicatorManager:
         calculator = ATRCalculator(period=period)
         
         try:
-            # Fetch historical data for the symbol
+            # Fetch historical data for the symbol with specified bar size
             data = await self.minute_data_manager.get_historical_data(
                 symbol=symbol,
-                days=days
+                days=days,
+                bar_size=bar_size
             )
             
             if not data:

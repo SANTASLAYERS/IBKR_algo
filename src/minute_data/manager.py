@@ -405,3 +405,42 @@ class MinuteBarManager:
                     
                 if reqId in self._request_symbols:
                     del self._request_symbols[reqId]
+    
+    async def get_historical_data(
+        self,
+        symbol: str,
+        days: int = 5,
+        bar_size: str = "1 min",
+        use_cache: bool = True
+    ) -> List[MinuteBar]:
+        """
+        Get historical data for a symbol - convenience method for indicator calculations.
+        
+        Args:
+            symbol: The ticker symbol
+            days: Number of days of data to fetch
+            bar_size: Size of each bar (e.g., "10 secs", "1 min")
+            use_cache: Whether to use cache
+            
+        Returns:
+            List of MinuteBar objects
+        """
+        from ibapi.contract import Contract
+        
+        # Create a stock contract
+        contract = Contract()
+        contract.symbol = symbol
+        contract.secType = "STK"
+        contract.exchange = "SMART"
+        contract.currency = "USD"
+        
+        # Fetch the data
+        collection = await self.fetch_minute_bars(
+            contract=contract,
+            duration=f"{days} D",
+            bar_size=bar_size,
+            use_cache=use_cache
+        )
+        
+        # Return the bars as a list (the _bars attribute contains the MinuteBar objects)
+        return collection._bars if collection else []

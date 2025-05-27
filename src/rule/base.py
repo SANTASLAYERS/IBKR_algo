@@ -131,3 +131,7 @@ class Rule:
         except Exception as e:
             logger.error(f"Error evaluating rule {self.rule_id}: {e}")
             return False
+    
+    def reset_cooldown(self):
+        """Reset the rule's cooldown by clearing the last execution time."""
+        self.last_execution_time = None

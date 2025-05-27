@@ -48,6 +48,10 @@ class TWSConnection(EWrapper, EClient):
         self._next_order_id: Optional[int] = None
         self._start_time: Optional[float] = None
         
+        # Initialize minute bar manager for historical data
+        from src.minute_data.manager import MinuteBarManager
+        self.minute_bar_manager = MinuteBarManager(gateway=self)
+        
         # Connection state callbacks
         self._on_connected: Optional[Callable] = None
         self._on_disconnected: Optional[Callable] = None
@@ -204,6 +208,16 @@ class TWSConnection(EWrapper, EClient):
             Optional[int]: Next order ID if available
         """
         return self._next_order_id
+    
+    def get_next_request_id(self) -> int:
+        """
+        Get the next request ID for API calls.
+        
+        Returns:
+            int: Next request ID
+        """
+        # Use IB API's internal request ID counter
+        return self.reqId()
     
     # EWrapper callback implementations
     def connectAck(self):

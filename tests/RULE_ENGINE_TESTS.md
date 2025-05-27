@@ -98,6 +98,8 @@ Tests for the `RuleEngine` class that manages rules:
 ## Key Test Files
 
 - `/tests/rule_engine/test_rule_engine.py`: Main test file for all rule engine components
+- `/tests/rule_engine/test_buy_sell_enhancement.py`: Comprehensive tests for BUY/SELL side management, context tracking, and protective order placement (21 tests)
+- `/tests/rule_engine/test_price_calculations.py`: Tests for price calculations, integration scenarios, and edge cases for long/short positions (9 tests)
 
 ## Test Fixtures
 
@@ -232,3 +234,23 @@ async def test_real_world_rule_scenario(self, rule_engine, event_bus, position_t
 3. **Rule Persistence**: Add tests for saving and loading rule configurations
 4. **Extended Scenarios**: Add more complex multi-rule scenarios 
 5. **Stress Testing**: Test behavior under high event volume
+
+# Rule Engine Testing Strategy
+
+## Overview
+
+This document outlines the comprehensive testing strategy for the BUY/SELL enhancement implementation in the rule engine. The testing framework ensures all core functionality is validated through automated tests.
+
+## Test Files
+
+### `test_buy_sell_enhancement.py` (24 tests)
+Main test suite covering:
+- Order placement with correct sides and pricing (BUY/SELL)
+- Context management and side tracking
+- Scale-in functionality for both long and short positions
+- Position conclusion and context reset
+- Template rule creation and execution
+- **🆕 Position reversal logic** (one trade per symbol)
+- Error handling and edge cases
+
+All tests use mocked components for fast, deterministic execution without real broker interaction.

@@ -16,6 +16,7 @@ This document outlines the comprehensive testing strategy needed to ensure the T
 - Position management tests  
 - Order management tests
 - Configuration validation tests
+- **BUY/SELL Enhancement Tests** (`tests/rule_engine/test_buy_sell_enhancement.py`, `tests/rule_engine/test_price_calculations.py`) - 30 comprehensive tests covering explicit side management, context tracking, scale-in functionality, and protective order placement for both long and short positions
 
 #### What's Missing:
 - TWS connection unit tests with mocks

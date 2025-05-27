@@ -29,13 +29,16 @@ from src.event.api import PredictionSignalEvent
 from src.rule.engine import RuleEngine
 from src.rule.condition import EventCondition, TimeCondition
 from src.rule.action import CreateOrderAction, ClosePositionAction
-from src.rule.linked_order_actions import LinkedCreateOrderAction, LinkedScaleInAction, LinkedCloseAllAction, LinkedOrderConclusionManager
+from src.rule.linked_order_actions import LinkedCreateOrderAction, LinkedScaleInAction, LinkedCloseAllAction, LinkedOrderConclusionManager, CooldownResetManager
 from src.rule.base import Rule
 from src.order import OrderType
 from src.order.manager import OrderManager
 from src.position.tracker import PositionTracker
+from src.position.sizer import PositionSizer
+from src.price.service import PriceService
 from src.api.monitor import OptionsFlowMonitor
 from api_client import ApiClient
+from src.indicators.manager import IndicatorManager
 
 # Configure logging
 logging.basicConfig(
@@ -61,6 +64,10 @@ class TradingApplication:
         self.position_tracker = None
         self.api_monitor = None
         self.conclusion_manager = None
+        self.cooldown_reset_manager = None
+        self.indicator_manager = None
+        self.price_service = None
+        self.position_sizer = None
         
     async def initialize(self):
         """Initialize all system components."""
@@ -85,6 +92,17 @@ class TradingApplication:
         self.position_tracker = PositionTracker(self.event_bus)
         self.rule_engine = RuleEngine(self.event_bus)
         
+        # Initialize indicator manager for ATR calculations
+        self.indicator_manager = IndicatorManager(
+            minute_data_manager=self.tws_connection.minute_bar_manager  # Assuming TWS has minute bar manager
+        )
+        
+        # Initialize price service for real-time prices
+        self.price_service = PriceService(self.tws_connection)
+        
+        # Initialize position sizer for dynamic position sizing
+        self.position_sizer = PositionSizer(min_shares=1, max_shares=10000)
+        
         # Initialize components
         await self.order_manager.initialize()
         await self.position_tracker.initialize()
@@ -93,6 +111,9 @@ class TradingApplication:
         self.rule_engine.update_context({
             "order_manager": self.order_manager,
             "position_tracker": self.position_tracker,
+            "indicator_manager": self.indicator_manager,  # Add indicator manager to context
+            "price_service": self.price_service,          # Add price service to context
+            "position_sizer": self.position_sizer,        # Add position sizer to context
             "account": {"equity": 100000},  # Update with real account value
             "prices": {}
         })
@@ -103,6 +124,13 @@ class TradingApplication:
             event_bus=self.event_bus
         )
         await self.conclusion_manager.initialize()
+        
+        # Initialize cooldown reset manager for stop loss handling
+        self.cooldown_reset_manager = CooldownResetManager(
+            rule_engine=self.rule_engine,
+            event_bus=self.event_bus
+        )
+        await self.cooldown_reset_manager.initialize()
         
         # Setup API monitoring
         try:
@@ -122,36 +150,68 @@ class TradingApplication:
         # Strategy configurations for different tickers
         strategies = [
             {
-                "ticker": "AAPL",
-                "confidence_threshold": 0.80,
-                "quantity": 100,
-                "stop_loss_pct": 0.03,
-                "take_profit_pct": 0.08,
-                "cooldown_minutes": 5
+                "ticker": "CVNA",
+                "confidence_threshold": 0.50,
+                "allocation": 10000,           # $10K allocation instead of fixed 100 shares
+                "atr_stop_multiplier": 6.0,    # ATR * 6 for stop loss
+                "atr_target_multiplier": 3.0,  # ATR * 3 for profit target
+                "cooldown_minutes": 3
             },
             {
-                "ticker": "MSFT", 
-                "confidence_threshold": 0.85,
-                "quantity": 50,
-                "stop_loss_pct": 0.025,
-                "take_profit_pct": 0.10,
-                "cooldown_minutes": 10
+                "ticker": "UVXY", 
+                "confidence_threshold": 0.50,
+                "allocation": 10000,
+                "atr_stop_multiplier": 6.0,
+                "atr_target_multiplier": 3.0,
+                "cooldown_minutes": 3
             },
             {
-                "ticker": "TSLA",
-                "confidence_threshold": 0.90,  # Higher threshold for more volatile stock
-                "quantity": 25,
-                "stop_loss_pct": 0.04,
-                "take_profit_pct": 0.12,
-                "cooldown_minutes": 15
+                "ticker": "SOXL",
+                "confidence_threshold": 0.50,
+                "allocation": 10000,
+                "atr_stop_multiplier": 6.0,
+                "atr_target_multiplier": 3.0,
+                "cooldown_minutes": 3
             },
             {
-                "ticker": "NVDA",
-                "confidence_threshold": 0.85,
-                "quantity": 30,
-                "stop_loss_pct": 0.035,
-                "take_profit_pct": 0.09,
-                "cooldown_minutes": 8
+                "ticker": "SOXS",
+                "confidence_threshold": 0.50,
+                "allocation": 10000,
+                "atr_stop_multiplier": 6.0,
+                "atr_target_multiplier": 3.0,
+                "cooldown_minutes": 3
+            },
+            {
+                "ticker": "TQQQ",
+                "confidence_threshold": 0.50,
+                "allocation": 10000,
+                "atr_stop_multiplier": 6.0,
+                "atr_target_multiplier": 3.0,
+                "cooldown_minutes": 3
+            },
+            {
+                "ticker": "SQQQ",
+                "confidence_threshold": 0.50,
+                "allocation": 10000,
+                "atr_stop_multiplier": 6.0,
+                "atr_target_multiplier": 3.0,
+                "cooldown_minutes": 3
+            },
+            {
+                "ticker": "GLD",
+                "confidence_threshold": 0.50,
+                "allocation": 10000,
+                "atr_stop_multiplier": 6.0,
+                "atr_target_multiplier": 3.0,
+                "cooldown_minutes": 3
+            },
+            {
+                "ticker": "SLV",
+                "confidence_threshold": 0.50,
+                "allocation": 10000,
+                "atr_stop_multiplier": 6.0,
+                "atr_target_multiplier": 3.0,
+                "cooldown_minutes": 3
             }
         ]
         
@@ -180,12 +240,12 @@ class TradingApplication:
         
         buy_action = LinkedCreateOrderAction(
             symbol=ticker,
-            quantity=strategy["quantity"],
+            quantity=strategy["allocation"],
             side="BUY",
             order_type=OrderType.MARKET,
             auto_create_stops=True,  # Automatically create stop & target orders
-            stop_loss_pct=strategy["stop_loss_pct"],
-            take_profit_pct=strategy["take_profit_pct"]
+            atr_stop_multiplier=strategy["atr_stop_multiplier"],
+            atr_target_multiplier=strategy["atr_target_multiplier"]
         )
         
         buy_rule = Rule(
@@ -211,7 +271,7 @@ class TradingApplication:
         # Use the formal LinkedScaleInAction (replaces custom ScaleInAction)
         scalein_action = LinkedScaleInAction(
             symbol=ticker,
-            scale_quantity=strategy["quantity"] // 2,  # Scale in with half the original quantity
+            scale_quantity=50,  # Fixed scale-in quantity (reasonable for most stocks)
             trigger_profit_pct=0.02  # Only scale-in if position is 2%+ profitable
         )
         
@@ -263,12 +323,12 @@ class TradingApplication:
         
         short_action = LinkedCreateOrderAction(
             symbol=ticker,
-            quantity=strategy["quantity"],
+            quantity=strategy["allocation"],
             side="SELL",                      # NEW: Explicit side for short positions
             order_type=OrderType.MARKET,
             auto_create_stops=True,  # Automatically create stop & target orders
-            stop_loss_pct=strategy["stop_loss_pct"],
-            take_profit_pct=strategy["take_profit_pct"]
+            atr_stop_multiplier=strategy["atr_stop_multiplier"],
+            atr_target_multiplier=strategy["atr_target_multiplier"]
         )
         
         short_rule = Rule(
@@ -292,11 +352,11 @@ class TradingApplication:
     def _create_eod_closure_rule(self):
         """Create end-of-day position closure rule."""
         # End-of-Day Close Rule (close ALL positions and orders)
-        tickers = ["AAPL", "MSFT", "TSLA", "NVDA"]  # Same as in setup_strategies
+        tickers = ["CVNA", "UVXY", "SOXL", "SOXS", "TQQQ", "SQQQ", "GLD", "SLV"]  # Updated ticker list
         
         for ticker in tickers:
             eod_condition = TimeCondition(
-                time_check=lambda: datetime.now().time() >= time(15, 30)  # 3:30 PM ET
+                start_time=time(15, 30)  # 3:30 PM ET
             )
             
             # Use LinkedCloseAllAction to close position AND cancel all linked orders
@@ -323,7 +383,7 @@ class TradingApplication:
         logger.info("🔥 Starting trading system...")
         
         # Configure API monitoring for our tickers
-        tickers = ["AAPL", "MSFT", "TSLA", "NVDA"]
+        tickers = ["CVNA", "UVXY", "SOXL", "SOXS", "TQQQ", "SQQQ", "GLD", "SLV"]
         self.api_monitor.configure(tickers)
         
         # Start components

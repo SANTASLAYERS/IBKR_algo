@@ -45,13 +45,79 @@ class LinkedOrderConclusionManager:
             if (order_id in group.get("stop_orders", []) or 
                 order_id in group.get("target_orders", [])):
                 
-                # Position concluded via stop/target fill
-                group["status"] = "closed"
+                # Position concluded via stop/target fill - clear context completely
                 side = group.get("side", "UNKNOWN")
-                logger.info(f"🎯 {side} position concluded for {symbol} - {event.status.value} order {order_id} filled at ${event.fill_price}")
+                if symbol in self.context:
+                    del self.context[symbol]
+                    logger.info(f"🎯 {side} position concluded for {symbol} - {event.status.value} order {order_id} filled at ${event.fill_price} - context cleared")
                 
         except Exception as e:
             logger.error(f"Error handling fill event for position conclusion: {e}")
+
+
+class CooldownResetManager:
+    """Manages cooldown reset when stop loss orders are filled."""
+    
+    def __init__(self, rule_engine, event_bus):
+        self.rule_engine = rule_engine
+        self.event_bus = event_bus
+        self._initialized = False
+    
+    async def initialize(self):
+        """Subscribe to fill events to detect stop loss fills."""
+        if not self._initialized:
+            # Import here to avoid circular imports
+            from src.event.order import FillEvent
+            await self.event_bus.subscribe(FillEvent, self.on_order_fill)
+            self._initialized = True
+            logger.info("CooldownResetManager initialized - monitoring for stop loss fills")
+    
+    async def on_order_fill(self, event):
+        """Handle order fill events to detect stop loss fills and reset cooldowns."""
+        try:
+            # Check if this was a stop loss order that got filled
+            symbol = event.symbol
+            order_id = event.order_id
+            
+            # Get the order group for this symbol from rule engine context
+            context = self.rule_engine.context
+            group = context.get(symbol, {})
+            
+            # Check if the filled order was a stop order (stop loss)
+            if order_id in group.get("stop_orders", []):
+                # Stop loss was hit - reset cooldowns for this symbol's rules
+                side = group.get("side", "UNKNOWN")
+                logger.info(f"🔄 Stop loss hit for {symbol} {side} position - resetting rule cooldowns")
+                
+                # Find and reset cooldowns for rules related to this symbol
+                await self._reset_symbol_cooldowns(symbol)
+                
+        except Exception as e:
+            logger.error(f"Error handling fill event for cooldown reset: {e}")
+    
+    async def _reset_symbol_cooldowns(self, symbol: str):
+        """Reset cooldowns for all rules related to a specific symbol."""
+        try:
+            # Get all rules from the rule engine
+            all_rules = self.rule_engine.get_all_rules()
+            
+            # Find rules that are related to this symbol
+            symbol_rules = []
+            for rule in all_rules:
+                # Check if rule ID contains the symbol (our naming convention)
+                if symbol.lower() in rule.rule_id.lower():
+                    symbol_rules.append(rule)
+            
+            # Reset cooldowns for these rules
+            for rule in symbol_rules:
+                rule.reset_cooldown()
+                logger.info(f"🔄 Reset cooldown for rule: {rule.rule_id}")
+                
+            if symbol_rules:
+                logger.info(f"✅ Reset cooldowns for {len(symbol_rules)} rules related to {symbol}")
+            
+        except Exception as e:
+            logger.error(f"Error resetting cooldowns for {symbol}: {e}")
 
 
 class LinkedOrderManager:
@@ -60,17 +126,18 @@ class LinkedOrderManager:
     @staticmethod
     def get_order_group(context: Dict[str, Any], symbol: str, side: str) -> Dict[str, Any]:
         """Get or create order group for symbol with side."""
-        if symbol not in context or context[symbol].get("status") == "closed":
+        if symbol not in context:
+            # Create fresh context for new position
             context[symbol] = {
-                "side": side,              # Store side in context data
+                "side": side,
                 "main_orders": [],
                 "stop_orders": [],
                 "target_orders": [],
                 "scale_orders": [],
                 "status": "active"
             }
-            if symbol in context and context[symbol].get("status") == "closed":
-                logger.info(f"Reset order context for {symbol} (was closed)")
+            logger.info(f"Created new order context for {symbol} {side} position")
+        
         return context[symbol]
     
     @staticmethod
@@ -145,7 +212,7 @@ class LinkedCreateOrderAction(Action):
     
     def __init__(self, 
                  symbol: str,
-                 quantity: float,
+                 quantity: float,               # Can be allocation (if > 1000) or fixed shares
                  side: str,                    # NEW: Required parameter "BUY" or "SELL"
                  order_type: OrderType = OrderType.MARKET,
                  limit_price: Optional[float] = None,
@@ -153,10 +220,12 @@ class LinkedCreateOrderAction(Action):
                  link_type: str = "main",  # main, stop, target, scale
                  auto_create_stops: bool = False,
                  stop_loss_pct: Optional[float] = None,
-                 take_profit_pct: Optional[float] = None):
+                 take_profit_pct: Optional[float] = None,
+                 atr_stop_multiplier: Optional[float] = None,      # NEW: ATR multiplier for stop loss
+                 atr_target_multiplier: Optional[float] = None):   # NEW: ATR multiplier for profit target
         
         self.symbol = symbol
-        self.quantity = quantity
+        self.quantity = quantity  # Can be allocation or fixed shares
         self.side = side  # "BUY" or "SELL"
         self.order_type = order_type
         self.limit_price = limit_price
@@ -165,22 +234,42 @@ class LinkedCreateOrderAction(Action):
         self.auto_create_stops = auto_create_stops
         self.stop_loss_pct = stop_loss_pct
         self.take_profit_pct = take_profit_pct
+        self.atr_stop_multiplier = atr_stop_multiplier      # NEW: ATR * this for stop distance
+        self.atr_target_multiplier = atr_target_multiplier  # NEW: ATR * this for target distance
     
     async def execute(self, context: Dict[str, Any]) -> bool:
-        """Create order and automatically link it."""
+        """Create order and automatically link it with position reversal logic."""
         order_manager = context.get("order_manager")
         if not order_manager:
             logger.error("Order manager not found in context")
             return False
         
-        # Validate position consistency
-        if not LinkedOrderManager.validate_position_consistency(context, self.symbol, self.side):
-            logger.error(f"Cannot create {self.side} order for {self.symbol} - side conflict")
-            return False
+        # Check for existing position and handle position reversal
+        if self.symbol in context and context[self.symbol].get("status") == "active":
+            current_side = context[self.symbol]["side"]
+            
+            if current_side == self.side:
+                # Same side signal → IGNORE
+                logger.info(f"Ignoring {self.side} signal for {self.symbol} - already in {current_side} position")
+                return True
+            else:
+                # Opposite side signal → EXIT current position, then ENTER new position
+                logger.info(f"Reversing position for {self.symbol}: {current_side} → {self.side}")
+                success = await self._exit_current_position(context)
+                if not success:
+                    logger.error(f"Failed to exit current position for {self.symbol}")
+                    return False
+                # Context is now cleared, proceed with new position creation
         
         try:
+            # Calculate actual shares to trade
+            actual_shares = await self._calculate_position_size(context)
+            if actual_shares is None:
+                logger.warning(f"Could not calculate position size for {self.symbol}")
+                return False
+            
             # Adjust quantity based on side (positive for BUY, negative for SELL)
-            actual_quantity = abs(self.quantity) if self.side == "BUY" else -abs(self.quantity)
+            actual_quantity = abs(actual_shares) if self.side == "BUY" else -abs(actual_shares)
             
             # Create the main order
             order = await order_manager.create_and_submit_order(
@@ -196,7 +285,7 @@ class LinkedCreateOrderAction(Action):
             
             # Auto-create stop loss and take profit if requested
             if self.auto_create_stops and self.link_type == "main":
-                await self._create_protective_orders(context, order)
+                await self._create_protective_orders(context, order, actual_shares)
             
             logger.info(f"Created and linked {self.side} {self.link_type} order {order.order_id} for {self.symbol}")
             return True
@@ -205,25 +294,116 @@ class LinkedCreateOrderAction(Action):
             logger.error(f"Error creating linked order for {self.symbol}: {e}")
             return False
     
-    async def _create_protective_orders(self, context: Dict[str, Any], main_order):
+    async def _calculate_position_size(self, context: Dict[str, Any]) -> Optional[int]:
+        """Calculate position size based on allocation or use fixed quantity."""
+        # If quantity is large (> 1000), treat it as dollar allocation
+        if self.quantity > 1000:
+            # Dynamic position sizing based on allocation
+            price_service = context.get("price_service")
+            position_sizer = context.get("position_sizer")
+            
+            if not price_service or not position_sizer:
+                logger.warning(f"Price service or position sizer not available - using quantity as shares")
+                return int(self.quantity)
+            
+            # Get current price
+            current_price = await price_service.get_price(self.symbol)
+            if not current_price:
+                logger.error(f"Could not get price for {self.symbol}")
+                return None
+            
+            # Calculate shares for allocation
+            shares = position_sizer.calculate_shares(
+                allocation=self.quantity,
+                price=current_price,
+                side=self.side
+            )
+            
+            if shares is None:
+                logger.error(f"Position sizer returned None for {self.symbol}")
+                return None
+                
+            return shares
+        else:
+            # Treat as fixed number of shares
+            logger.info(f"Using fixed position size: {int(self.quantity)} shares for {self.symbol}")
+            return int(self.quantity)
+    
+    async def _exit_current_position(self, context: Dict[str, Any]) -> bool:
+        """Exit current position by canceling all orders and closing position."""
+        try:
+            # Use LinkedCloseAllAction to cleanly exit current position
+            close_action = LinkedCloseAllAction(
+                symbol=self.symbol,
+                reason="Position reversal - exiting current position"
+            )
+            
+            result = await close_action.execute(context)
+            if result:
+                logger.info(f"Successfully exited current position for {self.symbol}")
+            else:
+                logger.warning(f"Failed to fully exit current position for {self.symbol}")
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error exiting current position for {self.symbol}: {e}")
+            return False
+    
+    async def _create_protective_orders(self, context: Dict[str, Any], main_order, actual_shares):
         """Create stop loss and take profit orders."""
         order_manager = context.get("order_manager")
         
-        # Get current price for percentage calculations
+        # Get current price for calculations
         current_price = self.limit_price or context.get("prices", {}).get(self.symbol)
         if not current_price:
             logger.warning(f"No price available for {self.symbol} protective orders")
             return
         
-        # Create stop loss with correct logic for shorts
-        if self.stop_loss_pct:
+        # Try to get ATR value if using ATR-based stops
+        atr_value = None
+        if self.atr_stop_multiplier is not None or self.atr_target_multiplier is not None:
+            indicator_manager = context.get("indicator_manager")
+            if indicator_manager:
+                try:
+                    # Calculate 10-second ATR with 14 periods
+                    atr_value = await indicator_manager.get_atr(
+                        symbol=self.symbol,
+                        period=14,
+                        days=1,
+                        bar_size="10 secs"
+                    )
+                    if atr_value:
+                        logger.info(f"ATR for {self.symbol}: {atr_value:.4f}")
+                    else:
+                        logger.warning(f"Failed to calculate ATR for {self.symbol}")
+                except Exception as e:
+                    logger.error(f"Error calculating ATR for {self.symbol}: {e}")
+        
+        # Create stop loss order
+        stop_price = None
+        if self.atr_stop_multiplier is not None and atr_value is not None:
+            # Use ATR-based stop loss
+            stop_distance = atr_value * self.atr_stop_multiplier
+            if self.side == "BUY":  # Long position
+                stop_price = current_price - stop_distance
+                stop_quantity = -abs(actual_shares)  # Sell to close long
+            else:  # Short position (SELL)
+                stop_price = current_price + stop_distance
+                stop_quantity = abs(actual_shares)   # Buy to close short
+            logger.info(f"ATR-based stop: {self.symbol} stop at ${stop_price:.2f} (ATR: {atr_value:.4f} * {self.atr_stop_multiplier} = {stop_distance:.4f})")
+            
+        elif self.stop_loss_pct:
+            # Fallback to percentage-based stop loss
             if self.side == "BUY":  # Long position
                 stop_price = current_price * (1 - self.stop_loss_pct)
-                stop_quantity = -abs(self.quantity)  # Sell to close long
+                stop_quantity = -abs(actual_shares)  # Sell to close long
             else:  # Short position (SELL)
                 stop_price = current_price * (1 + self.stop_loss_pct)  # Higher than entry
-                stop_quantity = abs(self.quantity)   # Buy to close short
-            
+                stop_quantity = abs(actual_shares)   # Buy to close short
+            logger.info(f"Percentage-based stop: {self.symbol} stop at ${stop_price:.2f} ({self.stop_loss_pct:.1%})")
+        
+        if stop_price is not None:
             stop_order = await order_manager.create_order(
                 symbol=self.symbol,
                 quantity=stop_quantity,
@@ -234,15 +414,30 @@ class LinkedCreateOrderAction(Action):
             LinkedOrderManager.add_order(context, self.symbol, stop_order.order_id, "stop", self.side)
             logger.info(f"Auto-created {self.side} stop loss {stop_order.order_id} at ${stop_price:.2f}")
         
-        # Create take profit with correct logic for shorts
-        if self.take_profit_pct:
+        # Create take profit order
+        target_price = None
+        if self.atr_target_multiplier is not None and atr_value is not None:
+            # Use ATR-based take profit
+            target_distance = atr_value * self.atr_target_multiplier
+            if self.side == "BUY":  # Long position
+                target_price = current_price + target_distance
+                target_quantity = -abs(actual_shares)  # Sell to close long
+            else:  # Short position (SELL)
+                target_price = current_price - target_distance
+                target_quantity = abs(actual_shares)   # Buy to close short
+            logger.info(f"ATR-based target: {self.symbol} target at ${target_price:.2f} (ATR: {atr_value:.4f} * {self.atr_target_multiplier} = {target_distance:.4f})")
+            
+        elif self.take_profit_pct:
+            # Fallback to percentage-based take profit
             if self.side == "BUY":  # Long position
                 target_price = current_price * (1 + self.take_profit_pct)
-                target_quantity = -abs(self.quantity)  # Sell to close long
+                target_quantity = -abs(actual_shares)  # Sell to close long
             else:  # Short position (SELL)
                 target_price = current_price * (1 - self.take_profit_pct)  # Lower than entry
-                target_quantity = abs(self.quantity)   # Buy to close short
-            
+                target_quantity = abs(actual_shares)   # Buy to close short
+            logger.info(f"Percentage-based target: {self.symbol} target at ${target_price:.2f} ({self.take_profit_pct:.1%})")
+        
+        if target_price is not None:
             target_order = await order_manager.create_order(
                 symbol=self.symbol,
                 quantity=target_quantity,
@@ -418,9 +613,10 @@ class LinkedCloseAllAction(Action):
             for position in positions:
                 await position_tracker.close_position(position.position_id, self.reason)
             
-            # Mark group as closed
+            # PROPERLY CLEAR context instead of just marking as closed
             if self.symbol in context:
-                context[self.symbol]["status"] = "closed"
+                del context[self.symbol]
+                logger.info(f"Cleared context for {self.symbol} - ready for new position")
             
             logger.info(f"Closed all linked orders and position for {self.symbol}")
             return True

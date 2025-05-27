@@ -122,6 +122,50 @@ action = LinkedCreateOrderAction(
 )
 ```
 
+### 🆕 Position Reversal Logic
+
+The `LinkedCreateOrderAction` now includes intelligent position reversal logic to ensure only one trade per symbol at a time:
+
+**Behavior:**
+- **Same Side Signal** → **IGNORE**: If already in a BUY position and new BUY signal arrives → ignore
+- **Opposite Side Signal** → **REVERSE**: If in BUY position and SELL signal arrives → exit BUY completely, then enter SELL
+- **No Current Position** → **ENTER**: If no active position → proceed with new position normally
+
+**Clean Context Management:**
+The system maintains clean state by completely clearing context when positions are closed:
+
+```python
+# When position concludes (stop/target hit or manual close):
+# OLD: context[symbol]["status"] = "closed"  # Kept old data around
+# NEW: del context[symbol]                   # Complete cleanup
+
+# Benefits of complete context clearing:
+# 1. No "corrupted" or "stale" state possible
+# 2. Fresh start for each new position  
+# 3. Clean position reversal with no conflicts
+# 4. Simplified validation logic
+```
+
+**Implementation:**
+```python
+# If current position is BUY and new signal is SELL:
+# 1. Cancel all pending orders (stops, targets, scale-ins)  
+# 2. Close position via market order
+# 3. COMPLETELY CLEAR context for symbol (del context[symbol])
+# 4. Create new SELL position with stops/targets
+
+# If current position is BUY and new signal is BUY:
+# 1. Log "Ignoring BUY signal - already in BUY position"
+# 2. Return without creating any orders
+```
+
+**Benefits:**
+- Prevents position accumulation from duplicate signals
+- Enables clean position reversal on opposing signals  
+- Maintains risk management through automatic stop/target recreation
+- Provides audit trail through detailed logging
+- **🆕 Eliminates context corruption** - no stale data possible
+
 ### LinkedScaleInAction
 
 Intelligent scale-in with automatic stop/target adjustment:
@@ -139,6 +183,65 @@ action = LinkedScaleInAction(
 - Validates context consistency  
 - Updates stop/target orders for new total position size
 - Maintains correct quantity signs for both long and short positions
+
+### LinkedOrderManager Design & Modularity
+
+The `LinkedOrderManager` provides a highly modular, context-based approach to order relationship management:
+
+**Core Purpose:**
+The LinkedOrderManager acts as a centralized registry that tracks related orders by symbol and side, enabling complex trading strategies with automatic order coordination.
+
+**How It Works:**
+1. **Context-Based Storage**: Uses shared context dictionary with symbol as key
+2. **Order Type Classification**: Categorizes orders as "main", "stop", "target", or "scale"
+3. **Side Awareness**: Tracks BUY/SELL side to ensure consistency
+4. **Event-Driven Updates**: Automatically maintains order relationships as trades execute
+
+**Modular Design Benefits:**
+
+- **Easy Order Addition**: Add new order types by simply extending the order type categories
+  ```python
+  # Current categories: main_orders, stop_orders, target_orders, scale_orders
+  # Easy to add: trail_orders, hedge_orders, etc.
+  ```
+
+- **Multiple Scale-In Orders**: Add multiple scale-in orders at different prices
+  ```python
+  # First scale-in at 2% profit
+  scale_1 = LinkedScaleInAction(symbol="AAPL", scale_quantity=25, trigger_profit_pct=0.02)
+  
+  # Second scale-in at 5% profit  
+  scale_2 = LinkedScaleInAction(symbol="AAPL", scale_quantity=25, trigger_profit_pct=0.05)
+  
+  # Both automatically link and adjust existing stops/targets
+  ```
+
+- **Flexible Order Combinations**: Mix and match different order actions
+  ```python
+  # Entry with auto stops/targets
+  entry = LinkedCreateOrderAction(..., auto_create_stops=True)
+  
+  # Multiple scale-ins at different levels
+  scale_small = LinkedScaleInAction(..., scale_quantity=25, trigger_profit_pct=0.02)
+  scale_large = LinkedScaleInAction(..., scale_quantity=50, trigger_profit_pct=0.05)
+  
+  # Manual additional stop orders  
+  trailing_stop = LinkedCreateOrderAction(..., link_type="stop", order_type=OrderType.TRAIL)
+  ```
+
+- **Symbol Isolation**: Each symbol maintains independent order context
+  ```python
+  # AAPL and MSFT positions managed completely separately
+  context["AAPL"] = {"side": "BUY", "main_orders": [...], ...}
+  context["MSFT"] = {"side": "SELL", "main_orders": [...], ...}
+  ```
+
+**Extensibility Examples:**
+
+- **Custom Order Types**: Add new `link_type` values (e.g., "hedge", "trail", "bracket")
+- **Advanced Scaling**: Implement pyramid scaling with multiple price levels
+- **Risk Overlays**: Add portfolio-level risk orders that span multiple symbols
+- **Time-Based Orders**: Link orders with time-based triggers (e.g., close at EOD)
 
 ## Event System
 
