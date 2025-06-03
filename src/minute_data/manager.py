@@ -107,8 +107,9 @@ class MinuteBarManager:
         if end_date is None:
             end_date = datetime.now(timezone.utc)
             
-        # Convert to IB format: yyyyMMdd HH:mm:ss
-        end_date_str = end_date.strftime("%Y%m%d %H:%M:%S")
+        # Convert to IB format: yyyyMMdd HH:mm:ss with timezone
+        # IB API wants explicit timezone, so we'll add UTC
+        end_date_str = end_date.strftime("%Y%m%d %H:%M:%S") + " UTC"
         
         # Request the data
         self.gateway.reqHistoricalData(
@@ -271,11 +272,16 @@ class MinuteBarManager:
         """
         # Parse the timestamp
         if isinstance(bar.date, str):
-            # Format: YYYYMMDD HH:MM:SS
-            timestamp = datetime.strptime(bar.date, "%Y%m%d %H:%M:%S")
-            timestamp = timestamp.replace(tzinfo=timezone.utc)
+            # Check if it's a Unix timestamp as string (all digits)
+            if bar.date.isdigit():
+                # Unix timestamp as string
+                timestamp = datetime.fromtimestamp(int(bar.date), tz=timezone.utc)
+            else:
+                # Format: YYYYMMDD HH:MM:SS
+                timestamp = datetime.strptime(bar.date, "%Y%m%d %H:%M:%S")
+                timestamp = timestamp.replace(tzinfo=timezone.utc)
         else:
-            # Unix timestamp in seconds
+            # Unix timestamp in seconds (integer)
             timestamp = datetime.fromtimestamp(bar.date, tz=timezone.utc)
         
         # Create and return the minute bar
@@ -381,7 +387,7 @@ class MinuteBarManager:
         # Check if this is for a historical data request we're tracking
         if reqId in self._data_futures:
             # Certain error codes are expected and shouldn't cause a failure
-            non_critical_errors = [2106, 2107, 2108]
+            non_critical_errors = [2106, 2107, 2108, 2174, 2176]  # 2174 is timezone warning, 2176 is fractional shares warning
             
             if errorCode not in non_critical_errors:
                 logger.error(
