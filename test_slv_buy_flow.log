@@ -15562,3 +15562,397 @@ Test cleanup complete
 ================================================================================
 2025-06-03 16:07:24,916 - __main__ - INFO - TEST COMPLETE
 2025-06-03 16:07:24,916 - __main__ - INFO - ================================================================================
+2025-06-03 16:16:28,093 - __main__ - INFO - ================================================================================
+2025-06-03 16:16:28,093 - __main__ - INFO - INITIALIZING SLV BUY FLOW TEST
+2025-06-03 16:16:28,094 - __main__ - INFO - ================================================================================
+2025-06-03 16:16:28,094 - __main__ - INFO - Event bus created
+2025-06-03 16:16:28,094 - __main__ - INFO - Subscribed to order events
+2025-06-03 16:16:28,094 - __main__ - INFO - TWS Config: host=127.0.0.1, port=7497, client_id=1
+2025-06-03 16:16:28,097 - __main__ - INFO - Connecting to TWS...
+2025-06-03 16:16:28,097 - src.tws_connection - INFO - Connecting to TWS at 127.0.0.1:7497
+2025-06-03 16:16:28,098 - src.tws_connection - INFO - Connection thread: Connecting to 127.0.0.1:7497 (client ID: 1)
+2025-06-03 16:16:29,718 - src.tws_connection - INFO - ✅ Connection acknowledged by TWS
+2025-06-03 16:16:29,719 - src.tws_connection - INFO - Connection thread: Socket connected, starting message loop
+2025-06-03 16:16:29,739 - src.tws_connection - INFO - Open Order - ID: 23, Symbol: SLV, Action: BUY, Quantity: 317.0
+2025-06-03 16:16:29,740 - src.tws_connection - INFO - Order Status Update - ID: 23, Status: PreSubmitted, Filled: 0.0, Remaining: 317.0
+2025-06-03 16:16:29,742 - src.tws_connection - INFO - ✅ Next valid order ID received: 24
+2025-06-03 16:16:29,742 - src.tws_connection - INFO - ✅ TWS connection fully established
+2025-06-03 16:16:29,743 - src.tws_connection - INFO - Open Order - ID: 23, Symbol: SLV, Action: BUY, Quantity: 317.0
+2025-06-03 16:16:29,744 - src.tws_connection - INFO - ✅ Successfully connected to TWS
+2025-06-03 16:16:29,744 - src.tws_connection - INFO - Order Status Update - ID: 23, Status: PreSubmitted, Filled: 0.0, Remaining: 317.0
+2025-06-03 16:16:29,745 - __main__ - INFO - Connected to TWS successfully
+2025-06-03 16:16:29,746 - src.order.manager - INFO - OrderManager callbacks set up with TWSConnection
+2025-06-03 16:16:29,746 - src.tws_connection - INFO - ✅ Next valid order ID received: 24
+2025-06-03 16:16:29,747 - src.position.tracker - INFO - PositionTracker async initialization completed
+2025-06-03 16:16:29,748 - __main__ - INFO - Order manager and position tracker initialized
+2025-06-03 16:16:29,748 - __main__ - INFO - Rule engine context configured
+2025-06-03 16:16:29,749 - src.rule.linked_order_actions - INFO - LinkedOrderConclusionManager initialized - monitoring for position conclusions
+2025-06-03 16:16:29,749 - __main__ - INFO - Order conclusion manager initialized
+2025-06-03 16:16:29,750 - LinkedDoubleDownFillManager - INFO - LinkedDoubleDownFillManager initialized
+2025-06-03 16:16:29,750 - __main__ - INFO - Double down fill manager initialized
+2025-06-03 16:16:29,750 - __main__ - INFO - 
+================================================================================
+2025-06-03 16:16:29,751 - __main__ - INFO - SETTING UP SLV BUY RULE
+2025-06-03 16:16:29,751 - __main__ - INFO - ================================================================================
+2025-06-03 16:16:29,751 - __main__ - INFO - Created BUY condition (threshold: 50%)
+2025-06-03 16:16:29,752 - __main__ - INFO - Created BUY action ($10K allocation, 3% stop, 6% target)
+2025-06-03 16:16:29,752 - __main__ - INFO - Registered rule: slv_buy_test_rule
+2025-06-03 16:16:29,752 - __main__ - INFO - 
+================================================================================
+2025-06-03 16:16:29,752 - __main__ - INFO - SIMULATING SLV BUY SIGNAL
+2025-06-03 16:16:29,752 - __main__ - INFO - ================================================================================
+2025-06-03 16:16:34,758 - __main__ - INFO - Current SLV price: $31.45
+2025-06-03 16:16:34,760 - __main__ - INFO - Created prediction event:
+2025-06-03 16:16:34,762 - __main__ - INFO -    Symbol: SLV
+2025-06-03 16:16:34,763 - __main__ - INFO -    Signal: BUY
+2025-06-03 16:16:34,764 - __main__ - INFO -    Confidence: 77.0%
+2025-06-03 16:16:34,765 - __main__ - INFO -    Price: $31.45
+2025-06-03 16:16:34,765 - src.rule.engine - INFO - Rule engine started
+2025-06-03 16:16:34,766 - __main__ - INFO - Rule engine started
+2025-06-03 16:16:34,767 - __main__ - INFO - 
+EMITTING PREDICTION EVENT...
+2025-06-03 16:16:34,768 - __main__ - INFO - Prediction event emitted
+2025-06-03 16:16:34,768 - __main__ - INFO - Waiting for initial order creation...
+2025-06-03 16:16:35,779 - src.position.sizer - INFO - BUY position size: 317 shares @ $31.45 = $9969.65 (99.7% of $10000.00 allocation)
+2025-06-03 16:16:35,781 - src.order.base - INFO - Order 0775ce69-46b3-41c3-9e69-ee23add83ecc status changed: created -> pending_submit (Submitting to broker)
+2025-06-03 16:16:35,781 - src.order.manager - INFO - Submitting order 0775ce69-46b3-41c3-9e69-ee23add83ecc to TWS
+2025-06-03 16:16:35,782 - src.order.manager - INFO - Got broker order ID 24 for order 0775ce69-46b3-41c3-9e69-ee23add83ecc
+2025-06-03 16:16:35,782 - src.order.manager - INFO - Calling placeOrder with ID 24, contract 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: MKT BUY 317@0.000000 DAY
+2025-06-03 16:16:35,783 - src.order.manager - INFO - placeOrder called successfully for order 0775ce69-46b3-41c3-9e69-ee23add83ecc
+2025-06-03 16:16:35,784 - src.order.base - INFO - Order 0775ce69-46b3-41c3-9e69-ee23add83ecc status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-03 16:16:35,785 - src.rule.linked_order_actions - INFO - Created new order context for SLV BUY position
+2025-06-03 16:16:35,785 - src.rule.linked_order_actions - INFO - Percentage-based stop: SLV stop at $30.51 (3.0%)
+2025-06-03 16:16:35,792 - src.order.base - INFO - Order c6991883-adbe-4d0b-a4dd-47cbb4f463fe status changed: created -> pending_submit (Submitting to broker)
+2025-06-03 16:16:35,793 - src.order.manager - INFO - Submitting order c6991883-adbe-4d0b-a4dd-47cbb4f463fe to TWS
+2025-06-03 16:16:35,794 - src.order.manager - INFO - Got broker order ID 25 for order c6991883-adbe-4d0b-a4dd-47cbb4f463fe
+2025-06-03 16:16:35,794 - src.order.manager - INFO - Calling placeOrder with ID 25, contract 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: STP SELL 317@0.000000 DAY
+2025-06-03 16:16:35,795 - src.order.manager - INFO - placeOrder called successfully for order c6991883-adbe-4d0b-a4dd-47cbb4f463fe
+2025-06-03 16:16:35,798 - src.order.base - INFO - Order c6991883-adbe-4d0b-a4dd-47cbb4f463fe status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-03 16:16:35,798 - src.rule.linked_order_actions - INFO - Auto-created BUY stop loss c6991883-adbe-4d0b-a4dd-47cbb4f463fe at $30.51
+2025-06-03 16:16:35,799 - src.rule.linked_order_actions - INFO - Percentage-based target: SLV target at $33.34 (6.0%)
+2025-06-03 16:16:35,800 - src.order.base - INFO - Order 12dd7919-cbc1-4d05-b5e5-7bcc0974a9a2 status changed: created -> pending_submit (Submitting to broker)
+2025-06-03 16:16:35,801 - src.order.manager - INFO - Submitting order 12dd7919-cbc1-4d05-b5e5-7bcc0974a9a2 to TWS
+2025-06-03 16:16:35,802 - src.order.manager - INFO - Got broker order ID 26 for order 12dd7919-cbc1-4d05-b5e5-7bcc0974a9a2
+2025-06-03 16:16:35,803 - src.order.manager - INFO - Calling placeOrder with ID 26, contract 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: LMT SELL 317@33.337000 DAY
+2025-06-03 16:16:35,804 - src.order.manager - INFO - placeOrder called successfully for order 12dd7919-cbc1-4d05-b5e5-7bcc0974a9a2
+2025-06-03 16:16:35,808 - src.order.base - INFO - Order 12dd7919-cbc1-4d05-b5e5-7bcc0974a9a2 status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-03 16:16:35,808 - src.rule.linked_order_actions - INFO - Auto-created BUY take profit 12dd7919-cbc1-4d05-b5e5-7bcc0974a9a2 at $33.34
+2025-06-03 16:16:35,809 - __main__ - INFO - 
+NEW ORDER CREATED:
+2025-06-03 16:16:35,809 - __main__ - INFO -    Order ID: 0775ce69-46b3-41c3-9e69-ee23add83ecc
+2025-06-03 16:16:35,810 - __main__ - INFO -    Symbol: SLV
+2025-06-03 16:16:35,810 - __main__ - INFO -    Type: OrderType.MARKET
+2025-06-03 16:16:35,810 - __main__ - INFO -    Quantity: 317
+2025-06-03 16:16:35,811 - __main__ - INFO - 
+ORDER STATUS UPDATE:
+2025-06-03 16:16:35,811 - __main__ - INFO -    Order ID: 0775ce69-46b3-41c3-9e69-ee23add83ecc
+2025-06-03 16:16:35,812 - __main__ - INFO -    Status: pending_submit
+2025-06-03 16:16:35,812 - __main__ - INFO -    Previous: created
+2025-06-03 16:16:35,813 - __main__ - INFO - 
+ORDER STATUS UPDATE:
+2025-06-03 16:16:35,813 - __main__ - INFO -    Order ID: 0775ce69-46b3-41c3-9e69-ee23add83ecc
+2025-06-03 16:16:35,813 - __main__ - INFO -    Status: submitted
+2025-06-03 16:16:35,814 - __main__ - INFO -    Previous: pending_submit
+2025-06-03 16:16:35,814 - __main__ - INFO - 
+NEW ORDER CREATED:
+2025-06-03 16:16:35,814 - __main__ - INFO -    Order ID: c6991883-adbe-4d0b-a4dd-47cbb4f463fe
+2025-06-03 16:16:35,815 - __main__ - INFO -    Symbol: SLV
+2025-06-03 16:16:35,815 - __main__ - INFO -    Type: OrderType.STOP
+2025-06-03 16:16:35,815 - __main__ - INFO -    Quantity: -317
+2025-06-03 16:16:35,816 - __main__ - INFO -    Stop Price: $30.51
+2025-06-03 16:16:35,816 - __main__ - INFO - 
+ORDER STATUS UPDATE:
+2025-06-03 16:16:35,816 - __main__ - INFO -    Order ID: c6991883-adbe-4d0b-a4dd-47cbb4f463fe
+2025-06-03 16:16:35,817 - __main__ - INFO -    Status: pending_submit
+2025-06-03 16:16:35,817 - __main__ - INFO -    Previous: created
+2025-06-03 16:16:35,817 - __main__ - INFO - 
+ORDER STATUS UPDATE:
+2025-06-03 16:16:35,818 - __main__ - INFO -    Order ID: c6991883-adbe-4d0b-a4dd-47cbb4f463fe
+2025-06-03 16:16:35,818 - __main__ - INFO -    Status: submitted
+2025-06-03 16:16:35,818 - __main__ - INFO -    Previous: pending_submit
+2025-06-03 16:16:35,818 - __main__ - INFO - 
+NEW ORDER CREATED:
+2025-06-03 16:16:35,818 - __main__ - INFO -    Order ID: 12dd7919-cbc1-4d05-b5e5-7bcc0974a9a2
+2025-06-03 16:16:35,819 - __main__ - INFO -    Symbol: SLV
+2025-06-03 16:16:35,819 - __main__ - INFO -    Type: OrderType.LIMIT
+2025-06-03 16:16:35,820 - __main__ - INFO -    Quantity: -317
+2025-06-03 16:16:35,821 - __main__ - INFO -    Limit Price: $33.34
+2025-06-03 16:16:35,821 - __main__ - INFO - 
+ORDER STATUS UPDATE:
+2025-06-03 16:16:35,822 - __main__ - INFO -    Order ID: 12dd7919-cbc1-4d05-b5e5-7bcc0974a9a2
+2025-06-03 16:16:35,824 - __main__ - INFO -    Status: pending_submit
+2025-06-03 16:16:35,827 - __main__ - INFO -    Previous: created
+2025-06-03 16:16:35,828 - __main__ - INFO - 
+ORDER STATUS UPDATE:
+2025-06-03 16:16:35,828 - __main__ - INFO -    Order ID: 12dd7919-cbc1-4d05-b5e5-7bcc0974a9a2
+2025-06-03 16:16:35,828 - __main__ - INFO -    Status: submitted
+2025-06-03 16:16:35,828 - __main__ - INFO -    Previous: pending_submit
+2025-06-03 16:16:35,835 - src.tws_connection - WARNING - ⚠️ TWS Error 110: The price does not conform to the minimum price variation for this contract. (reqId: 25)
+2025-06-03 16:16:35,837 - src.tws_connection - WARNING - ⚠️ TWS Error 110: The price does not conform to the minimum price variation for this contract. (reqId: 26)
+2025-06-03 16:16:35,876 - src.tws_connection - WARNING - ⚠️ TWS Error 399: Order Message: BUY 317 SLV ARCA Warning: Your order will not be placed at the exchange until 2025-06-04 09:30:00 US/Eastern. (reqId: 24)
+2025-06-03 16:16:35,877 - src.tws_connection - INFO - Open Order - ID: 24, Symbol: SLV, Action: BUY, Quantity: 317.0
+2025-06-03 16:16:35,878 - src.tws_connection - INFO - Disconnecting from TWS
+2025-06-03 16:16:35,879 - src.tws_connection - INFO - ⚠️ Connection to TWS closed
+2025-06-03 16:16:35,880 - src.tws_connection - INFO - ✅ Disconnect request sent
+2025-06-03 16:16:35,881 - src.tws_connection - ERROR - Connection thread: Error - no running event loop
+2025-06-03 16:16:36,321 - src.price.service - WARNING - TWS not connected - cannot get price
+2025-06-03 16:16:36,327 - src.rule.linked_order_actions - ERROR - Could not get current price for SLV
+2025-06-03 16:16:36,328 - src.rule.linked_order_actions - ERROR - Could not calculate double down parameters for SLV
+2025-06-03 16:16:36,328 - src.rule.linked_order_actions - WARNING - Failed to create double down order for SLV
+2025-06-03 16:16:36,329 - src.rule.linked_order_actions - INFO - Created and linked BUY main order 0775ce69-46b3-41c3-9e69-ee23add83ecc for SLV
+2025-06-03 16:16:37,777 - __main__ - INFO - 
+Waiting for order processing...
+2025-06-03 16:16:42,793 - __main__ - INFO - 
+================================================================================
+2025-06-03 16:16:42,794 - __main__ - INFO - VERIFYING ORDERS CREATED
+2025-06-03 16:16:42,795 - __main__ - INFO - ================================================================================
+2025-06-03 16:16:42,795 - __main__ - WARNING - No SLV context found!
+2025-06-03 16:16:42,795 - __main__ - INFO - 
+ORDERS SUMMARY:
+2025-06-03 16:16:42,796 - __main__ - INFO -    Total orders created: 3
+2025-06-03 16:16:42,796 - __main__ - INFO -    Market orders: 1
+2025-06-03 16:16:42,796 - __main__ - INFO -    Stop orders: 1
+2025-06-03 16:16:42,796 - __main__ - INFO -    Limit orders: 1
+2025-06-03 16:16:42,797 - __main__ - WARNING - 
+WARNING: Expected 4 orders but got 3
+2025-06-03 16:16:42,797 - __main__ - INFO - 
+DETAILED ORDER LIST:
+2025-06-03 16:16:42,797 - __main__ - INFO - 
+   Order #1:
+2025-06-03 16:16:42,797 - __main__ - INFO -      ID: 0775ce69-46b3-41c3-9e69-ee23add83ecc
+2025-06-03 16:16:42,797 - __main__ - INFO -      Type: market
+2025-06-03 16:16:42,798 - __main__ - INFO -      Quantity: 317
+2025-06-03 16:16:42,798 - __main__ - INFO - 
+   Order #2:
+2025-06-03 16:16:42,798 - __main__ - INFO -      ID: c6991883-adbe-4d0b-a4dd-47cbb4f463fe
+2025-06-03 16:16:42,798 - __main__ - INFO -      Type: stop
+2025-06-03 16:16:42,798 - __main__ - INFO -      Quantity: -317
+2025-06-03 16:16:42,799 - __main__ - INFO -      Stop: $30.51
+2025-06-03 16:16:42,799 - __main__ - INFO - 
+   Order #3:
+2025-06-03 16:16:42,799 - __main__ - INFO -      ID: 12dd7919-cbc1-4d05-b5e5-7bcc0974a9a2
+2025-06-03 16:16:42,799 - __main__ - INFO -      Type: limit
+2025-06-03 16:16:42,799 - __main__ - INFO -      Quantity: -317
+2025-06-03 16:16:42,800 - __main__ - INFO -      Limit: $33.34
+2025-06-03 16:16:42,800 - __main__ - INFO - 
+Monitoring for 10 seconds...
+2025-06-03 16:16:52,814 - __main__ - INFO - 
+================================================================================
+2025-06-03 16:16:52,816 - __main__ - INFO - CLEANING UP TEST
+2025-06-03 16:16:52,816 - __main__ - INFO - ================================================================================
+2025-06-03 16:16:52,817 - __main__ - INFO - Cancelling 3 test orders...
+2025-06-03 16:16:52,817 - src.order.base - INFO - Order 0775ce69-46b3-41c3-9e69-ee23add83ecc status changed: submitted -> pending_cancel (Test cleanup)
+2025-06-03 16:16:52,818 - src.order.manager - INFO - Cancelling order 0775ce69-46b3-41c3-9e69-ee23add83ecc with broker ID 24
+2025-06-03 16:16:52,818 - src.tws_connection - ERROR - ❌ TWS connection error 504: Not connected
+2025-06-03 16:16:52,819 - __main__ - INFO -    Cancelled order 0775ce69-46b3-41c3-9e69-ee23add83ecc
+2025-06-03 16:16:52,819 - src.order.base - INFO - Order c6991883-adbe-4d0b-a4dd-47cbb4f463fe status changed: submitted -> pending_cancel (Test cleanup)
+2025-06-03 16:16:52,820 - src.order.manager - INFO - Cancelling order c6991883-adbe-4d0b-a4dd-47cbb4f463fe with broker ID 25
+2025-06-03 16:16:52,821 - src.tws_connection - ERROR - ❌ TWS connection error 504: Not connected
+2025-06-03 16:16:52,821 - __main__ - INFO -    Cancelled order c6991883-adbe-4d0b-a4dd-47cbb4f463fe
+2025-06-03 16:16:52,821 - src.order.base - INFO - Order 12dd7919-cbc1-4d05-b5e5-7bcc0974a9a2 status changed: submitted -> pending_cancel (Test cleanup)
+2025-06-03 16:16:52,825 - src.order.manager - INFO - Cancelling order 12dd7919-cbc1-4d05-b5e5-7bcc0974a9a2 with broker ID 26
+2025-06-03 16:16:52,826 - src.tws_connection - ERROR - ❌ TWS connection error 504: Not connected
+2025-06-03 16:16:52,826 - __main__ - INFO -    Cancelled order 12dd7919-cbc1-4d05-b5e5-7bcc0974a9a2
+2025-06-03 16:16:52,827 - src.rule.engine - INFO - Rule engine stopped
+2025-06-03 16:16:52,827 - __main__ - INFO - Rule engine stopped
+2025-06-03 16:16:52,828 - __main__ - INFO - 
+Test cleanup complete
+2025-06-03 16:16:52,828 - __main__ - INFO - 
+================================================================================
+2025-06-03 16:16:52,828 - __main__ - INFO - TEST COMPLETE
+2025-06-03 16:16:52,829 - __main__ - INFO - ================================================================================
+2025-06-03 16:21:11,678 - __main__ - INFO - ================================================================================
+2025-06-03 16:21:11,678 - __main__ - INFO - INITIALIZING SLV BUY FLOW TEST
+2025-06-03 16:21:11,679 - __main__ - INFO - ================================================================================
+2025-06-03 16:21:11,679 - __main__ - INFO - Event bus created
+2025-06-03 16:21:11,680 - __main__ - INFO - Subscribed to order events
+2025-06-03 16:21:11,680 - __main__ - INFO - TWS Config: host=127.0.0.1, port=7497, client_id=1
+2025-06-03 16:21:11,683 - __main__ - INFO - Connecting to TWS...
+2025-06-03 16:21:11,684 - src.tws_connection - INFO - Connecting to TWS at 127.0.0.1:7497
+2025-06-03 16:21:11,685 - src.tws_connection - INFO - Connection thread: Connecting to 127.0.0.1:7497 (client ID: 1)
+2025-06-03 16:21:13,912 - src.tws_connection - INFO - ✅ Connection acknowledged by TWS
+2025-06-03 16:21:13,913 - src.tws_connection - INFO - Connection thread: Socket connected, starting message loop
+2025-06-03 16:21:13,936 - src.tws_connection - INFO - ✅ Next valid order ID received: 27
+2025-06-03 16:21:13,937 - src.tws_connection - INFO - ✅ TWS connection fully established
+2025-06-03 16:21:13,937 - src.tws_connection - INFO - Requesting additional order IDs from TWS
+2025-06-03 16:21:13,938 - src.tws_connection - INFO - ✅ Next valid order ID received: 27
+2025-06-03 16:21:13,939 - src.tws_connection - INFO - ✅ Next valid order ID received: 27
+2025-06-03 16:21:13,939 - src.tws_connection - INFO - ✅ Successfully connected to TWS
+2025-06-03 16:21:13,940 - __main__ - INFO - Connected to TWS successfully
+2025-06-03 16:21:13,941 - src.order.manager - INFO - OrderManager callbacks set up with TWSConnection
+2025-06-03 16:21:13,941 - src.position.tracker - INFO - PositionTracker async initialization completed
+2025-06-03 16:21:13,941 - __main__ - INFO - Order manager and position tracker initialized
+2025-06-03 16:21:13,941 - __main__ - INFO - Rule engine context configured
+2025-06-03 16:21:13,942 - src.rule.linked_order_actions - INFO - LinkedOrderConclusionManager initialized - monitoring for position conclusions
+2025-06-03 16:21:13,942 - __main__ - INFO - Order conclusion manager initialized
+2025-06-03 16:21:13,942 - LinkedDoubleDownFillManager - INFO - LinkedDoubleDownFillManager initialized
+2025-06-03 16:21:13,943 - __main__ - INFO - Double down fill manager initialized
+2025-06-03 16:21:13,943 - __main__ - INFO - 
+================================================================================
+2025-06-03 16:21:13,943 - __main__ - INFO - SETTING UP SLV BUY RULE
+2025-06-03 16:21:13,944 - __main__ - INFO - ================================================================================
+2025-06-03 16:21:13,944 - __main__ - INFO - Created BUY condition (threshold: 50%)
+2025-06-03 16:21:13,945 - __main__ - INFO - Created BUY action ($10K allocation, 3% stop, 6% target)
+2025-06-03 16:21:13,945 - __main__ - INFO - Registered rule: slv_buy_test_rule
+2025-06-03 16:21:13,945 - __main__ - INFO - 
+================================================================================
+2025-06-03 16:21:13,946 - __main__ - INFO - SIMULATING SLV BUY SIGNAL
+2025-06-03 16:21:13,946 - __main__ - INFO - ================================================================================
+2025-06-03 16:21:18,953 - __main__ - INFO - Current SLV price: $31.45
+2025-06-03 16:21:18,959 - __main__ - INFO - Created prediction event:
+2025-06-03 16:21:18,961 - __main__ - INFO -    Symbol: SLV
+2025-06-03 16:21:18,962 - __main__ - INFO -    Signal: BUY
+2025-06-03 16:21:18,962 - __main__ - INFO -    Confidence: 77.0%
+2025-06-03 16:21:18,963 - __main__ - INFO -    Price: $31.45
+2025-06-03 16:21:18,963 - src.rule.engine - INFO - Rule engine started
+2025-06-03 16:21:18,964 - __main__ - INFO - Rule engine started
+2025-06-03 16:21:18,964 - __main__ - INFO - 
+EMITTING PREDICTION EVENT...
+2025-06-03 16:21:18,965 - __main__ - INFO - Prediction event emitted
+2025-06-03 16:21:18,968 - __main__ - INFO - Waiting for initial order creation...
+2025-06-03 16:21:19,981 - src.position.sizer - INFO - BUY position size: 317 shares @ $31.45 = $9969.65 (99.7% of $10000.00 allocation)
+2025-06-03 16:21:19,987 - src.order.base - INFO - Order 886d2197-0bee-4b59-81ff-3cc29dce0655 status changed: created -> pending_submit (Submitting to broker)
+2025-06-03 16:21:19,988 - src.order.manager - INFO - Submitting order 886d2197-0bee-4b59-81ff-3cc29dce0655 to TWS
+2025-06-03 16:21:19,989 - src.order.manager - INFO - Got broker order ID 27 for order 886d2197-0bee-4b59-81ff-3cc29dce0655
+2025-06-03 16:21:19,989 - src.order.manager - INFO - Calling placeOrder with ID 27, contract 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: MKT BUY 317@0.000000 DAY
+2025-06-03 16:21:19,991 - src.order.manager - INFO - placeOrder called successfully for order 886d2197-0bee-4b59-81ff-3cc29dce0655
+2025-06-03 16:21:19,991 - src.order.base - INFO - Order 886d2197-0bee-4b59-81ff-3cc29dce0655 status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-03 16:21:19,992 - src.rule.linked_order_actions - INFO - Created new order context for SLV BUY position
+2025-06-03 16:21:19,992 - src.rule.linked_order_actions - INFO - Percentage-based stop: SLV stop at $30.51 (3.0%)
+2025-06-03 16:21:19,993 - src.order.base - INFO - Order 24cc93dc-6ae6-4636-b571-1718a7a8e9bc status changed: created -> pending_submit (Submitting to broker)
+2025-06-03 16:21:19,994 - src.order.manager - INFO - Submitting order 24cc93dc-6ae6-4636-b571-1718a7a8e9bc to TWS
+2025-06-03 16:21:19,995 - src.order.manager - INFO - Got broker order ID 28 for order 24cc93dc-6ae6-4636-b571-1718a7a8e9bc
+2025-06-03 16:21:19,996 - src.order.manager - INFO - Calling placeOrder with ID 28, contract 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: STP SELL 317@0.000000 DAY
+2025-06-03 16:21:19,997 - src.order.manager - INFO - placeOrder called successfully for order 24cc93dc-6ae6-4636-b571-1718a7a8e9bc
+2025-06-03 16:21:19,998 - src.order.base - INFO - Order 24cc93dc-6ae6-4636-b571-1718a7a8e9bc status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-03 16:21:19,999 - src.rule.linked_order_actions - INFO - Auto-created BUY stop loss 24cc93dc-6ae6-4636-b571-1718a7a8e9bc at $30.51
+2025-06-03 16:21:20,001 - src.rule.linked_order_actions - INFO - Percentage-based target: SLV target at $33.34 (6.0%)
+2025-06-03 16:21:20,003 - src.order.base - INFO - Order af242bf1-c8d7-446d-ac94-00f8780c197e status changed: created -> pending_submit (Submitting to broker)
+2025-06-03 16:21:20,004 - src.order.manager - INFO - Submitting order af242bf1-c8d7-446d-ac94-00f8780c197e to TWS
+2025-06-03 16:21:20,004 - src.order.manager - INFO - Got broker order ID 29 for order af242bf1-c8d7-446d-ac94-00f8780c197e
+2025-06-03 16:21:20,005 - src.order.manager - INFO - Calling placeOrder with ID 29, contract 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: LMT SELL 317@33.340000 DAY
+2025-06-03 16:21:20,005 - src.order.manager - INFO - placeOrder called successfully for order af242bf1-c8d7-446d-ac94-00f8780c197e
+2025-06-03 16:21:20,006 - src.order.base - INFO - Order af242bf1-c8d7-446d-ac94-00f8780c197e status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-03 16:21:20,007 - src.rule.linked_order_actions - INFO - Auto-created BUY take profit af242bf1-c8d7-446d-ac94-00f8780c197e at $33.34
+2025-06-03 16:21:20,009 - __main__ - INFO - 
+NEW ORDER CREATED:
+2025-06-03 16:21:20,010 - __main__ - INFO -    Order ID: 886d2197-0bee-4b59-81ff-3cc29dce0655
+2025-06-03 16:21:20,010 - __main__ - INFO -    Symbol: SLV
+2025-06-03 16:21:20,010 - __main__ - INFO -    Type: OrderType.MARKET
+2025-06-03 16:21:20,011 - __main__ - INFO -    Quantity: 317
+2025-06-03 16:21:20,011 - __main__ - INFO - 
+ORDER STATUS UPDATE:
+2025-06-03 16:21:20,011 - __main__ - INFO -    Order ID: 886d2197-0bee-4b59-81ff-3cc29dce0655
+2025-06-03 16:21:20,012 - __main__ - INFO -    Status: pending_submit
+2025-06-03 16:21:20,012 - __main__ - INFO -    Previous: created
+2025-06-03 16:21:20,012 - __main__ - INFO - 
+ORDER STATUS UPDATE:
+2025-06-03 16:21:20,013 - __main__ - INFO -    Order ID: 886d2197-0bee-4b59-81ff-3cc29dce0655
+2025-06-03 16:21:20,013 - __main__ - INFO -    Status: submitted
+2025-06-03 16:21:20,013 - __main__ - INFO -    Previous: pending_submit
+2025-06-03 16:21:20,013 - __main__ - INFO - 
+NEW ORDER CREATED:
+2025-06-03 16:21:20,014 - __main__ - INFO -    Order ID: 24cc93dc-6ae6-4636-b571-1718a7a8e9bc
+2025-06-03 16:21:20,014 - __main__ - INFO -    Symbol: SLV
+2025-06-03 16:21:20,014 - __main__ - INFO -    Type: OrderType.STOP
+2025-06-03 16:21:20,015 - __main__ - INFO -    Quantity: -317
+2025-06-03 16:21:20,015 - __main__ - INFO -    Stop Price: $30.51
+2025-06-03 16:21:20,015 - __main__ - INFO - 
+ORDER STATUS UPDATE:
+2025-06-03 16:21:20,017 - __main__ - INFO -    Order ID: 24cc93dc-6ae6-4636-b571-1718a7a8e9bc
+2025-06-03 16:21:20,017 - __main__ - INFO -    Status: pending_submit
+2025-06-03 16:21:20,018 - __main__ - INFO -    Previous: created
+2025-06-03 16:21:20,018 - __main__ - INFO - 
+ORDER STATUS UPDATE:
+2025-06-03 16:21:20,018 - __main__ - INFO -    Order ID: 24cc93dc-6ae6-4636-b571-1718a7a8e9bc
+2025-06-03 16:21:20,019 - __main__ - INFO -    Status: submitted
+2025-06-03 16:21:20,019 - __main__ - INFO -    Previous: pending_submit
+2025-06-03 16:21:20,019 - __main__ - INFO - 
+NEW ORDER CREATED:
+2025-06-03 16:21:20,020 - __main__ - INFO -    Order ID: af242bf1-c8d7-446d-ac94-00f8780c197e
+2025-06-03 16:21:20,020 - __main__ - INFO -    Symbol: SLV
+2025-06-03 16:21:20,020 - __main__ - INFO -    Type: OrderType.LIMIT
+2025-06-03 16:21:20,020 - __main__ - INFO -    Quantity: -317
+2025-06-03 16:21:20,021 - __main__ - INFO -    Limit Price: $33.34
+2025-06-03 16:21:20,021 - __main__ - INFO - 
+ORDER STATUS UPDATE:
+2025-06-03 16:21:20,022 - __main__ - INFO -    Order ID: af242bf1-c8d7-446d-ac94-00f8780c197e
+2025-06-03 16:21:20,022 - __main__ - INFO -    Status: pending_submit
+2025-06-03 16:21:20,022 - __main__ - INFO -    Previous: created
+2025-06-03 16:21:20,022 - __main__ - INFO - 
+ORDER STATUS UPDATE:
+2025-06-03 16:21:20,023 - __main__ - INFO -    Order ID: af242bf1-c8d7-446d-ac94-00f8780c197e
+2025-06-03 16:21:20,023 - __main__ - INFO -    Status: submitted
+2025-06-03 16:21:20,023 - __main__ - INFO -    Previous: pending_submit
+2025-06-03 16:21:20,085 - src.tws_connection - WARNING - ⚠️ TWS Error 399: Order Message: BUY 317 SLV ARCA Warning: Your order will not be placed at the exchange until 2025-06-04 09:30:00 US/Eastern. (reqId: 27)
+2025-06-03 16:21:20,086 - src.tws_connection - INFO - Open Order - ID: 27, Symbol: SLV, Action: BUY, Quantity: 317.0
+2025-06-03 16:21:20,087 - src.tws_connection - INFO - Disconnecting from TWS
+2025-06-03 16:21:20,087 - src.tws_connection - INFO - ⚠️ Connection to TWS closed
+2025-06-03 16:21:20,089 - src.tws_connection - INFO - ✅ Disconnect request sent
+2025-06-03 16:21:20,089 - src.tws_connection - ERROR - Connection thread: Error - no running event loop
+2025-06-03 16:21:20,543 - src.price.service - WARNING - TWS not connected - cannot get price
+2025-06-03 16:21:20,543 - src.rule.linked_order_actions - ERROR - Could not get current price for SLV
+2025-06-03 16:21:20,543 - src.rule.linked_order_actions - ERROR - Could not calculate double down parameters for SLV
+2025-06-03 16:21:20,544 - src.rule.linked_order_actions - WARNING - Failed to create double down order for SLV
+2025-06-03 16:21:20,544 - src.rule.linked_order_actions - INFO - Created and linked BUY main order 886d2197-0bee-4b59-81ff-3cc29dce0655 for SLV
+2025-06-03 16:21:21,987 - __main__ - INFO - 
+Waiting for order processing...
+2025-06-03 16:21:26,996 - __main__ - INFO - 
+================================================================================
+2025-06-03 16:21:26,996 - __main__ - INFO - VERIFYING ORDERS CREATED
+2025-06-03 16:21:26,997 - __main__ - INFO - ================================================================================
+2025-06-03 16:21:26,998 - __main__ - WARNING - No SLV context found!
+2025-06-03 16:21:26,998 - __main__ - INFO - 
+ORDERS SUMMARY:
+2025-06-03 16:21:26,999 - __main__ - INFO -    Total orders created: 3
+2025-06-03 16:21:27,002 - __main__ - INFO -    Market orders: 1
+2025-06-03 16:21:27,003 - __main__ - INFO -    Stop orders: 1
+2025-06-03 16:21:27,004 - __main__ - INFO -    Limit orders: 1
+2025-06-03 16:21:27,005 - __main__ - WARNING - 
+WARNING: Expected 4 orders but got 3
+2025-06-03 16:21:27,005 - __main__ - INFO - 
+DETAILED ORDER LIST:
+2025-06-03 16:21:27,005 - __main__ - INFO - 
+   Order #1:
+2025-06-03 16:21:27,006 - __main__ - INFO -      ID: 886d2197-0bee-4b59-81ff-3cc29dce0655
+2025-06-03 16:21:27,006 - __main__ - INFO -      Type: market
+2025-06-03 16:21:27,007 - __main__ - INFO -      Quantity: 317
+2025-06-03 16:21:27,007 - __main__ - INFO - 
+   Order #2:
+2025-06-03 16:21:27,007 - __main__ - INFO -      ID: 24cc93dc-6ae6-4636-b571-1718a7a8e9bc
+2025-06-03 16:21:27,008 - __main__ - INFO -      Type: stop
+2025-06-03 16:21:27,008 - __main__ - INFO -      Quantity: -317
+2025-06-03 16:21:27,009 - __main__ - INFO -      Stop: $30.51
+2025-06-03 16:21:27,011 - __main__ - INFO - 
+   Order #3:
+2025-06-03 16:21:27,012 - __main__ - INFO -      ID: af242bf1-c8d7-446d-ac94-00f8780c197e
+2025-06-03 16:21:27,013 - __main__ - INFO -      Type: limit
+2025-06-03 16:21:27,014 - __main__ - INFO -      Quantity: -317
+2025-06-03 16:21:27,014 - __main__ - INFO -      Limit: $33.34
+2025-06-03 16:21:27,014 - __main__ - INFO - 
+Monitoring for 10 seconds...
+2025-06-03 16:21:37,021 - __main__ - INFO - 
+================================================================================
+2025-06-03 16:21:37,021 - __main__ - INFO - CLEANING UP TEST
+2025-06-03 16:21:37,022 - __main__ - INFO - ================================================================================
+2025-06-03 16:21:37,022 - __main__ - INFO - Cancelling 3 test orders...
+2025-06-03 16:21:37,023 - src.order.base - INFO - Order 886d2197-0bee-4b59-81ff-3cc29dce0655 status changed: submitted -> pending_cancel (Test cleanup)
+2025-06-03 16:21:37,023 - src.order.manager - INFO - Cancelling order 886d2197-0bee-4b59-81ff-3cc29dce0655 with broker ID 27
+2025-06-03 16:21:37,023 - src.tws_connection - ERROR - ❌ TWS connection error 504: Not connected
+2025-06-03 16:21:37,024 - __main__ - INFO -    Cancelled order 886d2197-0bee-4b59-81ff-3cc29dce0655
+2025-06-03 16:21:37,024 - src.order.base - INFO - Order 24cc93dc-6ae6-4636-b571-1718a7a8e9bc status changed: submitted -> pending_cancel (Test cleanup)
+2025-06-03 16:21:37,025 - src.order.manager - INFO - Cancelling order 24cc93dc-6ae6-4636-b571-1718a7a8e9bc with broker ID 28
+2025-06-03 16:21:37,025 - src.tws_connection - ERROR - ❌ TWS connection error 504: Not connected
+2025-06-03 16:21:37,025 - __main__ - INFO -    Cancelled order 24cc93dc-6ae6-4636-b571-1718a7a8e9bc
+2025-06-03 16:21:37,026 - src.order.base - INFO - Order af242bf1-c8d7-446d-ac94-00f8780c197e status changed: submitted -> pending_cancel (Test cleanup)
+2025-06-03 16:21:37,027 - src.order.manager - INFO - Cancelling order af242bf1-c8d7-446d-ac94-00f8780c197e with broker ID 29
+2025-06-03 16:21:37,027 - src.tws_connection - ERROR - ❌ TWS connection error 504: Not connected
+2025-06-03 16:21:37,028 - __main__ - INFO -    Cancelled order af242bf1-c8d7-446d-ac94-00f8780c197e
+2025-06-03 16:21:37,028 - src.rule.engine - INFO - Rule engine stopped
+2025-06-03 16:21:37,028 - __main__ - INFO - Rule engine stopped
+2025-06-03 16:21:37,029 - __main__ - INFO - 
+Test cleanup complete
+2025-06-03 16:21:37,029 - __main__ - INFO - 
+================================================================================
+2025-06-03 16:21:37,029 - __main__ - INFO - TEST COMPLETE
+2025-06-03 16:21:37,029 - __main__ - INFO - ================================================================================

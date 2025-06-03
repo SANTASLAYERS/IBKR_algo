@@ -441,11 +441,14 @@ class LinkedCreateOrderAction(Action):
             logger.info(f"Percentage-based stop: {self.symbol} stop at ${stop_price:.2f} ({self.stop_loss_pct:.1%})")
         
         if stop_price is not None:
+            # Round to 2 decimal places for proper tick size
+            stop_price = round(stop_price, 2)
             stop_order = await order_manager.create_order(
                 symbol=self.symbol,
                 quantity=stop_quantity,
                 order_type=OrderType.STOP,
-                stop_price=stop_price
+                stop_price=stop_price,
+                auto_submit=True  # Submit immediately
             )
             
             LinkedOrderManager.add_order(context, self.symbol, stop_order.order_id, "stop", self.side)
@@ -475,11 +478,14 @@ class LinkedCreateOrderAction(Action):
             logger.info(f"Percentage-based target: {self.symbol} target at ${target_price:.2f} ({self.take_profit_pct:.1%})")
         
         if target_price is not None:
+            # Round to 2 decimal places for proper tick size
+            target_price = round(target_price, 2)
             target_order = await order_manager.create_order(
                 symbol=self.symbol,
                 quantity=target_quantity,
                 order_type=OrderType.LIMIT,
-                limit_price=target_price
+                limit_price=target_price,
+                auto_submit=True  # Submit immediately
             )
             
             LinkedOrderManager.add_order(context, self.symbol, target_order.order_id, "target", self.side)
@@ -618,12 +624,16 @@ class LinkedScaleInAction(Action):
             else:  # Short position
                 new_stop_price = new_avg_price * 1.03  # 3% stop loss above
                 stop_quantity = abs(new_quantity)   # Buy to close
+            
+            # Round to 2 decimal places
+            new_stop_price = round(new_stop_price, 2)
                 
             new_stop = await order_manager.create_order(
                 symbol=self.symbol,
                 quantity=stop_quantity,
                 order_type=OrderType.STOP,
-                stop_price=new_stop_price
+                stop_price=new_stop_price,
+                auto_submit=True  # Submit immediately
             )
             LinkedOrderManager.add_order(context, self.symbol, new_stop.order_id, "stop", side)
             logger.info(f"Updated {side} stop loss to {new_stop_price:.2f} after scale-in")
@@ -641,12 +651,16 @@ class LinkedScaleInAction(Action):
             else:  # Short position
                 new_target_price = new_avg_price * 0.92  # 8% profit target below
                 target_quantity = abs(new_quantity)   # Buy to close
+            
+            # Round to 2 decimal places
+            new_target_price = round(new_target_price, 2)
                 
             new_target = await order_manager.create_order(
                 symbol=self.symbol,
                 quantity=target_quantity,
                 order_type=OrderType.LIMIT,
-                limit_price=new_target_price
+                limit_price=new_target_price,
+                auto_submit=True  # Submit immediately
             )
             LinkedOrderManager.add_order(context, self.symbol, new_target.order_id, "target", side)
             logger.info(f"Updated {side} take profit to {new_target_price:.2f} after scale-in")
@@ -763,7 +777,8 @@ class LinkedDoubleDownAction(Action):
                 symbol=self.symbol,
                 quantity=double_down_quantity,  # Positive for BUY, negative for SELL
                 order_type=OrderType.LIMIT,
-                limit_price=double_down_price
+                limit_price=double_down_price,
+                auto_submit=True  # Submit immediately
             )
             
             # Link the double down order
@@ -821,6 +836,9 @@ class LinkedDoubleDownAction(Action):
             else:  # SELL
                 # For short positions: place limit sell above current price
                 double_down_price = current_price + double_down_distance
+            
+            # Round to 2 decimal places for proper tick size
+            double_down_price = round(double_down_price, 2)
             
             # Calculate double down quantity based on original position size
             original_quantity = abs(position_info.get("quantity", 0))
@@ -990,13 +1008,17 @@ class LinkedDoubleDownFillManager:
             # For short positions, stop/target orders are buy orders (positive quantity)
             order_quantity = abs(new_quantity)
         
+        # Round to 2 decimal places
+        stop_price = round(stop_price, 2)
+        target_price = round(target_price, 2)
+        
         # Create new stop order
         stop_order = await order_manager.create_order(
             symbol=symbol,
             quantity=order_quantity,
             order_type=OrderType.STOP,
             stop_price=stop_price,
-            time_in_force="GTC"
+            auto_submit=True  # Submit immediately
         )
         
         if stop_order:
@@ -1010,7 +1032,7 @@ class LinkedDoubleDownFillManager:
             quantity=order_quantity,
             order_type=OrderType.LIMIT,
             limit_price=target_price,
-            time_in_force="GTC"
+            auto_submit=True  # Submit immediately
         )
         
         if target_order:

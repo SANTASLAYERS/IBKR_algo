@@ -310,9 +310,10 @@ class OrderManager:
                 # Get next valid order ID from TWS
                 broker_order_id = self.gateway.get_next_order_id()
                 if not broker_order_id:
-                    # If no order ID available, try to get one
-                    self.gateway.request_next_order_id()
-                    await asyncio.sleep(1)  # Wait for order ID
+                    # If no order ID available, request more from TWS
+                    logger.info("No order ID available, requesting more from TWS")
+                    self.gateway.request_next_order_id(10)  # Request 10 more IDs
+                    await asyncio.sleep(0.5)  # Wait for order IDs
                     broker_order_id = self.gateway.get_next_order_id()
 
                 if not broker_order_id:

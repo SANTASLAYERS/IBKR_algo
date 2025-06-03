@@ -247,6 +247,10 @@ class TWSConnection(EWrapper, EClient):
             self._connected = True
             logger.info("✅ TWS connection fully established")
             
+            # Request more order IDs proactively
+            logger.info("Requesting additional order IDs from TWS")
+            self.reqIds(50)  # Request 50 order IDs upfront
+            
             # Call user callback if set
             if self._on_connected:
                 try:
