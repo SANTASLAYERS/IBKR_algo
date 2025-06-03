@@ -360,10 +360,10 @@ class SLVBuyFlowTest:
             await self.rule_engine.stop()
             logger.info("Rule engine stopped")
         
-        # Disconnect TWS
-        if self.tws_connection and self.tws_connection.is_connected():
-            self.tws_connection.disconnect()
-            logger.info("Disconnected from TWS")
+        # Disconnect TWS - moved to end of main() to keep connection alive
+        # if self.tws_connection and self.tws_connection.is_connected():
+        #     self.tws_connection.disconnect()
+        #     logger.info("Disconnected from TWS")
         
         logger.info("\nTest cleanup complete")
 
@@ -400,6 +400,12 @@ async def main():
     finally:
         # Always cleanup
         await test.cleanup()
+        
+        # Disconnect TWS at the very end
+        if test.tws_connection and test.tws_connection.is_connected():
+            test.tws_connection.disconnect()
+            logger.info("Disconnected from TWS")
+        
         logger.info("\n" + "=" * 80)
         logger.info("TEST COMPLETE")
         logger.info("=" * 80)

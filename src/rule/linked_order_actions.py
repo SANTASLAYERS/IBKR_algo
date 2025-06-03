@@ -494,11 +494,15 @@ class LinkedCreateOrderAction(Action):
     async def _create_double_down_orders(self, context: Dict[str, Any], actual_shares):
         """Create double down limit orders automatically after entry."""
         try:
+            logger.info(f"Starting double down order creation for {self.symbol}")
+            
             # Wait a bit for stop orders to be created
             await asyncio.sleep(0.5)
             
             # Check if stop orders exist now
             stop_orders = LinkedOrderManager.get_linked_orders(context, self.symbol, "stop")
+            logger.info(f"Found {len(stop_orders)} stop orders for {self.symbol}: {stop_orders}")
+            
             if not stop_orders:
                 logger.warning(f"No stop orders found yet for {self.symbol}, skipping double down creation")
                 return
@@ -512,6 +516,7 @@ class LinkedCreateOrderAction(Action):
             )
             
             # Execute double down creation
+            logger.info(f"Executing double down action for {self.symbol}")
             success = await double_down_action.execute(context)
             if success:
                 logger.info(f"Auto-created double down order for {self.symbol}")
@@ -519,7 +524,7 @@ class LinkedCreateOrderAction(Action):
                 logger.warning(f"Failed to create double down order for {self.symbol}")
                 
         except Exception as e:
-            logger.error(f"Error creating double down orders for {self.symbol}: {e}")
+            logger.error(f"Error creating double down orders for {self.symbol}: {e}", exc_info=True)
 
 
 class LinkedScaleInAction(Action):
@@ -797,11 +802,20 @@ class LinkedDoubleDownAction(Action):
         try:
             # Get current price
             price_service = context.get("price_service")
-            if not price_service:
-                logger.error("Price service not available")
-                return None, None
+            current_price = None
+            
+            if price_service:
+                try:
+                    current_price = await price_service.get_price(self.symbol)
+                except Exception as e:
+                    logger.warning(f"Price service failed for {self.symbol}: {e}")
+            
+            # Fall back to context price if price service failed
+            if not current_price:
+                current_price = context.get("prices", {}).get(self.symbol)
+                if current_price:
+                    logger.info(f"Using context price for {self.symbol}: ${current_price:.2f}")
                 
-            current_price = await price_service.get_price(self.symbol)
             if not current_price:
                 logger.error(f"Could not get current price for {self.symbol}")
                 return None, None

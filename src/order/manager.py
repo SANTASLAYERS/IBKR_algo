@@ -63,10 +63,17 @@ class OrderManager:
     async def initialize(self):
         """Initialize the OrderManager and set up TWS callbacks if available."""
         if self.gateway:
+            # Import asyncio for thread-safe task creation
+            import asyncio
+            
+            # Get the main event loop
+            loop = asyncio.get_event_loop()
+            
             # Set up callbacks for order status updates
             def on_order_status(orderId, status, filled, remaining, avgFillPrice, permId, parentId, lastFillPrice, clientId, whyHeld, mktCapPrice):
                 """Handle order status updates from TWS."""
-                asyncio.create_task(
+                # Schedule the async handler in the main event loop
+                asyncio.run_coroutine_threadsafe(
                     self.handle_order_status_update(
                         broker_order_id=str(orderId),
                         status=status,
@@ -74,12 +81,14 @@ class OrderManager:
                         remaining=remaining,
                         avg_fill_price=avgFillPrice,
                         last_fill_price=lastFillPrice
-                    )
+                    ),
+                    loop
                 )
             
             def on_exec_details(reqId, contract, execution):
                 """Handle execution details from TWS."""
-                asyncio.create_task(
+                # Schedule the async handler in the main event loop
+                asyncio.run_coroutine_threadsafe(
                     self.handle_execution_update(
                         broker_order_id=str(execution.orderId),
                         exec_id=execution.execId,
@@ -88,7 +97,8 @@ class OrderManager:
                         quantity=execution.shares,
                         price=execution.price,
                         commission=None  # Commission comes in separate callback
-                    )
+                    ),
+                    loop
                 )
             
             # Override TWS callbacks to route to our handlers
