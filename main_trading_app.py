@@ -29,7 +29,7 @@ from src.event.api import PredictionSignalEvent
 from src.rule.engine import RuleEngine
 from src.rule.condition import EventCondition, TimeCondition
 from src.rule.action import CreateOrderAction, ClosePositionAction
-from src.rule.linked_order_actions import LinkedCreateOrderAction, LinkedScaleInAction, LinkedCloseAllAction, LinkedOrderConclusionManager, CooldownResetManager
+from src.rule.linked_order_actions import LinkedCreateOrderAction, LinkedScaleInAction, LinkedCloseAllAction, LinkedOrderConclusionManager, CooldownResetManager, LinkedDoubleDownAction, LinkedDoubleDownFillManager
 from src.rule.base import Rule
 from src.order import OrderType
 from src.order.manager import OrderManager
@@ -65,6 +65,7 @@ class TradingApplication:
         self.api_monitor = None
         self.conclusion_manager = None
         self.cooldown_reset_manager = None
+        self.doubledown_fill_manager = None
         self.indicator_manager = None
         self.price_service = None
         self.position_sizer = None
@@ -131,6 +132,13 @@ class TradingApplication:
             event_bus=self.event_bus
         )
         await self.cooldown_reset_manager.initialize()
+        
+        # Initialize double down fill manager for updating stop/target orders
+        self.doubledown_fill_manager = LinkedDoubleDownFillManager(
+            context=self.rule_engine.context,
+            event_bus=self.event_bus
+        )
+        await self.doubledown_fill_manager.initialize()
         
         # Setup API monitoring
         try:
@@ -228,7 +236,7 @@ class TradingApplication:
         """Create buy and sell rules for a specific ticker strategy."""
         ticker = strategy["ticker"]
         
-        # BUY Rule
+        # BUY Rule (Long Entry)
         buy_condition = EventCondition(
             event_type=PredictionSignalEvent,
             field_conditions={
@@ -258,34 +266,7 @@ class TradingApplication:
             cooldown_seconds=strategy["cooldown_minutes"] * 60
         )
         
-        # SCALE-IN Rule (for existing positions)
-        scalein_condition = EventCondition(
-            event_type=PredictionSignalEvent,
-            field_conditions={
-                "symbol": ticker,
-                "signal": "BUY",
-                "confidence": lambda c: c >= (strategy["confidence_threshold"] + 0.05)  # Higher threshold for scale-in
-            }
-        )
-        
-        # Use the formal LinkedScaleInAction (replaces custom ScaleInAction)
-        scalein_action = LinkedScaleInAction(
-            symbol=ticker,
-            scale_quantity=50,  # Fixed scale-in quantity (reasonable for most stocks)
-            trigger_profit_pct=0.02  # Only scale-in if position is 2%+ profitable
-        )
-        
-        scalein_rule = Rule(
-            rule_id=f"{ticker.lower()}_scalein_rule",
-            name=f"{ticker} Scale-In on Very High Confidence",
-            description=f"Scale into existing {ticker} position when confidence >= {strategy['confidence_threshold'] + 0.05}",
-            condition=scalein_condition,
-            action=scalein_action,
-            priority=90,  # Lower priority than initial entry
-            cooldown_seconds=strategy["cooldown_minutes"] * 60 * 2  # Longer cooldown for scale-ins
-        )
-        
-        # SELL Rule (for closing long positions and/or short entry)
+        # SELL Rule (Short Entry)
         sell_condition = EventCondition(
             event_type=PredictionSignalEvent,
             field_conditions={
@@ -295,59 +276,31 @@ class TradingApplication:
             }
         )
         
-        # For now, use close action for SELL signals (can be changed to short entry later)
-        sell_action = LinkedCloseAllAction(
-            symbol=ticker,
-            reason="Sell signal from prediction API"
-        )
-        
-        sell_rule = Rule(
-            rule_id=f"{ticker.lower()}_sell_rule", 
-            name=f"{ticker} Sell on High Confidence",
-            description=f"Sell {ticker} when confidence >= {strategy['confidence_threshold']}",
-            condition=sell_condition,
-            action=sell_action,
-            priority=100,
-            cooldown_seconds=strategy["cooldown_minutes"] * 60
-        )
-        
-        # SHORT ENTRY Rule (demonstrates short position functionality)
-        short_condition = EventCondition(
-            event_type=PredictionSignalEvent,
-            field_conditions={
-                "symbol": ticker,
-                "signal": "SHORT",  # Different signal for short entry
-                "confidence": lambda c: c >= strategy["confidence_threshold"]
-            }
-        )
-        
-        short_action = LinkedCreateOrderAction(
+        sell_action = LinkedCreateOrderAction(
             symbol=ticker,
             quantity=strategy["allocation"],
-            side="SELL",                      # NEW: Explicit side for short positions
+            side="SELL",                      # Short position
             order_type=OrderType.MARKET,
             auto_create_stops=True,  # Automatically create stop & target orders
             atr_stop_multiplier=strategy["atr_stop_multiplier"],
             atr_target_multiplier=strategy["atr_target_multiplier"]
         )
         
-        short_rule = Rule(
-            rule_id=f"{ticker.lower()}_short_rule",
-            name=f"{ticker} Short on High Confidence",
-            description=f"Short {ticker} when confidence >= {strategy['confidence_threshold']} and signal is SHORT",
-            condition=short_condition,
-            action=short_action,
+        sell_rule = Rule(
+            rule_id=f"{ticker.lower()}_sell_rule", 
+            name=f"{ticker} Sell (Short) on High Confidence",
+            description=f"Short {ticker} when confidence >= {strategy['confidence_threshold']}",
+            condition=sell_condition,
+            action=sell_action,
             priority=100,
             cooldown_seconds=strategy["cooldown_minutes"] * 60
         )
         
-        # Register all rules
+        # Register rules
         self.rule_engine.register_rule(buy_rule)
-        self.rule_engine.register_rule(scalein_rule)  # Add scale-in rule
         self.rule_engine.register_rule(sell_rule)
-        self.rule_engine.register_rule(short_rule)    # Add short entry rule
         
-        logger.info(f"📊 Created strategy for {ticker} (confidence >= {strategy['confidence_threshold']}, scale-in >= {strategy['confidence_threshold'] + 0.05})")
+        logger.info(f"📊 Created strategy for {ticker} (confidence >= {strategy['confidence_threshold']}, auto double down @ 50% to stop)")
     
     def _create_eod_closure_rule(self):
         """Create end-of-day position closure rule."""

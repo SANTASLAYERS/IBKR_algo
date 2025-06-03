@@ -55,6 +55,16 @@ class PositionTracker:
         
         logger.debug("PositionTracker initialized")
     
+    async def initialize(self):
+        """
+        Initialize the position tracker for async operations.
+        
+        This method can be called to perform any async initialization
+        that cannot be done in __init__.
+        """
+        logger.info("PositionTracker async initialization completed")
+        return True
+    
     async def create_stock_position(self, 
                                   symbol: str, 
                                   quantity: float = 0, 

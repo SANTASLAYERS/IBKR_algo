@@ -219,9 +219,9 @@ class TestEODClosure:
         cancel_calls = context["order_manager"].cancel_order.call_args_list
         assert len(cancel_calls) >= 6  # 3 AAPL orders + 4 MSFT orders (including scale)
         
-        # Verify contexts marked as closed
-        assert context["AAPL"]["status"] == "closed"
-        assert context["MSFT"]["status"] == "closed"
+        # Verify contexts were deleted (not just marked as closed)
+        assert "AAPL" not in context
+        assert "MSFT" not in context
 
 
 # ===== INTEGRATION TESTS =====

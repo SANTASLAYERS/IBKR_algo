@@ -12,6 +12,7 @@ import asyncio
 import logging
 import os
 from unittest.mock import patch
+from datetime import datetime, timezone
 
 from src.tws_config import TWSConfig
 from src.tws_connection import TWSConnection
@@ -112,7 +113,7 @@ class TestE2ETradingWorkflow:
                 signal="BUY",
                 confidence=0.85,
                 price=150.0,
-                prediction_data={"model": "test", "features": {}}
+                model_info={"model": "test", "features": {}}
             )
             
             await event_bus.emit(prediction_event)
@@ -128,7 +129,7 @@ class TestE2ETradingWorkflow:
                 symbol="AAPL",
                 price=152.0,
                 volume=1000,
-                timestamp=asyncio.get_event_loop().time()
+                timestamp=datetime.now(timezone.utc)
             )
             
             await event_bus.emit(price_event)
@@ -181,7 +182,7 @@ class TestE2ETradingWorkflow:
                 signal="INVALID",  # Invalid signal
                 confidence=-1.0,  # Invalid confidence
                 price=0.0,  # Invalid price
-                prediction_data={}
+                model_info={}
             )
             
             # This should not crash the system

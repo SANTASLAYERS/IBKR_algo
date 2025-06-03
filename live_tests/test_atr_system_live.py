@@ -43,15 +43,15 @@ class TestATRSystemLive:
             assert connected, "Failed to connect to TWS"
             logger.info("✅ Connected to TWS")
             
-            # Create indicator manager for 10-second bars
-            indicator_manager = IndicatorManager(tws_connection, bar_size="10 secs")
+            # Create indicator manager
+            indicator_manager = IndicatorManager(tws_connection.minute_bar_manager)
             
             # Test with AAPL (should have good data)
             test_ticker = "AAPL"
             logger.info(f"📊 Calculating 10-second ATR for {test_ticker}...")
             
             start_time = datetime.now()
-            atr_value = await indicator_manager.get_atr(test_ticker, period=14, timeout=30.0)
+            atr_value = await indicator_manager.get_atr(test_ticker, period=14)
             end_time = datetime.now()
             
             duration = (end_time - start_time).total_seconds()
@@ -118,8 +118,8 @@ class TestATRSystemLive:
             assert connected, "Failed to connect to TWS"
             logger.info("✅ Connected to TWS")
             
-            # Create indicator manager for 10-second bars
-            indicator_manager = IndicatorManager(tws_connection, bar_size="10 secs")
+            # Create indicator manager
+            indicator_manager = IndicatorManager(tws_connection.minute_bar_manager)
             
             # Test each ticker
             atr_results = []
@@ -130,7 +130,7 @@ class TestATRSystemLive:
                 start_time = datetime.now()
                 
                 try:
-                    atr_value = await indicator_manager.get_atr(ticker, period=14, timeout=20.0)
+                    atr_value = await indicator_manager.get_atr(ticker, period=14)
                     end_time = datetime.now()
                     duration = (end_time - start_time).total_seconds()
                     
@@ -217,7 +217,7 @@ class TestATRSystemLive:
             logger.info("✅ Connected to TWS")
             
             # Create indicator manager
-            indicator_manager = IndicatorManager(tws_connection, bar_size="10 secs")
+            indicator_manager = IndicatorManager(tws_connection.minute_bar_manager)
             
             # Test different ATR periods
             test_ticker = "AAPL"
@@ -229,7 +229,7 @@ class TestATRSystemLive:
             for period in test_periods:
                 logger.info(f"📈 Calculating ATR with period {period}...")
                 
-                atr_value = await indicator_manager.get_atr(test_ticker, period=period, timeout=20.0)
+                atr_value = await indicator_manager.get_atr(test_ticker, period=period)
                 
                 if atr_value is not None:
                     atr_by_period[period] = atr_value
@@ -291,7 +291,7 @@ class TestATRSystemLive:
             logger.info("✅ Connected to TWS")
             
             # Create indicator manager
-            indicator_manager = IndicatorManager(tws_connection, bar_size="10 secs")
+            indicator_manager = IndicatorManager(tws_connection.minute_bar_manager)
             
             # Test realistic trading scenarios
             test_scenarios = [
@@ -310,7 +310,7 @@ class TestATRSystemLive:
                 logger.info(f"📈 Scenario: {side} {ticker} @ ${entry_price:.2f}")
                 
                 # Get ATR
-                atr_value = await indicator_manager.get_atr(ticker, period=14, timeout=15.0)
+                atr_value = await indicator_manager.get_atr(ticker, period=14)
                 
                 if atr_value is None:
                     logger.warning(f"⚠️ No ATR data for {ticker}")
@@ -395,7 +395,7 @@ if __name__ == "__main__":
             
             print("✅ Connected!")
             
-            indicator_manager = IndicatorManager(tws_connection, bar_size="10 secs")
+            indicator_manager = IndicatorManager(tws_connection.minute_bar_manager)
             
             # Test ATR for some tickers
             tickers = ["AAPL", "UVXY", "SOXL"]
@@ -407,7 +407,7 @@ if __name__ == "__main__":
                 print(f"📈 Getting ATR for {ticker}...")
                 start_time = datetime.now()
                 
-                atr = await indicator_manager.get_atr(ticker, timeout=15.0)
+                atr = await indicator_manager.get_atr(ticker, period=14)
                 
                 end_time = datetime.now()
                 duration = (end_time - start_time).total_seconds()

@@ -48,7 +48,7 @@ class TestComponentIntegrationLive:
             # Create all services
             price_service = PriceService(tws_connection)
             position_sizer = PositionSizer(min_shares=1, max_shares=10000)
-            indicator_manager = IndicatorManager(tws_connection, bar_size="10 secs")
+            indicator_manager = IndicatorManager(tws_connection.minute_bar_manager)
             
             # Test scenario parameters
             test_ticker = "AAPL"
@@ -99,7 +99,7 @@ class TestComponentIntegrationLive:
             logger.info("📈 Step 3: Calculating ATR for stop losses...")
             start_time = datetime.now()
             
-            atr_value = await indicator_manager.get_atr(test_ticker, period=14, timeout=20.0)
+            atr_value = await indicator_manager.get_atr(test_ticker, period=14)
             
             atr_time = (datetime.now() - start_time).total_seconds()
             
@@ -212,7 +212,7 @@ class TestComponentIntegrationLive:
             # Create all services
             price_service = PriceService(tws_connection)
             position_sizer = PositionSizer(min_shares=1, max_shares=10000)
-            indicator_manager = IndicatorManager(tws_connection, bar_size="10 secs")
+            indicator_manager = IndicatorManager(tws_connection.minute_bar_manager)
             
             logger.info(f"🎯 Testing integration for {len(test_tickers)} tickers")
             
@@ -228,7 +228,7 @@ class TestComponentIntegrationLive:
                     # Get price and ATR concurrently
                     logger.info(f"   Fetching price and ATR for {ticker}...")
                     price_task = price_service.get_price(ticker, timeout=10.0)
-                    atr_task = indicator_manager.get_atr(ticker, period=14, timeout=15.0)
+                    atr_task = indicator_manager.get_atr(ticker, period=14)
                     
                     price, atr_value = await asyncio.gather(price_task, atr_task)
                     
@@ -357,7 +357,7 @@ class TestComponentIntegrationLive:
             # Create all services
             price_service = PriceService(tws_connection)
             position_sizer = PositionSizer(min_shares=1, max_shares=10000)
-            indicator_manager = IndicatorManager(tws_connection, bar_size="10 secs")
+            indicator_manager = IndicatorManager(tws_connection.minute_bar_manager)
             
             logger.info("🧪 Testing error resilience with mixed valid/invalid tickers")
             
@@ -376,7 +376,7 @@ class TestComponentIntegrationLive:
                         errors += 1
                         continue
                     
-                    atr_value = await indicator_manager.get_atr(ticker, period=14, timeout=8.0)
+                    atr_value = await indicator_manager.get_atr(ticker, period=14)
                     
                     if atr_value is None:
                         logger.info(f"   ⚠️ No ATR for {ticker}")
@@ -460,7 +460,7 @@ if __name__ == "__main__":
             # Create services
             price_service = PriceService(tws_connection)
             position_sizer = PositionSizer()
-            indicator_manager = IndicatorManager(tws_connection, bar_size="10 secs")
+            indicator_manager = IndicatorManager(tws_connection.minute_bar_manager)
             
             # Test complete flow for AAPL
             ticker = "AAPL"

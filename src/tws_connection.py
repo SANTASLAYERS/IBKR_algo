@@ -47,6 +47,7 @@ class TWSConnection(EWrapper, EClient):
         self._connection_thread: Optional[threading.Thread] = None
         self._next_order_id: Optional[int] = None
         self._start_time: Optional[float] = None
+        self._request_id_counter = 1000  # Start from 1000 to avoid conflicts
         
         # Initialize minute bar manager for historical data
         from src.minute_data.manager import MinuteBarManager
@@ -216,8 +217,10 @@ class TWSConnection(EWrapper, EClient):
         Returns:
             int: Next request ID
         """
-        # Use IB API's internal request ID counter
-        return self.reqId()
+        # Use a simple counter for request IDs
+        current_id = self._request_id_counter
+        self._request_id_counter += 1
+        return current_id
     
     # EWrapper callback implementations
     def connectAck(self):

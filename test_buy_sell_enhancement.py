@@ -243,11 +243,15 @@ class TestContextManagement:
     
     @pytest.mark.asyncio
     async def test_2_2_side_consistency_prevention(self, base_context, mock_order):
-        """Test 2.2: Side Consistency Prevention"""
+        """Test 2.2: Position Reversal on Opposite Side Signal"""
         # Setup - create long position first
         base_context["order_manager"].create_and_submit_order.return_value = mock_order
         base_context["order_manager"].create_order.return_value = mock_order
-        
+
+        # Ensure we start with clean context
+        if "AAPL" in base_context:
+            del base_context["AAPL"]
+
         # Create long position
         long_action = LinkedCreateOrderAction(
             symbol="AAPL",
@@ -255,17 +259,20 @@ class TestContextManagement:
             side="BUY"
         )
         await long_action.execute(base_context)
-        
+
         # Attempt to create short order for same symbol
         short_action = LinkedCreateOrderAction(
             symbol="AAPL",
             quantity=100,
             side="SELL"
         )
-        
-        # Should prevent mixing sides
+
+        # Should trigger position reversal (exit long, enter short)
         result = await short_action.execute(base_context)
-        assert result is False  # Should fail validation
+        assert result is True  # Should succeed with position reversal
+        
+        # Verify final position is SHORT
+        assert base_context["AAPL"]["side"] == "SELL"
     
     @pytest.mark.asyncio
     async def test_2_3_multi_symbol_side_management(self, base_context, mock_order):
