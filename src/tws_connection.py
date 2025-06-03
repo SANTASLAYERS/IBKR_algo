@@ -208,7 +208,13 @@ class TWSConnection(EWrapper, EClient):
         Returns:
             Optional[int]: Next order ID if available
         """
-        return self._next_order_id
+        if self._next_order_id is None:
+            return None
+        
+        # Return current ID and increment for next use
+        current_id = self._next_order_id
+        self._next_order_id += 1
+        return current_id
     
     def get_next_request_id(self) -> int:
         """
@@ -312,4 +318,22 @@ class TWSConnection(EWrapper, EClient):
     def request_next_order_id(self, num_ids: int = 1):
         """Request next valid order ID."""
         if self.is_connected():
-            self.reqIds(num_ids) 
+            self.reqIds(num_ids)
+    
+    # Order-related callbacks
+    def orderStatus(self, orderId: int, status: str, filled: float, remaining: float, 
+                   avgFillPrice: float, permId: int, parentId: int, lastFillPrice: float, 
+                   clientId: int, whyHeld: str, mktCapPrice: float):
+        """Called when order status is updated."""
+        logger.info(f"Order Status Update - ID: {orderId}, Status: {status}, Filled: {filled}, Remaining: {remaining}")
+        # The OrderManager will override this method to handle status updates
+    
+    def openOrder(self, orderId: int, contract, order, orderState):
+        """Called when an order is opened."""
+        logger.info(f"Open Order - ID: {orderId}, Symbol: {contract.symbol}, Action: {order.action}, Quantity: {order.totalQuantity}")
+        # The OrderManager can use this for order tracking
+    
+    def execDetails(self, reqId: int, contract, execution):
+        """Called when an order is executed."""
+        logger.info(f"Execution - Order ID: {execution.orderId}, Symbol: {contract.symbol}, Shares: {execution.shares}, Price: {execution.price}")
+        # The OrderManager will override this method to handle executions 

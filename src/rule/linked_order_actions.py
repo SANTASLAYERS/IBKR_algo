@@ -11,6 +11,7 @@ from src.rule.base import Action
 from src.rule.action import CreateOrderAction
 from src.order import OrderType
 from src.event.order import FillEvent
+import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -286,12 +287,13 @@ class LinkedCreateOrderAction(Action):
             actual_quantity = abs(actual_shares) if self.side == "BUY" else -abs(actual_shares)
             
             # Create the main order
-            order = await order_manager.create_and_submit_order(
+            order = await order_manager.create_order(
                 symbol=self.symbol,
                 quantity=actual_quantity,
                 order_type=self.order_type,
                 limit_price=self.limit_price,
-                stop_price=self.stop_price
+                stop_price=self.stop_price,
+                auto_submit=True  # Submit immediately
             )
             
             # Link the order with side tracking
@@ -486,6 +488,15 @@ class LinkedCreateOrderAction(Action):
     async def _create_double_down_orders(self, context: Dict[str, Any], actual_shares):
         """Create double down limit orders automatically after entry."""
         try:
+            # Wait a bit for stop orders to be created
+            await asyncio.sleep(0.5)
+            
+            # Check if stop orders exist now
+            stop_orders = LinkedOrderManager.get_linked_orders(context, self.symbol, "stop")
+            if not stop_orders:
+                logger.warning(f"No stop orders found yet for {self.symbol}, skipping double down creation")
+                return
+            
             # Create double down action
             double_down_action = LinkedDoubleDownAction(
                 symbol=self.symbol,
@@ -560,10 +571,11 @@ class LinkedScaleInAction(Action):
             else:  # SELL
                 scale_quantity = -abs(self.scale_quantity)  # Negative for additional short
             
-            scale_order = await order_manager.create_and_submit_order(
+            scale_order = await order_manager.create_order(
                 symbol=self.symbol,
                 quantity=scale_quantity,
-                order_type=OrderType.MARKET
+                order_type=OrderType.MARKET,
+                auto_submit=True  # Submit immediately
             )
             
             # Link the scale order

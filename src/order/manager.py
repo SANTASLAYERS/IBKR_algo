@@ -62,7 +62,7 @@ class OrderManager:
     
     async def initialize(self):
         """Initialize the OrderManager and set up TWS callbacks if available."""
-        if self.gateway and hasattr(self.gateway, 'set_callbacks'):
+        if self.gateway:
             # Set up callbacks for order status updates
             def on_order_status(orderId, status, filled, remaining, avgFillPrice, permId, parentId, lastFillPrice, clientId, whyHeld, mktCapPrice):
                 """Handle order status updates from TWS."""
@@ -92,10 +92,8 @@ class OrderManager:
                 )
             
             # Override TWS callbacks to route to our handlers
-            if hasattr(self.gateway, 'orderStatus'):
-                self.gateway.orderStatus = on_order_status
-            if hasattr(self.gateway, 'execDetails'):
-                self.gateway.execDetails = on_exec_details
+            self.gateway.orderStatus = on_order_status
+            self.gateway.execDetails = on_exec_details
                 
             logger.info("OrderManager callbacks set up with TWSConnection")
         else:
@@ -340,8 +338,12 @@ class OrderManager:
 
                     return False
 
+                logger.info(f"Got broker order ID {broker_order_id} for order {order_id}")
+                
                 # Submit the order to TWS using IBAPI
+                logger.info(f"Calling placeOrder with ID {broker_order_id}, contract {ib_contract}, order {ib_order}")
                 self.gateway.placeOrder(broker_order_id, ib_contract, ib_order)
+                logger.info(f"placeOrder called successfully for order {order_id}")
 
                 # Store broker order ID mapping
                 broker_order_id_str = str(broker_order_id)
@@ -479,7 +481,7 @@ class OrderManager:
 
                 if broker_order_id_int > 0:
                     # Use TWS connection to cancel the order
-                    self.gateway.cancelOrder(broker_order_id_int, reason or "User requested cancellation")
+                    self.gateway.cancelOrder(broker_order_id_int)
 
                     # Update order status to pending cancel
                     # Final cancellation will be confirmed by IB callbacks
@@ -853,6 +855,15 @@ class OrderManager:
         # Create the IB order
         ib_order = IBOrder()
 
+        # Only set the absolutely necessary fields
+        # Initialize price fields to avoid max float values
+        ib_order.lmtPrice = 0
+        ib_order.auxPrice = 0
+        
+        # Disable deprecated attributes that cause warnings
+        ib_order.eTradeOnly = False
+        ib_order.firmQuoteOnly = False
+
         # Use our order ID as the IB order ID if possible
         try:
             ib_order.orderId = int(order.order_id.split('-')[-1])
@@ -878,14 +889,14 @@ class OrderManager:
             ib_order.orderType = "MKT"
         elif order.order_type == OrderType.LIMIT:
             ib_order.orderType = "LMT"
-            ib_order.lmtPrice = order.limit_price
+            ib_order.lmtPrice = order.limit_price or 0
         elif order.order_type == OrderType.STOP:
             ib_order.orderType = "STP"
-            ib_order.auxPrice = order.stop_price
+            ib_order.auxPrice = order.stop_price or 0
         elif order.order_type == OrderType.STOP_LIMIT:
             ib_order.orderType = "STP LMT"
-            ib_order.lmtPrice = order.limit_price
-            ib_order.auxPrice = order.stop_price
+            ib_order.lmtPrice = order.limit_price or 0
+            ib_order.auxPrice = order.stop_price or 0
 
         # Set time in force
         if order.time_in_force == TimeInForce.DAY:
