@@ -11,6 +11,7 @@ from src.rule.base import Action
 from src.rule.action import CreateOrderAction
 from src.order import OrderType
 from src.event.order import FillEvent
+from src.trade_tracker import TradeTracker
 import asyncio
 
 logger = logging.getLogger(__name__)
@@ -46,8 +47,14 @@ class LinkedOrderConclusionManager:
             if (order_id in group.get("stop_orders", []) or 
                 order_id in group.get("target_orders", [])):
                 
-                # Position concluded via stop/target fill - delete context completely
+                # Position concluded via stop/target fill
                 side = group.get("side", "UNKNOWN")
+                
+                # Update TradeTracker
+                trade_tracker = TradeTracker()
+                trade_tracker.close_trade(symbol)
+                
+                # Delete context completely
                 if symbol in self.context:
                     del self.context[symbol]
                     logger.info(f"🎯 {side} position concluded for {symbol} - {event.status.value if hasattr(event, 'status') else 'fill'} order {order_id} filled at ${event.fill_price} - context cleared")
@@ -247,36 +254,56 @@ class LinkedCreateOrderAction(Action):
     
     async def execute(self, context: Dict[str, Any]) -> bool:
         """Create order and automatically link it with position reversal logic."""
+        logger.debug(f"LinkedCreateOrderAction.execute called with context keys: {list(context.keys())}")
+        
         order_manager = context.get("order_manager")
         if not order_manager:
             logger.error("Order manager not found in context")
             return False
         
-        # Check for existing position and handle position reversal
-        if self.symbol in context:
-            status = context[self.symbol].get("status", "active")
-            
-            if status == "closed":
-                # Clean up closed context before creating new position
-                del context[self.symbol]
-                logger.info(f"Cleaned up closed context for {self.symbol}")
-            elif status == "active":
-                current_side = context[self.symbol]["side"]
-                
-                if current_side == self.side:
-                    # Same side signal → IGNORE
-                    logger.info(f"Ignoring {self.side} signal for {self.symbol} - already in {current_side} position")
-                    return True
-                else:
-                    # Opposite side signal → EXIT current position, then ENTER new position
-                    logger.info(f"Reversing position for {self.symbol}: {current_side} → {self.side}")
-                    success = await self._exit_current_position(context)
-                    if not success:
-                        logger.error(f"Failed to exit current position for {self.symbol}")
-                        return False
-                    # Context is now cleared, proceed with new position creation
+        # Get the trade tracker singleton
+        trade_tracker = TradeTracker()
+        
+        # FIRST: Check if we already have an active trade for this symbol
+        active_trade = trade_tracker.get_active_trade(self.symbol)
+        if active_trade:
+            if active_trade.side == self.side:
+                # Same side signal → IGNORE (we already have a trade in this direction)
+                logger.info(f"Ignoring {self.side} signal for {self.symbol} - already have active {active_trade.side} trade")
+                return True
+            else:
+                # Opposite side signal → EXIT current trade, then ENTER new trade
+                logger.info(f"Reversing trade for {self.symbol}: {active_trade.side} → {self.side}")
+                success = await self._exit_current_position(context)
+                if not success:
+                    logger.error(f"Failed to exit current trade for {self.symbol}")
+                    return False
+                # Trade tracker will be updated when exit completes
+        
+        # SECOND: Check actual positions from PositionTracker (as backup)
+        position_side = await LinkedOrderManager.find_active_position_side(context, self.symbol)
+        if position_side:
+            if position_side == self.side:
+                # Same side signal → IGNORE (we already have a position in this direction)
+                logger.info(f"Ignoring {self.side} signal for {self.symbol} - already have {position_side} position")
+                return True
+            else:
+                # Opposite side signal → EXIT current position, then ENTER new position
+                logger.info(f"Reversing position for {self.symbol}: {position_side} → {self.side}")
+                success = await self._exit_current_position(context)
+                if not success:
+                    logger.error(f"Failed to exit current position for {self.symbol}")
+                    return False
+                # Context is now cleared, proceed with new position creation
+        
+        # Note: Context modifications (like adding symbol entries) are not persisted 
+        # between rule executions because the rule creates a copy of the context.
+        # The duplicate prevention relies on checking active orders and positions above.
         
         try:
+            # Start tracking this new trade
+            trade_tracker.start_trade(self.symbol, self.side)
+            
             # Calculate actual shares to trade
             actual_shares = await self._calculate_position_size(context)
             if actual_shares is None:
@@ -699,6 +726,10 @@ class LinkedCloseAllAction(Action):
             positions = await position_tracker.get_positions_for_symbol(self.symbol)
             for position in positions:
                 await position_tracker.close_position(position.position_id, self.reason)
+            
+            # Update TradeTracker
+            trade_tracker = TradeTracker()
+            trade_tracker.close_trade(self.symbol)
             
             # Delete context completely for clean slate
             if self.symbol in context:

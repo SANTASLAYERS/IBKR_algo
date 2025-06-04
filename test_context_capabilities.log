@@ -1,0 +1,209 @@
+2025-06-04 11:32:33,536 - __main__ - INFO - Starting context capabilities test...
+2025-06-04 11:32:33,537 - src.trade_tracker - INFO - TradeTracker initialized
+2025-06-04 11:32:33,537 - src.trade_tracker - INFO - Cleared all trades from tracker
+2025-06-04 11:32:33,539 - __main__ - INFO - Connecting to TWS...
+2025-06-04 11:32:33,539 - src.tws_connection - INFO - Connecting to TWS at 127.0.0.1:7497
+2025-06-04 11:32:33,540 - src.tws_connection - INFO - Connection thread: Connecting to 127.0.0.1:7497 (client ID: 1)
+2025-06-04 11:32:34,569 - ibapi.client - INFO - sent startApi
+2025-06-04 11:32:34,570 - ibapi.client - INFO - REQUEST startApi {}
+2025-06-04 11:32:34,570 - ibapi.client - INFO - SENDING startApi b'\x00\x00\x00\x0871\x002\x001\x00\x00'
+2025-06-04 11:32:34,578 - ibapi.client - INFO - REQUEST startApi {}
+2025-06-04 11:32:34,579 - ibapi.client - INFO - SENDING startApi b'\x00\x00\x00\x0871\x002\x001\x00\x00'
+2025-06-04 11:32:34,579 - src.tws_connection - INFO - Connection thread: Socket connected, starting message loop
+2025-06-04 11:32:34,594 - src.tws_connection - INFO - Open Order - ID: 54, Symbol: SLV, Action: SELL, Quantity: 50.0
+2025-06-04 11:32:34,594 - src.tws_connection - INFO - Order Status Update - ID: 54, Status: PreSubmitted, Filled: 0.0, Remaining: 50.0
+2025-06-04 11:32:34,595 - src.tws_connection - INFO - Open Order - ID: 55, Symbol: SLV, Action: SELL, Quantity: 50.0
+2025-06-04 11:32:34,596 - src.tws_connection - INFO - Order Status Update - ID: 55, Status: Submitted, Filled: 0.0, Remaining: 50.0
+2025-06-04 11:32:34,597 - src.tws_connection - INFO - Open Order - ID: 56, Symbol: SLV, Action: BUY, Quantity: 50.0
+2025-06-04 11:32:34,597 - src.tws_connection - INFO - Order Status Update - ID: 56, Status: Submitted, Filled: 0.0, Remaining: 50.0
+2025-06-04 11:32:34,598 - ibapi.wrapper - INFO - ANSWER openOrderEnd {}
+2025-06-04 11:32:34,607 - src.tws_connection - INFO - Requesting additional order IDs from TWS
+2025-06-04 11:32:34,608 - ibapi.client - INFO - REQUEST reqIds {'numIds': 50}
+2025-06-04 11:32:34,608 - ibapi.client - INFO - SENDING reqIds b'\x00\x00\x00\x078\x001\x0050\x00'
+2025-06-04 11:32:34,609 - src.tws_connection - INFO - Open Order - ID: 54, Symbol: SLV, Action: SELL, Quantity: 50.0
+2025-06-04 11:32:34,610 - src.tws_connection - INFO - Order Status Update - ID: 54, Status: PreSubmitted, Filled: 0.0, Remaining: 50.0
+2025-06-04 11:32:34,617 - src.tws_connection - INFO - Open Order - ID: 55, Symbol: SLV, Action: SELL, Quantity: 50.0
+2025-06-04 11:32:34,620 - src.order.manager - INFO - OrderManager callbacks set up with TWSConnection
+2025-06-04 11:32:34,621 - src.position.tracker - INFO - PositionTracker async initialization completed
+2025-06-04 11:32:34,621 - src.tws_connection - INFO - Open Order - ID: 56, Symbol: SLV, Action: BUY, Quantity: 50.0
+2025-06-04 11:32:34,621 - src.rule.linked_order_actions - INFO - LinkedOrderConclusionManager initialized - monitoring for position conclusions
+2025-06-04 11:32:34,621 - ibapi.wrapper - INFO - ANSWER openOrderEnd {}
+2025-06-04 11:32:34,622 - LinkedDoubleDownFillManager - INFO - LinkedDoubleDownFillManager initialized
+2025-06-04 11:32:34,623 - src.rule.engine - INFO - Rule engine started
+2025-06-04 11:32:34,626 - __main__ - INFO - 
+================================================================================
+2025-06-04 11:32:34,633 - __main__ - INFO - CAPABILITY 1: CREATE POSITION WITH MULTIPLE ORDERS
+2025-06-04 11:32:34,634 - __main__ - INFO - ================================================================================
+2025-06-04 11:32:34,635 - src.trade_tracker - INFO - Started tracking BUY trade for SLV
+2025-06-04 11:32:34,635 - src.rule.linked_order_actions - INFO - Using fixed position size: 100 shares for SLV
+2025-06-04 11:32:34,635 - src.order.base - INFO - Order 51be1217-be60-495a-9b45-634d17a4ed1c status changed: created -> pending_submit (Submitting to broker)
+2025-06-04 11:32:34,636 - src.order.manager - INFO - Submitting order 51be1217-be60-495a-9b45-634d17a4ed1c to TWS
+2025-06-04 11:32:34,637 - src.order.manager - INFO - Got broker order ID 57 for order 51be1217-be60-495a-9b45-634d17a4ed1c
+2025-06-04 11:32:34,637 - src.order.manager - INFO - Calling placeOrder with ID 57, contract 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: MKT BUY 100@0.000000 DAY
+2025-06-04 11:32:34,638 - ibapi.client - INFO - REQUEST placeOrder {'orderId': 57, 'contract': 1637476763584: 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, 'order': 1637476232528: 0,0,0: MKT BUY 100@0.000000 DAY}
+2025-06-04 11:32:34,638 - ibapi.client - INFO - SENDING placeOrder b'\x00\x00\x01;3\x0057\x000\x00SLV\x00STK\x00\x000.0\x00\x00\x00SMART\x00\x00USD\x00\x00\x00\x00\x00BUY\x00100\x00MKT\x000\x000\x00DAY\x00\x00\x00\x000\x00\x001\x000\x000\x000\x000\x000\x000\x000\x00\x000\x00\x00\x00\x00\x00\x00\x00\x000\x00\x00-1\x000\x00\x00\x000\x00\x00\x000\x000\x00\x000\x00\x00\x00\x00\x00\x000\x00\x00\x00\x00\x000\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x000\x00\x00\x000\x000\x00\x00\x000\x00\x000\x000\x000\x000\x00\x001.7976931348623157e+308\x001.7976931348623157e+308\x001.7976931348623157e+308\x001.7976931348623157e+308\x001.7976931348623157e+308\x000\x00\x00\x00\x001.7976931348623157e+308\x00\x00\x00\x00\x000\x000\x000\x00\x00'
+2025-06-04 11:32:34,639 - src.order.manager - INFO - placeOrder called successfully for order 51be1217-be60-495a-9b45-634d17a4ed1c
+2025-06-04 11:32:34,639 - src.order.base - INFO - Order 51be1217-be60-495a-9b45-634d17a4ed1c status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-04 11:32:34,640 - src.rule.linked_order_actions - INFO - Created new order context for SLV BUY position
+2025-06-04 11:32:34,640 - ibapi.client - INFO - REQUEST reqMktData {'reqId': 1000, 'contract': 1637476763584: 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, 'genericTickList': '', 'snapshot': False, 'regulatorySnapshot': False, 'mktDataOptions': []}
+2025-06-04 11:32:34,640 - ibapi.client - INFO - SENDING reqMktData b'\x00\x00\x0001\x0011\x001000\x000\x00SLV\x00STK\x00\x000.0\x00\x00\x00SMART\x00\x00USD\x00\x00\x000\x00\x000\x000\x00\x00'
+2025-06-04 11:32:34,641 - src.order.manager - WARNING - Received status update for unknown order: 55
+2025-06-04 11:32:34,641 - src.order.manager - WARNING - Received status update for unknown order: 56
+2025-06-04 11:32:34,701 - ibapi.wrapper - INFO - ANSWER tickReqParams {'tickerId': 1000, 'minTick': 0.01, 'bboExchange': 'a60001', 'snapshotPermissions': 3}
+2025-06-04 11:32:34,702 - ibapi.wrapper - INFO - ANSWER marketDataType {'reqId': 1000, 'marketDataType': 1}
+2025-06-04 11:32:34,702 - ibapi.wrapper - INFO - ANSWER tickPrice {'reqId': 1000, 'tickType': 1, 'price': 31.29, 'attrib': 1637476831248: CanAutoExecute: 1, PastLimit: 0, PreOpen: 0}
+2025-06-04 11:32:34,703 - ibapi.wrapper - INFO - ANSWER tickSize {'reqId': 1000, 'tickType': 0, 'size': 82}
+2025-06-04 11:32:34,703 - ibapi.wrapper - INFO - ANSWER tickPrice {'reqId': 1000, 'tickType': 2, 'price': 31.3, 'attrib': 1637476229008: CanAutoExecute: 1, PastLimit: 0, PreOpen: 0}
+2025-06-04 11:32:34,703 - ibapi.wrapper - INFO - ANSWER tickSize {'reqId': 1000, 'tickType': 3, 'size': 2484}
+2025-06-04 11:32:34,703 - ibapi.wrapper - INFO - ANSWER tickPrice {'reqId': 1000, 'tickType': 4, 'price': 31.3, 'attrib': 1637476229008: CanAutoExecute: 0, PastLimit: 0, PreOpen: 0}
+2025-06-04 11:32:34,703 - ibapi.wrapper - INFO - ANSWER tickSize {'reqId': 1000, 'tickType': 5, 'size': 1}
+2025-06-04 11:32:34,703 - ibapi.wrapper - INFO - ANSWER tickSize {'reqId': 1000, 'tickType': 0, 'size': 82}
+2025-06-04 11:32:34,704 - ibapi.wrapper - INFO - ANSWER tickSize {'reqId': 1000, 'tickType': 3, 'size': 2484}
+2025-06-04 11:32:34,704 - ibapi.wrapper - INFO - ANSWER tickSize {'reqId': 1000, 'tickType': 5, 'size': 1}
+2025-06-04 11:32:34,704 - ibapi.wrapper - INFO - ANSWER tickSize {'reqId': 1000, 'tickType': 8, 'size': 106346}
+2025-06-04 11:32:34,704 - ibapi.wrapper - INFO - ANSWER tickPrice {'reqId': 1000, 'tickType': 6, 'price': 31.43, 'attrib': 1637476185840: CanAutoExecute: 0, PastLimit: 0, PreOpen: 0}
+2025-06-04 11:32:34,704 - ibapi.wrapper - INFO - ANSWER tickPrice {'reqId': 1000, 'tickType': 7, 'price': 31.23, 'attrib': 1637476185840: CanAutoExecute: 0, PastLimit: 0, PreOpen: 0}
+2025-06-04 11:32:34,705 - ibapi.wrapper - INFO - ANSWER tickPrice {'reqId': 1000, 'tickType': 9, 'price': 31.44, 'attrib': 1637476747600: CanAutoExecute: 0, PastLimit: 0, PreOpen: 0}
+2025-06-04 11:32:34,705 - ibapi.wrapper - INFO - ANSWER tickPrice {'reqId': 1000, 'tickType': 14, 'price': 31.32, 'attrib': 1637476763856: CanAutoExecute: 0, PastLimit: 0, PreOpen: 0}
+2025-06-04 11:32:34,705 - ibapi.wrapper - INFO - ANSWER tickString {'reqId': 1000, 'tickType': 32, 'value': 'PTV'}
+2025-06-04 11:32:34,706 - ibapi.wrapper - INFO - ANSWER tickString {'reqId': 1000, 'tickType': 33, 'value': 'ACNJKPTVXYZUH'}
+2025-06-04 11:32:34,706 - ibapi.wrapper - INFO - ANSWER tickString {'reqId': 1000, 'tickType': 84, 'value': 'D'}
+2025-06-04 11:32:34,706 - ibapi.wrapper - INFO - ANSWER tickString {'reqId': 1000, 'tickType': 45, 'value': '1749051153'}
+2025-06-04 11:32:34,706 - ibapi.wrapper - INFO - ANSWER tickGeneric {'reqId': 1000, 'tickType': 49, 'value': 0.0}
+2025-06-04 11:32:34,716 - ibapi.wrapper - INFO - ANSWER tickGeneric {'reqId': 1000, 'tickType': 49, 'value': 0.0}
+2025-06-04 11:32:34,716 - ibapi.wrapper - INFO - ANSWER tickString {'reqId': 1000, 'tickType': 45, 'value': '1749051154'}
+2025-06-04 11:32:34,717 - ibapi.wrapper - INFO - ANSWER tickGeneric {'reqId': 1000, 'tickType': 49, 'value': 0.0}
+2025-06-04 11:32:34,717 - ibapi.wrapper - INFO - ANSWER tickSize {'reqId': 1000, 'tickType': 5, 'size': 3}
+2025-06-04 11:32:34,717 - ibapi.wrapper - INFO - ANSWER tickGeneric {'reqId': 1000, 'tickType': 49, 'value': 0.0}
+2025-06-04 11:32:34,758 - src.tws_connection - INFO - Open Order - ID: 57, Symbol: SLV, Action: BUY, Quantity: 100.0
+2025-06-04 11:32:34,759 - ibapi.client - INFO - REQUEST cancelMktData {'reqId': 1000}
+2025-06-04 11:32:34,759 - ibapi.client - INFO - SENDING cancelMktData b'\x00\x00\x00\t2\x002\x001000\x00'
+2025-06-04 11:32:34,759 - src.rule.linked_order_actions - INFO - Percentage-based stop: SLV stop at $30.36 (3.0%)
+2025-06-04 11:32:34,759 - src.order.base - INFO - Order 5db6ed04-3075-406b-a5d3-9d91b4b4fce6 status changed: created -> pending_submit (Submitting to broker)
+2025-06-04 11:32:34,760 - src.order.manager - INFO - Submitting order 5db6ed04-3075-406b-a5d3-9d91b4b4fce6 to TWS
+2025-06-04 11:32:34,760 - src.order.manager - INFO - Got broker order ID 58 for order 5db6ed04-3075-406b-a5d3-9d91b4b4fce6
+2025-06-04 11:32:34,760 - src.order.manager - INFO - Calling placeOrder with ID 58, contract 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: STP SELL 100@0.000000 DAY
+2025-06-04 11:32:34,761 - ibapi.client - INFO - REQUEST placeOrder {'orderId': 58, 'contract': 1637476439120: 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, 'order': 1637476233168: 0,0,0: STP SELL 100@0.000000 DAY}
+2025-06-04 11:32:34,761 - ibapi.client - INFO - SENDING placeOrder b'\x00\x00\x01@3\x0058\x000\x00SLV\x00STK\x00\x000.0\x00\x00\x00SMART\x00\x00USD\x00\x00\x00\x00\x00SELL\x00100\x00STP\x000\x0030.36\x00DAY\x00\x00\x00\x000\x00\x001\x000\x000\x000\x000\x000\x000\x000\x00\x000\x00\x00\x00\x00\x00\x00\x00\x000\x00\x00-1\x000\x00\x00\x000\x00\x00\x000\x000\x00\x000\x00\x00\x00\x00\x00\x000\x00\x00\x00\x00\x000\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x000\x00\x00\x000\x000\x00\x00\x000\x00\x000\x000\x000\x000\x00\x001.7976931348623157e+308\x001.7976931348623157e+308\x001.7976931348623157e+308\x001.7976931348623157e+308\x001.7976931348623157e+308\x000\x00\x00\x00\x001.7976931348623157e+308\x00\x00\x00\x00\x000\x000\x000\x00\x00'
+2025-06-04 11:32:34,761 - src.order.manager - INFO - placeOrder called successfully for order 5db6ed04-3075-406b-a5d3-9d91b4b4fce6
+2025-06-04 11:32:34,761 - src.order.base - INFO - Order 5db6ed04-3075-406b-a5d3-9d91b4b4fce6 status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-04 11:32:34,762 - src.rule.linked_order_actions - INFO - Auto-created BUY stop loss 5db6ed04-3075-406b-a5d3-9d91b4b4fce6 at $30.36
+2025-06-04 11:32:34,762 - src.rule.linked_order_actions - INFO - Percentage-based target: SLV target at $33.18 (6.0%)
+2025-06-04 11:32:34,762 - src.order.base - INFO - Order 0593ce3e-8792-4f40-9d13-4728279f533b status changed: created -> pending_submit (Submitting to broker)
+2025-06-04 11:32:34,763 - src.order.manager - INFO - Submitting order 0593ce3e-8792-4f40-9d13-4728279f533b to TWS
+2025-06-04 11:32:34,763 - src.order.manager - INFO - Got broker order ID 59 for order 0593ce3e-8792-4f40-9d13-4728279f533b
+2025-06-04 11:32:34,763 - src.order.manager - INFO - Calling placeOrder with ID 59, contract 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: LMT SELL 100@33.180000 DAY
+2025-06-04 11:32:34,763 - ibapi.client - INFO - REQUEST placeOrder {'orderId': 59, 'contract': 1637476651792: 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, 'order': 1637476233808: 0,0,0: LMT SELL 100@33.180000 DAY}
+2025-06-04 11:32:34,764 - ibapi.client - INFO - SENDING placeOrder b'\x00\x00\x01@3\x0059\x000\x00SLV\x00STK\x00\x000.0\x00\x00\x00SMART\x00\x00USD\x00\x00\x00\x00\x00SELL\x00100\x00LMT\x0033.18\x000\x00DAY\x00\x00\x00\x000\x00\x001\x000\x000\x000\x000\x000\x000\x000\x00\x000\x00\x00\x00\x00\x00\x00\x00\x000\x00\x00-1\x000\x00\x00\x000\x00\x00\x000\x000\x00\x000\x00\x00\x00\x00\x00\x000\x00\x00\x00\x00\x000\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x000\x00\x00\x000\x000\x00\x00\x000\x00\x000\x000\x000\x000\x00\x001.7976931348623157e+308\x001.7976931348623157e+308\x001.7976931348623157e+308\x001.7976931348623157e+308\x001.7976931348623157e+308\x000\x00\x00\x00\x001.7976931348623157e+308\x00\x00\x00\x00\x000\x000\x000\x00\x00'
+2025-06-04 11:32:34,764 - src.order.manager - INFO - placeOrder called successfully for order 0593ce3e-8792-4f40-9d13-4728279f533b
+2025-06-04 11:32:34,764 - src.order.base - INFO - Order 0593ce3e-8792-4f40-9d13-4728279f533b status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-04 11:32:34,764 - src.rule.linked_order_actions - INFO - Auto-created BUY take profit 0593ce3e-8792-4f40-9d13-4728279f533b at $33.18
+2025-06-04 11:32:34,765 - src.rule.linked_order_actions - INFO - Starting double down order creation for SLV
+2025-06-04 11:32:34,765 - src.order.base - INFO - Order 51be1217-be60-495a-9b45-634d17a4ed1c status changed: submitted -> accepted (IB status: PreSubmitted)
+2025-06-04 11:32:34,793 - src.tws_connection - INFO - Open Order - ID: 57, Symbol: SLV, Action: BUY, Quantity: 100.0
+2025-06-04 11:32:34,794 - src.order.base - INFO - Order 51be1217-be60-495a-9b45-634d17a4ed1c status changed: accepted -> submitted (IB status: Submitted)
+2025-06-04 11:32:34,895 - src.tws_connection - INFO - Open Order - ID: 58, Symbol: SLV, Action: SELL, Quantity: 100.0
+2025-06-04 11:32:34,896 - src.order.base - INFO - Order 5db6ed04-3075-406b-a5d3-9d91b4b4fce6 status changed: submitted -> accepted (IB status: PreSubmitted)
+2025-06-04 11:32:34,936 - src.tws_connection - INFO - Open Order - ID: 59, Symbol: SLV, Action: SELL, Quantity: 100.0
+2025-06-04 11:32:35,269 - src.rule.linked_order_actions - INFO - Found 1 stop orders for SLV: ['5db6ed04-3075-406b-a5d3-9d91b4b4fce6']
+2025-06-04 11:32:35,270 - src.rule.linked_order_actions - INFO - Executing double down action for SLV
+2025-06-04 11:32:35,270 - ibapi.client - INFO - REQUEST reqMktData {'reqId': 1001, 'contract': 1637476651792: 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, 'genericTickList': '', 'snapshot': False, 'regulatorySnapshot': False, 'mktDataOptions': []}
+2025-06-04 11:32:35,270 - ibapi.client - INFO - SENDING reqMktData b'\x00\x00\x0001\x0011\x001001\x000\x00SLV\x00STK\x00\x000.0\x00\x00\x00SMART\x00\x00USD\x00\x00\x000\x00\x000\x000\x00\x00'
+2025-06-04 11:32:35,311 - ibapi.wrapper - INFO - ANSWER tickReqParams {'tickerId': 1001, 'minTick': 0.01, 'bboExchange': 'a60001', 'snapshotPermissions': 3}
+2025-06-04 11:32:35,314 - ibapi.wrapper - INFO - ANSWER marketDataType {'reqId': 1001, 'marketDataType': 1}
+2025-06-04 11:32:35,315 - ibapi.wrapper - INFO - ANSWER tickPrice {'reqId': 1001, 'tickType': 1, 'price': 31.29, 'attrib': 1637476763040: CanAutoExecute: 1, PastLimit: 0, PreOpen: 0}
+2025-06-04 11:32:35,315 - ibapi.wrapper - INFO - ANSWER tickSize {'reqId': 1001, 'tickType': 0, 'size': 82}
+2025-06-04 11:32:35,315 - ibapi.wrapper - INFO - ANSWER tickPrice {'reqId': 1001, 'tickType': 2, 'price': 31.3, 'attrib': 1637476439120: CanAutoExecute: 1, PastLimit: 0, PreOpen: 0}
+2025-06-04 11:32:35,316 - ibapi.wrapper - INFO - ANSWER tickSize {'reqId': 1001, 'tickType': 3, 'size': 2420}
+2025-06-04 11:32:35,317 - ibapi.wrapper - INFO - ANSWER tickPrice {'reqId': 1001, 'tickType': 4, 'price': 31.3, 'attrib': 1637476439120: CanAutoExecute: 0, PastLimit: 0, PreOpen: 0}
+2025-06-04 11:32:35,317 - ibapi.wrapper - INFO - ANSWER tickSize {'reqId': 1001, 'tickType': 5, 'size': 3}
+2025-06-04 11:32:35,318 - ibapi.wrapper - INFO - ANSWER tickSize {'reqId': 1001, 'tickType': 0, 'size': 82}
+2025-06-04 11:32:35,318 - ibapi.wrapper - INFO - ANSWER tickSize {'reqId': 1001, 'tickType': 3, 'size': 2420}
+2025-06-04 11:32:35,319 - ibapi.wrapper - INFO - ANSWER tickSize {'reqId': 1001, 'tickType': 5, 'size': 3}
+2025-06-04 11:32:35,319 - ibapi.wrapper - INFO - ANSWER tickSize {'reqId': 1001, 'tickType': 8, 'size': 106349}
+2025-06-04 11:32:35,319 - ibapi.wrapper - INFO - ANSWER tickPrice {'reqId': 1001, 'tickType': 6, 'price': 31.43, 'attrib': 1637476650112: CanAutoExecute: 0, PastLimit: 0, PreOpen: 0}
+2025-06-04 11:32:35,319 - ibapi.wrapper - INFO - ANSWER tickPrice {'reqId': 1001, 'tickType': 7, 'price': 31.23, 'attrib': 1637476650112: CanAutoExecute: 0, PastLimit: 0, PreOpen: 0}
+2025-06-04 11:32:35,320 - ibapi.wrapper - INFO - ANSWER tickPrice {'reqId': 1001, 'tickType': 9, 'price': 31.44, 'attrib': 1637476737200: CanAutoExecute: 0, PastLimit: 0, PreOpen: 0}
+2025-06-04 11:32:35,320 - ibapi.wrapper - INFO - ANSWER tickPrice {'reqId': 1001, 'tickType': 14, 'price': 31.32, 'attrib': 1637476737200: CanAutoExecute: 0, PastLimit: 0, PreOpen: 0}
+2025-06-04 11:32:35,320 - ibapi.wrapper - INFO - ANSWER tickString {'reqId': 1001, 'tickType': 32, 'value': 'PTV'}
+2025-06-04 11:32:35,320 - ibapi.wrapper - INFO - ANSWER tickString {'reqId': 1001, 'tickType': 33, 'value': 'ACNJKPTVXYZUH'}
+2025-06-04 11:32:35,320 - ibapi.wrapper - INFO - ANSWER tickString {'reqId': 1001, 'tickType': 84, 'value': 'D'}
+2025-06-04 11:32:35,321 - ibapi.wrapper - INFO - ANSWER tickString {'reqId': 1001, 'tickType': 45, 'value': '1749051154'}
+2025-06-04 11:32:35,321 - ibapi.wrapper - INFO - ANSWER tickGeneric {'reqId': 1001, 'tickType': 49, 'value': 0.0}
+2025-06-04 11:32:35,521 - ibapi.client - INFO - REQUEST cancelMktData {'reqId': 1001}
+2025-06-04 11:32:35,521 - src.tws_connection - INFO - Open Order - ID: 57, Symbol: SLV, Action: BUY, Quantity: 100.0
+2025-06-04 11:32:35,522 - ibapi.client - INFO - SENDING cancelMktData b'\x00\x00\x00\t2\x002\x001001\x00'
+2025-06-04 11:32:35,525 - src.rule.linked_order_actions - INFO - Using ATR-based stop distance for SLV: 0.0814
+2025-06-04 11:32:35,526 - src.rule.linked_order_actions - INFO - Double down calc for SLV (BUY): current=$31.30, stop_distance=$0.08, dd_distance=$0.04, dd_price=$31.26, original_qty=100, dd_qty=100
+2025-06-04 11:32:35,526 - src.tws_connection - INFO - Open Order - ID: 57, Symbol: SLV, Action: BUY, Quantity: 100.0
+2025-06-04 11:32:35,526 - src.order.base - INFO - Order 9fb3a812-38c5-41cb-bd32-d242798979eb status changed: created -> pending_submit (Submitting to broker)
+2025-06-04 11:32:35,526 - ibapi.wrapper - INFO - ANSWER commissionReport {'commissionReport': 1637476830576: ExecId: 00025b49.68406f98.01.01, Commission: 1.003500, Currency: USD, RealizedPnL: , Yield: , YieldRedemptionDate: 0}
+2025-06-04 11:32:35,527 - src.order.manager - INFO - Submitting order 9fb3a812-38c5-41cb-bd32-d242798979eb to TWS
+2025-06-04 11:32:35,528 - src.order.manager - INFO - Got broker order ID 60 for order 9fb3a812-38c5-41cb-bd32-d242798979eb
+2025-06-04 11:32:35,528 - src.order.manager - INFO - Calling placeOrder with ID 60, contract 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: LMT BUY 100@31.260000 DAY
+2025-06-04 11:32:35,528 - ibapi.client - INFO - REQUEST placeOrder {'orderId': 60, 'contract': 1637476650592: 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, 'order': 1637476233808: 0,0,0: LMT BUY 100@31.260000 DAY}
+2025-06-04 11:32:35,528 - ibapi.client - INFO - SENDING placeOrder b'\x00\x00\x01?3\x0060\x000\x00SLV\x00STK\x00\x000.0\x00\x00\x00SMART\x00\x00USD\x00\x00\x00\x00\x00BUY\x00100\x00LMT\x0031.26\x000\x00DAY\x00\x00\x00\x000\x00\x001\x000\x000\x000\x000\x000\x000\x000\x00\x000\x00\x00\x00\x00\x00\x00\x00\x000\x00\x00-1\x000\x00\x00\x000\x00\x00\x000\x000\x00\x000\x00\x00\x00\x00\x00\x000\x00\x00\x00\x00\x000\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x000\x00\x00\x000\x000\x00\x00\x000\x00\x000\x000\x000\x000\x00\x001.7976931348623157e+308\x001.7976931348623157e+308\x001.7976931348623157e+308\x001.7976931348623157e+308\x001.7976931348623157e+308\x000\x00\x00\x00\x001.7976931348623157e+308\x00\x00\x00\x00\x000\x000\x000\x00\x00'
+2025-06-04 11:32:35,528 - src.order.manager - INFO - placeOrder called successfully for order 9fb3a812-38c5-41cb-bd32-d242798979eb
+2025-06-04 11:32:35,529 - src.order.base - INFO - Order 9fb3a812-38c5-41cb-bd32-d242798979eb status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-04 11:32:35,529 - src.rule.linked_order_actions - INFO - Created BUY double down order 'doubledown1' for SLV: 100 shares @ $31.26
+2025-06-04 11:32:35,529 - src.rule.linked_order_actions - INFO - Auto-created double down order for SLV
+2025-06-04 11:32:35,529 - src.rule.linked_order_actions - INFO - Created and linked BUY main order 51be1217-be60-495a-9b45-634d17a4ed1c for SLV
+2025-06-04 11:32:35,531 - src.order.base - INFO - Order 51be1217-be60-495a-9b45-634d17a4ed1c status changed: submitted -> filled (Order fully filled)
+2025-06-04 11:32:35,531 - src.order.base - INFO - Order 51be1217-be60-495a-9b45-634d17a4ed1c filled: 100.0 @ 31.3 (100.0/100)
+2025-06-04 11:32:35,688 - src.tws_connection - INFO - Open Order - ID: 60, Symbol: SLV, Action: BUY, Quantity: 100.0
+2025-06-04 11:32:37,653 - __main__ - INFO -   - DOUBLE_DOWN: 100 @ $31.26
+2025-06-04 11:32:37,654 - __main__ - INFO -   - TARGET: -100 @ $33.18
+2025-06-04 11:32:37,654 - __main__ - INFO -   - stop: -100 @ $30.36
+2025-06-04 11:32:37,654 - __main__ - INFO - 
+================================================================================
+2025-06-04 11:32:37,654 - __main__ - INFO - CAPABILITY 2: CANCEL ALL ORDERS WITH ONE COMMAND
+2025-06-04 11:32:37,654 - __main__ - INFO - ================================================================================
+2025-06-04 11:32:37,655 - __main__ - INFO - 
+Using LinkedCloseAllAction to cancel all orders at once...
+2025-06-04 11:32:37,655 - src.trade_tracker - INFO - Closed trade for SLV
+2025-06-04 11:32:37,655 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-04 11:32:39,662 - __main__ - INFO -   - Orders before: 3
+2025-06-04 11:32:39,662 - __main__ - INFO -   - Orders after: 3
+2025-06-04 11:32:39,662 - __main__ - INFO -   - All cancelled with ONE command!
+2025-06-04 11:32:39,663 - __main__ - INFO -   - Context automatically cleared
+2025-06-04 11:32:39,664 - __main__ - INFO -   - TradeTracker automatically updated
+2025-06-04 11:32:39,664 - __main__ - INFO - 
+================================================================================
+2025-06-04 11:32:39,664 - __main__ - INFO - CAPABILITY 3: DOUBLE DOWN UPDATES (Simulation)
+2025-06-04 11:32:39,665 - __main__ - INFO - ================================================================================
+2025-06-04 11:32:39,665 - __main__ - INFO - 
+When a double down order fills, the context enables:
+2025-06-04 11:32:39,665 - __main__ - INFO - 1. Automatic cancellation of old stop/target orders
+2025-06-04 11:32:39,665 - __main__ - INFO - 2. Creation of new stop/target with updated quantities
+2025-06-04 11:32:39,665 - __main__ - INFO - 3. New average price calculation
+2025-06-04 11:32:39,666 - __main__ - INFO - 4. Preservation of ATR multipliers from original position
+2025-06-04 11:32:39,666 - __main__ - INFO - 
+Example flow:
+2025-06-04 11:32:39,666 - __main__ - INFO -   - Original: 100 shares @ $31.00, stop @ $30.00, target @ $33.00
+2025-06-04 11:32:39,666 - __main__ - INFO -   - Double down fills: 100 shares @ $30.50
+2025-06-04 11:32:39,667 - __main__ - INFO -   - New position: 200 shares @ $30.75 average
+2025-06-04 11:32:39,668 - __main__ - INFO -   - Old stop/target cancelled automatically
+2025-06-04 11:32:39,669 - __main__ - INFO -   - New stop: 200 shares @ $29.75 (using same ATR multiplier)
+2025-06-04 11:32:39,670 - __main__ - INFO -   - New target: 200 shares @ $32.75 (using same ATR multiplier)
+2025-06-04 11:32:39,670 - __main__ - INFO - 
+================================================================================
+2025-06-04 11:32:39,670 - __main__ - INFO - BENEFITS OF CONTEXT-BASED MANAGEMENT
+2025-06-04 11:32:39,671 - __main__ - INFO - ================================================================================
+2025-06-04 11:32:39,677 - __main__ - INFO -   - One command cancels all related orders
+2025-06-04 11:32:39,677 - __main__ - INFO -   - Automatic tracking of order relationships
+2025-06-04 11:32:39,677 - __main__ - INFO -   - Preserves position parameters (ATR multipliers, etc.)
+2025-06-04 11:32:39,678 - __main__ - INFO -   - Automatic updates when orders fill
+2025-06-04 11:32:39,678 - __main__ - INFO -   - Clean state management
+2025-06-04 11:32:39,683 - __main__ - INFO -   - Query all orders and filter manually
+2025-06-04 11:32:39,683 - __main__ - INFO -   - Risk cancelling wrong orders
+2025-06-04 11:32:39,683 - __main__ - INFO -   - Lose position parameters
+2025-06-04 11:32:39,683 - __main__ - INFO -   - Manual tracking of relationships
+2025-06-04 11:32:39,683 - __main__ - INFO -   - Complex state management
+2025-06-04 11:32:39,683 - src.rule.engine - INFO - Rule engine stopped
+2025-06-04 11:32:39,684 - src.trade_tracker - INFO - Cleared all trades from tracker
+2025-06-04 11:32:39,684 - __main__ - INFO - 
+Disconnecting from TWS...
+2025-06-04 11:32:39,684 - src.tws_connection - INFO - Disconnecting from TWS
+2025-06-04 11:32:39,684 - ibapi.client - INFO - disconnecting
+2025-06-04 11:32:39,706 - src.tws_connection - WARNING - Not connected to TWS
+2025-06-04 11:32:39,706 - src.tws_connection - INFO - Connection thread: Message loop ended
