@@ -243,6 +243,129 @@ The LinkedOrderManager acts as a centralized registry that tracks related orders
 - **Risk Overlays**: Add portfolio-level risk orders that span multiple symbols
 - **Time-Based Orders**: Link orders with time-based triggers (e.g., close at EOD)
 
+## 🆕 Trade Tracking System (TradeTracker vs Context)
+
+The system uses two complementary mechanisms for trade management:
+
+### TradeTracker - Duplicate Prevention
+
+The `TradeTracker` is a singleton class that provides persistent tracking of active trades to prevent duplicate positions:
+
+```python
+class TradeTracker:
+    """
+    Singleton class to track active trades across the application.
+    
+    This provides persistent tracking that survives between rule executions,
+    unlike the context which gets copied.
+    """
+    
+    def has_active_trade(self, symbol: str) -> bool:
+        """Check if there's an active trade for a symbol."""
+        
+    def start_trade(self, symbol: str, side: str) -> TradeInfo:
+        """Start tracking a new trade."""
+        
+    def close_trade(self, symbol: str):
+        """Mark a trade as closed."""
+```
+
+**Key Features:**
+- **Persistence**: Survives between rule executions (singleton pattern)
+- **Simple State**: Only tracks symbol, side, and active/closed status
+- **Duplicate Prevention**: Primary purpose is to prevent multiple positions on same symbol
+- **Lightweight**: Minimal data storage for fast lookups
+
+**Usage Example:**
+```python
+# In LinkedCreateOrderAction
+tracker = TradeTracker()
+if tracker.has_active_trade(symbol):
+    active_trade = tracker.get_active_trade(symbol)
+    if active_trade.side == side:
+        logger.info(f"Ignoring {side} signal for {symbol} - already have active {side} trade")
+        return  # Prevent duplicate
+```
+
+### Context - Order Relationship Management
+
+The Context system provides detailed order management and relationships:
+
+```python
+context[symbol] = {
+    "side": "BUY",              # Position side
+    "main_orders": ["id1"],     # Entry order IDs
+    "stop_orders": ["id2"],     # Stop loss order IDs
+    "target_orders": ["id3"],   # Take profit order IDs
+    "doubledown_orders": ["id4"], # Double down order IDs
+    "quantity": 100,            # Position size
+    "entry_price": 150.50,      # Entry price
+    "atr_stop_multiplier": 6.0, # ATR multiplier for stops
+    "status": "active"          # Position status
+}
+```
+
+**Key Features:**
+- **Detailed Tracking**: Stores all order IDs and their relationships
+- **Order Management**: Enables bulk operations (cancel all stops, update targets)
+- **Position Parameters**: Maintains entry prices, quantities, ATR multipliers
+- **Transient**: Gets copied during rule execution (not persistent)
+
+### How They Work Together
+
+1. **Trade Entry**:
+   - TradeTracker checks for duplicates (fast, persistent check)
+   - If no duplicate, Context stores detailed order information
+   - Both systems updated when position opens
+
+2. **During Trade**:
+   - Context manages order relationships and updates
+   - TradeTracker maintains simple active/closed state
+   - Context enables complex operations (update stops after scale-in)
+
+3. **Trade Exit**:
+   - Context used to cancel all related orders
+   - TradeTracker marks trade as closed
+   - Context cleared for fresh start on next trade
+
+**Example Flow:**
+```python
+# 1. New BUY signal arrives
+if not tracker.has_active_trade("AAPL"):  # TradeTracker check
+    # Create position with orders
+    context["AAPL"] = {                    # Context stores details
+        "side": "BUY",
+        "main_orders": ["123"],
+        "stop_orders": ["124"],
+        "target_orders": ["125"],
+        ...
+    }
+    tracker.start_trade("AAPL", "BUY")    # TradeTracker marks active
+
+# 2. Stop loss fills
+# LinkedOrderConclusionManager uses context to:
+# - Find all related orders
+# - Cancel remaining orders
+# - Clear context
+# - Update TradeTracker
+tracker.close_trade("AAPL")
+del context["AAPL"]  # Clean slate for next trade
+```
+
+### Summary of Roles
+
+| Feature | TradeTracker | Context |
+|---------|--------------|---------|
+| **Purpose** | Prevent duplicates | Manage order relationships |
+| **Persistence** | Singleton (persistent) | Transient (copied) |
+| **Data Stored** | Symbol, side, status | All order IDs, prices, parameters |
+| **Primary Use** | "Can I trade this?" | "How do I manage this trade?" |
+| **Scope** | Application-wide | Rule execution scope |
+
+Both systems are essential and complementary:
+- **TradeTracker** = Traffic light (red/green for new trades)
+- **Context** = Control panel (detailed trade management)
+
 ## Event System
 
 The event system provides a flexible, decoupled communication mechanism between components. It is implemented in the `src/event` directory with these key files:

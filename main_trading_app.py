@@ -37,7 +37,7 @@ from src.position.tracker import PositionTracker
 from src.position.sizer import PositionSizer
 from src.price.service import PriceService
 from src.api.monitor import OptionsFlowMonitor
-from api_client import ApiClient
+from api_client import ApiClient, PredictionEndpoint
 from src.indicators.manager import IndicatorManager
 
 # Configure logging
@@ -45,11 +45,20 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('trading.log'),
+        logging.FileHandler('trading.log', encoding='utf-8'),  # Add UTF-8 encoding
         logging.StreamHandler(sys.stdout)
     ]
 )
 logger = logging.getLogger(__name__)
+
+# Reduce noise from IB API logging
+logging.getLogger('ibapi').setLevel(logging.WARNING)
+logging.getLogger('ibapi.client').setLevel(logging.WARNING)
+logging.getLogger('ibapi.wrapper').setLevel(logging.WARNING)
+logging.getLogger('ibapi.decoder').setLevel(logging.WARNING)
+logging.getLogger('ibapi.reader').setLevel(logging.WARNING)
+logging.getLogger('ibapi.connection').setLevel(logging.WARNING)
+logging.getLogger('ibapi.utils').setLevel(logging.WARNING)
 
 
 class TradingApplication:
@@ -142,7 +151,10 @@ class TradingApplication:
         
         # Setup API monitoring
         try:
-            api_client = ApiClient.from_env()
+            # ApiClient will automatically use environment variables if no parameters provided
+            api_client = ApiClient()
+            # Attach the prediction endpoint that OptionsFlowMonitor expects
+            api_client.prediction = PredictionEndpoint(api_client)
             self.api_monitor = OptionsFlowMonitor(self.event_bus, api_client)
             logger.info("✅ API client initialized")
         except Exception as e:

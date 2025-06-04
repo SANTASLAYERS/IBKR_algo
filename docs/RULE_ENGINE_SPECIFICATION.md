@@ -896,6 +896,138 @@ class RuleEngine:
                     logger.error(f"Error handling event for rule {rule_id}: {e}")
 ```
 
+## Context System
+
+The Context system is a fundamental part of the Rule Engine that provides a shared data space for conditions and actions. It enables communication between different components and maintains state during rule execution.
+
+### Context Overview
+
+The context is a dictionary (`Dict[str, Any]`) that contains:
+- **System Components**: References to managers (order_manager, position_tracker, etc.)
+- **Current State**: Active positions, orders, market data
+- **Event Data**: The current event being processed
+- **Symbol-Specific Data**: Order relationships and position details
+- **Custom Data**: Any additional data needed by rules
+
+### Context Hierarchy
+
+1. **Global Context** (`rule_engine.context`)
+   - Persistent throughout the application lifetime
+   - Contains system components and shared state
+   - Updated via `set_context()` and `update_context()`
+
+2. **Rule Context** (`rule.context`)
+   - Rule-specific data that supplements global context
+   - Merged with global context during evaluation
+
+3. **Execution Context** (`rule_context`)
+   - Created for each rule evaluation
+   - Copy of global context + rule context + event data
+   - Isolated to prevent side effects between rules
+
+### Symbol-Specific Context Structure
+
+For order and position management, the context maintains detailed information per symbol:
+
+```python
+context["AAPL"] = {
+    "side": "BUY",                    # Position side (BUY/SELL)
+    "main_orders": ["order_id_1"],    # Entry order IDs
+    "stop_orders": ["order_id_2"],    # Stop loss order IDs
+    "target_orders": ["order_id_3"],  # Take profit order IDs
+    "doubledown_orders": ["order_id_4"], # Double down order IDs
+    "quantity": 100,                  # Total position size
+    "entry_price": 150.50,            # Average entry price
+    "atr_stop_multiplier": 6.0,       # ATR multiplier for stops
+    "atr_target_multiplier": 3.0,     # ATR multiplier for targets
+    "status": "active"                # Position status
+}
+```
+
+### Context Usage in Conditions
+
+Conditions access context to make decisions:
+
+```python
+class EventCondition(Condition):
+    async def evaluate(self, context: Dict[str, Any]) -> bool:
+        event = context.get("event")  # Access current event
+        # ... evaluation logic
+        
+class PositionCondition(Condition):
+    async def evaluate(self, context: Dict[str, Any]) -> bool:
+        position = context.get("position")  # Access current position
+        market_data = context.get("market_data", {})  # Access market data
+        # ... evaluation logic
+```
+
+### Context Usage in Actions
+
+Actions use and modify context:
+
+```python
+class CreateOrderAction(Action):
+    async def execute(self, context: Dict[str, Any]) -> bool:
+        order_manager = context.get("order_manager")  # Get system component
+        symbol_context = context.get(self.symbol, {})  # Get symbol data
+        
+        # Create order...
+        
+        # Update context with new order info
+        if self.symbol not in context:
+            context[self.symbol] = {}
+        context[self.symbol]["main_orders"] = [order.id]
+        
+        return True
+```
+
+### Context Best Practices
+
+1. **Component Access**
+   ```python
+   # Always check if component exists
+   order_manager = context.get("order_manager")
+   if not order_manager:
+       logger.error("Order manager not found in context")
+       return False
+   ```
+
+2. **Symbol Data Management**
+   ```python
+   # Use LinkedOrderManager for consistent symbol data
+   from src.rule.linked_order_actions import LinkedOrderManager
+   
+   order_group = LinkedOrderManager.get_order_group(context, symbol, side)
+   LinkedOrderManager.add_order(context, symbol, order_id, "stop", side)
+   ```
+
+3. **Context Isolation**
+   ```python
+   # Don't modify global context directly in rules
+   # BAD: self.context["key"] = value
+   # GOOD: context["key"] = value  # Modifies execution context only
+   ```
+
+4. **Context Cleanup**
+   ```python
+   # Clean up symbol context when position closes
+   if symbol in context and context[symbol]["status"] == "closed":
+       del context[symbol]  # Remove to prevent stale data
+   ```
+
+### Context vs TradeTracker
+
+While Context provides detailed order management within rule execution scope, TradeTracker provides persistent duplicate prevention across the application:
+
+| Feature | Context | TradeTracker |
+|---------|---------|--------------|
+| **Scope** | Rule execution | Application-wide |
+| **Persistence** | Transient (copied) | Singleton (persistent) |
+| **Purpose** | Order relationships | Duplicate prevention |
+| **Data** | Detailed order/position info | Simple active/closed state |
+
+Both work together to provide complete trade management.
+
 ## Use Cases and Examples
 
 ### Example 1: Trading based on API Prediction Signal

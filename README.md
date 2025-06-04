@@ -14,6 +14,8 @@ A Python framework for automated trading with Interactive Brokers Trader Worksta
 - **Risk Management**: Built-in controls for position limits, stop losses, and take profits
 - **API Integration**: Live connection to external prediction APIs with signal processing
 - **Technical Indicators**: ATR calculation and integration for position sizing
+- **Duplicate Prevention**: TradeTracker system prevents multiple positions on same symbol
+- **Context Management**: Detailed order relationship tracking for complex strategies
 - **Comprehensive Testing**: Integration tests with real TWS connections (29 tests passing)
 
 ## Requirements
@@ -403,6 +405,18 @@ pytest tests/order/
 - P&L calculations (realized and unrealized)
 - Risk management integration
 
+### Trade Tracker (`src/trade_tracker.py`)
+- Singleton pattern for persistent trade tracking
+- Prevents duplicate positions on same symbol
+- Tracks active trades across rule executions
+- Works with Context system for complete trade management
+
+### Context System (Rule Engine)
+- Detailed order relationship management
+- Tracks all order IDs (main, stop, target, double down)
+- Enables bulk order operations
+- Transient storage within rule execution scope
+
 ## Contributing
 
 1. **Setup development environment**:
@@ -410,22 +424,3 @@ pytest tests/order/
    pip install -r requirements.txt
    pip install -r requirements-dev.txt
    ```
-
-2. **Run tests before committing**:
-   ```bash
-   pytest tests/
-   python run_integration_tests.py basic
-   ```
-
-3. **Follow safety guidelines**:
-   - Use paper trading only
-   - Test incrementally
-   - Document changes thoroughly
-
-## License
-
-MIT License - see LICENSE file for details
-
----
-
-**⚠️ Important**: This framework is designed for educational and development purposes. Always use paper trading accounts for testing and development. Never risk real money without thorough testing and proper risk management procedures.
