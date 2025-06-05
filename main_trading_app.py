@@ -35,10 +35,12 @@ from src.order import OrderType
 from src.order.manager import OrderManager
 from src.position.tracker import PositionTracker
 from src.position.sizer import PositionSizer
+from src.position.position_manager import PositionManager
 from src.price.service import PriceService
 from src.api.monitor import OptionsFlowMonitor
 from api_client import ApiClient, PredictionEndpoint
 from src.indicators.manager import IndicatorManager
+from src.config.feature_flags import FeatureFlags
 
 # Configure logging
 logging.basicConfig(
@@ -78,10 +80,14 @@ class TradingApplication:
         self.indicator_manager = None
         self.price_service = None
         self.position_sizer = None
+        self.strategies = {}
         
     async def initialize(self):
         """Initialize all system components."""
         logger.info("🚀 Initializing Trading Application...")
+        
+        # Log feature flags
+        FeatureFlags.log_flags(logger)
         
         # Create event bus
         self.event_bus = EventBus()
@@ -101,6 +107,10 @@ class TradingApplication:
         self.order_manager = OrderManager(self.event_bus, self.tws_connection)
         self.position_tracker = PositionTracker(self.event_bus)
         self.rule_engine = RuleEngine(self.event_bus)
+        
+        # Initialize PositionManager (singleton)
+        position_manager = PositionManager()
+        logger.info("✅ PositionManager initialized (dual-write enabled)")
         
         # Initialize indicator manager for ATR calculations
         self.indicator_manager = IndicatorManager(
@@ -168,85 +178,28 @@ class TradingApplication:
         logger.info("📋 Setting up trading strategies...")
         
         # Strategy configurations for different tickers
-        strategies = [
-            {
-                "ticker": "CVNA",
-                "confidence_threshold": 0.50,
-                "allocation": 10000,           # $10K allocation instead of fixed 100 shares
-                "atr_stop_multiplier": 6.0,    # ATR * 6 for stop loss
-                "atr_target_multiplier": 3.0,  # ATR * 3 for profit target
-                "cooldown_minutes": 3
-            },
-            {
-                "ticker": "UVXY", 
-                "confidence_threshold": 0.50,
-                "allocation": 10000,
-                "atr_stop_multiplier": 6.0,
-                "atr_target_multiplier": 3.0,
-                "cooldown_minutes": 3
-            },
-            {
-                "ticker": "SOXL",
-                "confidence_threshold": 0.50,
-                "allocation": 10000,
-                "atr_stop_multiplier": 6.0,
-                "atr_target_multiplier": 3.0,
-                "cooldown_minutes": 3
-            },
-            {
-                "ticker": "SOXS",
-                "confidence_threshold": 0.50,
-                "allocation": 10000,
-                "atr_stop_multiplier": 6.0,
-                "atr_target_multiplier": 3.0,
-                "cooldown_minutes": 3
-            },
-            {
-                "ticker": "TQQQ",
-                "confidence_threshold": 0.50,
-                "allocation": 10000,
-                "atr_stop_multiplier": 6.0,
-                "atr_target_multiplier": 3.0,
-                "cooldown_minutes": 3
-            },
-            {
-                "ticker": "SQQQ",
-                "confidence_threshold": 0.50,
-                "allocation": 10000,
-                "atr_stop_multiplier": 6.0,
-                "atr_target_multiplier": 3.0,
-                "cooldown_minutes": 3
-            },
-            {
-                "ticker": "GLD",
-                "confidence_threshold": 0.50,
-                "allocation": 10000,
-                "atr_stop_multiplier": 6.0,
-                "atr_target_multiplier": 3.0,
-                "cooldown_minutes": 3
-            },
-            {
-                "ticker": "SLV",
-                "confidence_threshold": 0.50,
-                "allocation": 10000,
-                "atr_stop_multiplier": 6.0,
-                "atr_target_multiplier": 3.0,
-                "cooldown_minutes": 3
-            }
-        ]
+        self.strategies = {
+            "CVNA": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 1.0, "cooldown_minutes": 3},
+            "UVXY": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 1.0, "cooldown_minutes": 3},
+            "SOXL": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 1.0, "cooldown_minutes": 3},
+            "SOXS": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 1.0, "cooldown_minutes": 3},
+            "TQQQ": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 1.0, "cooldown_minutes": 3},
+            "SQQQ": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 1.0, "cooldown_minutes": 3},
+            "GLD": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 1.0, "cooldown_minutes": 3},
+            "SLV": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 1.0, "cooldown_minutes": 3}
+        }
         
         # Create rules for each strategy
-        for strategy in strategies:
-            self._create_strategy_rules(strategy)
+        for ticker, strategy in self.strategies.items():
+            self._create_strategy_rules(ticker, strategy)
         
         # Add end-of-day position closure rule
         self._create_eod_closure_rule()
         
-        logger.info(f"✅ Created strategies for {len(strategies)} tickers")
+        logger.info(f"✅ Created strategies for {len(self.strategies)} tickers")
     
-    def _create_strategy_rules(self, strategy: Dict):
+    def _create_strategy_rules(self, ticker: str, strategy: Dict):
         """Create buy and sell rules for a specific ticker strategy."""
-        ticker = strategy["ticker"]
         
         # BUY Rule (Long Entry)
         buy_condition = EventCondition(
@@ -395,7 +348,25 @@ class TradingApplication:
     async def run_monitoring_loop(self):
         """Run the main monitoring loop."""
         try:
+            last_reconciliation = datetime.now()
+            reconciliation_interval = 3600  # 1 hour
+            
             while self.running:
+                # Check if we should run reconciliation
+                if FeatureFlags.RECONCILIATION_ENABLED:
+                    time_since_last = (datetime.now() - last_reconciliation).total_seconds()
+                    if time_since_last >= reconciliation_interval:
+                        # Run reconciliation
+                        try:
+                            from src.utils.reconcile_position_tracking import run_reconciliation
+                            logger.info("🔍 Running position tracking reconciliation...")
+                            summary = run_reconciliation()
+                            if summary['status'] != 'IN_SYNC':
+                                logger.warning(f"⚠️ Position tracking discrepancies found: {summary['discrepancies']['count']}")
+                            last_reconciliation = datetime.now()
+                        except Exception as e:
+                            logger.error(f"Error running reconciliation: {e}")
+                
                 # Log status every 10 minutes
                 await asyncio.sleep(600)
                 if self.running:

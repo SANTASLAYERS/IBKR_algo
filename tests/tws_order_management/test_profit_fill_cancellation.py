@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Test Double Down Fill Order Updates
-===================================
+Test Profit Target Fill Order Cancellation
+==========================================
 
-This test verifies that when a double down order fills, the stop and target
-orders are properly updated with new quantities and prices.
+This test verifies that when a profit target fills, all remaining orders
+(stop loss and double down) are properly cancelled.
 
-We create REAL orders with a small ATR multiplier to make the double down fill quickly.
+We create REAL orders but SIMULATE the profit target fill to test the cancellation logic.
 """
 
 import asyncio
@@ -23,8 +23,7 @@ from src.rule.engine import RuleEngine
 from src.rule.condition import EventCondition
 from src.rule.linked_order_actions import (
     LinkedCreateOrderAction, 
-    LinkedOrderConclusionManager,
-    LinkedDoubleDownFillManager
+    LinkedOrderConclusionManager
 )
 from src.rule.base import Rule
 from src.order import OrderType, OrderStatus
@@ -35,14 +34,13 @@ from src.position.sizer import PositionSizer
 from src.price.service import PriceService
 from src.indicators.manager import IndicatorManager
 from src.trade_tracker import TradeTracker
-from src.position.position_manager import PositionManager
 
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('test_doubledown_fill_update.log', encoding='utf-8'),
+        logging.FileHandler('test_profit_fill_cancellation.log', encoding='utf-8'),
         logging.StreamHandler()
     ]
 )
@@ -55,9 +53,9 @@ logging.getLogger('ibapi.wrapper').setLevel(logging.WARNING)
 
 
 async def main():
-    """Test double down fill order updates."""
+    """Test profit target fill order cancellation."""
     logger.info("=" * 80)
-    logger.info("DOUBLE DOWN FILL UPDATE TEST")
+    logger.info("PROFIT TARGET FILL CANCELLATION TEST")
     logger.info("=" * 80)
     
     # Initialize components
@@ -86,10 +84,6 @@ async def main():
     await order_manager.initialize()
     await position_tracker.initialize()
     
-    # Get current GLD price to avoid 5-second delay in double down creation
-    gld_price = await price_service.get_price("GLD")
-    logger.info(f"Current GLD price: ${gld_price}")
-    
     # Setup rule engine context
     rule_engine.update_context({
         "order_manager": order_manager,
@@ -98,7 +92,7 @@ async def main():
         "price_service": price_service,
         "position_sizer": position_sizer,
         "account": {"equity": 100000},
-        "prices": {"GLD": gld_price}  # Add GLD price to context
+        "prices": {}
     })
     
     # Initialize LinkedOrderConclusionManager
@@ -108,14 +102,7 @@ async def main():
     )
     await conclusion_manager.initialize()
     
-    # Initialize LinkedDoubleDownFillManager
-    doubledown_manager = LinkedDoubleDownFillManager(
-        context=rule_engine.context,
-        event_bus=event_bus
-    )
-    await doubledown_manager.initialize()
-    
-    # Create buy rule for GLD with small ATR multipliers for quick fills
+    # Create buy rule for GLD with very tight profit target
     buy_condition = EventCondition(
         event_type=PredictionSignalEvent,
         field_conditions={
@@ -130,8 +117,8 @@ async def main():
         side="BUY",
         order_type=OrderType.MARKET,
         auto_create_stops=True,
-        atr_stop_multiplier=50.0,     # Increased to 50 ATR for much larger stop distance
-        atr_target_multiplier=20.0    # Target at 20 ATR above (very far away so double down fills first)
+        atr_stop_multiplier=6.0,
+        atr_target_multiplier=0.5  # Set target 0.5 ATR above current price
     )
     
     buy_rule = Rule(
@@ -195,36 +182,29 @@ async def main():
     logger.info(f"Target orders: {len(target_orders)}")
     logger.info(f"Double down orders: {len(doubledown_orders)}")
     
-    if not doubledown_orders:
-        logger.error("❌ No double down orders found!")
-        await cleanup(tws_connection, rule_engine, order_manager)
+    if not target_orders:
+        logger.error("❌ No target orders found!")
+        await cleanup(tws_connection, rule_engine)
         return
     
-    # Get the double down order
-    dd_order = doubledown_orders[0]
+    # Get the target order
+    target_order = target_orders[0]
     
-    logger.info(f"\nDouble down order details:")
-    logger.info(f"  ID: {dd_order.order_id}")
-    logger.info(f"  Status: {dd_order.status.value}")
-    logger.info(f"  Limit price: {dd_order.limit_price}")
-    logger.info(f"  Quantity: {dd_order.quantity}")
+    logger.info(f"\nTarget order details:")
+    logger.info(f"  ID: {target_order.order_id}")
+    logger.info(f"  Status: {target_order.status.value}")
+    logger.info(f"  Limit price: {target_order.limit_price}")
     
-    # Record original stop/target details
-    original_stop_price = stop_orders[0].stop_price if stop_orders else None
-    original_target_price = target_orders[0].limit_price if target_orders else None
-    original_stop_qty = stop_orders[0].quantity if stop_orders else None
-    original_target_qty = target_orders[0].quantity if target_orders else None
-    
-    logger.info(f"\nOriginal protective orders:")
-    logger.info(f"  Stop: {original_stop_qty} @ ${original_stop_price}")
-    logger.info(f"  Target: {original_target_qty} @ ${original_target_price}")
+    # Count active orders before waiting for fill
+    active_orders_before = len([o for o in gld_orders if o.is_active])
+    logger.info(f"\nActive orders before fill: {active_orders_before}")
     
     logger.info("\n" + "="*60)
-    logger.info("STEP 3: Waiting for double down order to fill")
+    logger.info("STEP 3: Waiting for profit target to fill")
     logger.info("="*60)
     
-    # Wait for the double down order to fill naturally
-    logger.info(f"Waiting for double down order {dd_order.order_id} to fill at ${dd_order.limit_price}...")
+    # Wait for the target order to fill naturally
+    logger.info(f"Waiting for target order {target_order.order_id} to fill at ${target_order.limit_price}...")
     
     max_wait_time = 300  # Wait up to 5 minutes
     check_interval = 5   # Check every 5 seconds
@@ -232,103 +212,74 @@ async def main():
     
     while elapsed_time < max_wait_time:
         # Refresh order status
-        dd_order = await order_manager.get_order(dd_order.order_id)
-        if dd_order and dd_order.is_filled:
-            logger.info(f"✅ Double down order filled at ${dd_order.avg_fill_price}!")
+        target_order = await order_manager.get_order(target_order.order_id)
+        if target_order and target_order.is_filled:
+            logger.info(f"✅ Target order filled at ${target_order.avg_fill_price}!")
             break
         
-        logger.info(f"Waiting... ({elapsed_time}s elapsed, order status: {dd_order.status.value if dd_order else 'unknown'})")
+        logger.info(f"Waiting... ({elapsed_time}s elapsed, order status: {target_order.status.value if target_order else 'unknown'})")
         await asyncio.sleep(check_interval)
         elapsed_time += check_interval
     
-    if not dd_order or not dd_order.is_filled:
-        logger.warning(f"⚠️ Double down order did not fill within {max_wait_time} seconds")
-        logger.info("Test incomplete - double down order did not fill naturally")
-        await cleanup(tws_connection, rule_engine, order_manager)
+    if not target_order or not target_order.is_filled:
+        logger.warning(f"⚠️ Target order did not fill within {max_wait_time} seconds")
+        logger.info("Test incomplete - profit target did not fill naturally")
+        await cleanup(tws_connection, rule_engine)
         return
     
-    # Give LinkedDoubleDownFillManager time to process the fill and update orders
-    await asyncio.sleep(10)
+    # Give LinkedOrderConclusionManager time to process the fill
+    await asyncio.sleep(5)
     
     logger.info("\n" + "="*60)
-    logger.info("STEP 4: Checking if stop and target orders were updated")
+    logger.info("STEP 4: Checking if stop and double down orders were cancelled")
     logger.info("="*60)
     
-    # Get updated orders
+    # Check order statuses
+    for order in stop_orders:
+        order = await order_manager.get_order(order.order_id)  # Refresh order status
+        if order:
+            logger.info(f"Stop order {order.order_id} status: {order.status.value}")
+            if order.status == "cancelled":
+                logger.info("✅ Stop order was cancelled!")
+            else:
+                logger.error(f"❌ Stop order is still {order.status.value}")
+    
+    for order in doubledown_orders:
+        order = await order_manager.get_order(order.order_id)  # Refresh order status
+        if order:
+            logger.info(f"Double down order {order.order_id} status: {order.status.value}")
+            if order.status == "cancelled":
+                logger.info("✅ Double down order was cancelled!")
+            else:
+                logger.error(f"❌ Double down order is still {order.status.value}")
+    
+    # Count active orders after
     gld_orders_after = await order_manager.get_orders_for_symbol("GLD")
+    active_orders_after = len([o for o in gld_orders_after if o.is_active])
+    logger.info(f"\nActive orders after fill: {active_orders_after}")
     
-    # Find new stop and target orders
-    new_stop_orders = []
-    new_target_orders = []
-    
-    for order in gld_orders_after:
-        if order.order_type == OrderType.STOP and order.is_active:
-            new_stop_orders.append(order)
-        elif order.order_type == OrderType.LIMIT and order.side == OrderSide.SELL and order.is_active:
-            new_target_orders.append(order)
-    
-    logger.info(f"Active stop orders after double down: {len(new_stop_orders)}")
-    logger.info(f"Active target orders after double down: {len(new_target_orders)}")
-    
-    if new_stop_orders:
-        new_stop = new_stop_orders[0]
-        logger.info(f"\nNew stop order:")
-        logger.info(f"  ID: {new_stop.order_id}")
-        logger.info(f"  Quantity: {new_stop.quantity} (was {original_stop_qty})")
-        logger.info(f"  Stop price: ${new_stop.stop_price} (was ${original_stop_price})")
-        
-        # Check if quantity was updated (should be doubled)
-        expected_qty = original_stop_qty * 2  # Since we doubled the position
-        if abs(new_stop.quantity) == abs(expected_qty):
-            logger.info("✅ Stop order quantity correctly updated!")
-        else:
-            logger.error(f"❌ Stop order quantity not updated correctly: expected {expected_qty}, got {new_stop.quantity}")
+    # Check if TradeTracker was updated
+    trade_tracker = TradeTracker()
+    gld_trade = trade_tracker.get_active_trade("GLD")
+    if gld_trade:
+        logger.error("❌ TradeTracker still shows active trade for GLD")
     else:
-        logger.error("❌ No active stop orders found after double down fill")
-    
-    if new_target_orders:
-        new_target = new_target_orders[0]
-        logger.info(f"\nNew target order:")
-        logger.info(f"  ID: {new_target.order_id}")
-        logger.info(f"  Quantity: {new_target.quantity} (was {original_target_qty})")
-        logger.info(f"  Limit price: ${new_target.limit_price} (was ${original_target_price})")
-        
-        # Check if quantity was updated (should be doubled)
-        expected_qty = original_target_qty * 2  # Since we doubled the position
-        if abs(new_target.quantity) == abs(expected_qty):
-            logger.info("✅ Target order quantity correctly updated!")
-        else:
-            logger.error(f"❌ Target order quantity not updated correctly: expected {expected_qty}, got {new_target.quantity}")
-    else:
-        logger.error("❌ No active target orders found after double down fill")
-    
-    # Check PositionManager state
-    position_manager = PositionManager()
-    position = position_manager.get_position("GLD")
-    
-    if position:
-        logger.info(f"\nPositionManager state:")
-        logger.info(f"  Symbol: {position.symbol}")
-        logger.info(f"  Side: {position.side}")
-        logger.info(f"  Stop orders: {len(position.stop_orders)}")
-        logger.info(f"  Target orders: {len(position.target_orders)}")
-        logger.info(f"  All orders: {position.get_all_orders()}")
-    else:
-        logger.error("❌ No position found in PositionManager")
+        logger.info("✅ TradeTracker correctly shows no active trade for GLD")
     
     logger.info("\n" + "="*60)
     logger.info("TEST COMPLETE")
     logger.info("="*60)
     
-    await cleanup(tws_connection, rule_engine, order_manager)
-
-
-async def cleanup(tws_connection, rule_engine, order_manager):
-    """Clean up resources."""
+    # Cancel all remaining orders for cleanup
     logger.info("\nCancelling all remaining orders for cleanup...")
     cancelled = await order_manager.cancel_all_orders("GLD", "Test cleanup")
     logger.info(f"Cancelled {cancelled} orders")
     
+    await cleanup(tws_connection, rule_engine)
+
+
+async def cleanup(tws_connection, rule_engine):
+    """Clean up resources."""
     logger.info("\nCleaning up...")
     await rule_engine.stop()
     if tws_connection.is_connected():

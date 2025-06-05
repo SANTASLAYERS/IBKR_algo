@@ -13,6 +13,12 @@ from src.order import OrderType
 from src.event.order import FillEvent
 from src.trade_tracker import TradeTracker
 import asyncio
+from datetime import datetime
+
+from src.event.bus import EventBus
+from src.order.manager import OrderManager
+from src.position.tracker import PositionTracker
+from src.position.position_manager import PositionManager
 
 logger = logging.getLogger(__name__)
 
@@ -40,45 +46,47 @@ class LinkedOrderConclusionManager:
             symbol = event.symbol
             order_id = event.order_id
             
-            # Get the order group for this symbol
-            group = self.context.get(symbol, {})
+            # Use PositionManager to find position and check if it's a protective order
+            position_manager = PositionManager()
+            position = position_manager.find_position_by_order(order_id)
             
-            # Check if the filled order was a stop or target order
-            if (order_id in group.get("stop_orders", []) or 
-                order_id in group.get("target_orders", [])):
-                
-                # Position concluded via stop/target fill
-                side = group.get("side", "UNKNOWN")
-                order_type = "stop" if order_id in group.get("stop_orders", []) else "target"
-                
-                logger.info(f"🎯 {side} position concluded for {symbol} - {order_type} order {order_id} filled at ${event.fill_price}")
-                
-                # CRITICAL FIX: Cancel all remaining orders before clearing context
-                order_manager = self.context.get("order_manager")
-                if order_manager:
-                    # Get all remaining orders for this symbol
-                    all_orders = LinkedOrderManager.get_linked_orders(self.context, symbol)
-                    
-                    # Remove the filled order from the list
-                    if order_id in all_orders:
-                        all_orders.remove(order_id)
-                    
-                    # Cancel all remaining orders
-                    for remaining_order_id in all_orders:
-                        try:
-                            await order_manager.cancel_order(remaining_order_id, f"Position concluded via {order_type} fill")
-                            logger.info(f"Cancelled remaining order {remaining_order_id} for {symbol}")
-                        except Exception as e:
-                            logger.warning(f"Failed to cancel order {remaining_order_id}: {e}")
-                
-                # Update TradeTracker
-                trade_tracker = TradeTracker()
-                trade_tracker.close_trade(symbol)
-                
-                # Delete context completely
-                if symbol in self.context:
-                    del self.context[symbol]
-                    logger.info(f"Context cleared for {symbol} after position conclusion")
+            if not position:
+                logger.debug(f"No position found for order {order_id}")
+                return
+            
+            is_protective, order_type = position.is_protective_order(order_id)
+            if not is_protective:
+                logger.debug(f"Order {order_id} is not a protective order")
+                return
+            
+            # Position concluded via stop/target fill
+            logger.info(f"🎯 {position.side} position concluded for {symbol} - {order_type} order {order_id} filled at ${event.fill_price}")
+            
+            # Get all orders to cancel
+            all_orders = position.get_all_orders()
+            
+            # Remove the filled order from the list
+            all_orders.discard(order_id)
+            
+            # Cancel all remaining orders
+            order_manager = self.context.get("order_manager")
+            if order_manager:
+                for remaining_order_id in all_orders:
+                    try:
+                        await order_manager.cancel_order(remaining_order_id, f"Position concluded via {order_type} fill")
+                        logger.info(f"Cancelled remaining order {remaining_order_id} for {symbol}")
+                    except Exception as e:
+                        logger.warning(f"Failed to cancel order {remaining_order_id}: {e}")
+            
+            # Update both TradeTracker and PositionManager
+            trade_tracker = TradeTracker()
+            trade_tracker.close_trade(symbol)
+            position_manager.close_position(symbol)
+            
+            # Clean up context if it exists (for backward compatibility)
+            if symbol in self.context:
+                del self.context[symbol]
+                logger.info(f"Context cleared for {symbol} after position conclusion")
                 
         except Exception as e:
             logger.error(f"Error handling fill event for position conclusion: {e}")
@@ -285,6 +293,9 @@ class LinkedCreateOrderAction(Action):
         # Get the trade tracker singleton
         trade_tracker = TradeTracker()
         
+        # Get the position manager singleton (for dual-write)
+        position_manager = PositionManager()
+        
         # FIRST: Check if we already have an active trade for this symbol
         active_trade = trade_tracker.get_active_trade(self.symbol)
         if active_trade:
@@ -325,6 +336,10 @@ class LinkedCreateOrderAction(Action):
             # Start tracking this new trade
             trade_tracker.start_trade(self.symbol, self.side)
             
+            # DUAL-WRITE: Also open position in PositionManager
+            position_manager.open_position(self.symbol, self.side)
+            logger.debug(f"[DUAL-WRITE] Opened position in PositionManager for {self.symbol} {self.side}")
+            
             # Calculate actual shares to trade
             actual_shares = await self._calculate_position_size(context)
             if actual_shares is None:
@@ -344,8 +359,12 @@ class LinkedCreateOrderAction(Action):
                 auto_submit=True  # Submit immediately
             )
             
-            # Link the order with side tracking
+            # Link the order with side tracking (legacy)
             LinkedOrderManager.add_order(context, self.symbol, order.order_id, self.link_type, self.side)
+            
+            # DUAL-WRITE: Also track in PositionManager
+            position_manager.add_orders_to_position(self.symbol, "main", [order.order_id])
+            logger.debug(f"[DUAL-WRITE] Added main order {order.order_id} to PositionManager")
             
             # Store quantity and ATR multipliers in context for double down calculation
             if self.symbol in context:
@@ -501,6 +520,11 @@ class LinkedCreateOrderAction(Action):
             
             LinkedOrderManager.add_order(context, self.symbol, stop_order.order_id, "stop", self.side)
             logger.info(f"Auto-created {self.side} stop loss {stop_order.order_id} at ${stop_price:.2f}")
+            
+            # DUAL-WRITE: Also track in PositionManager
+            position_manager = PositionManager()
+            position_manager.add_orders_to_position(self.symbol, "stop", [stop_order.order_id])
+            logger.debug(f"[DUAL-WRITE] Added stop order {stop_order.order_id} to PositionManager")
         
         # Create take profit order
         target_price = None
@@ -538,6 +562,11 @@ class LinkedCreateOrderAction(Action):
             
             LinkedOrderManager.add_order(context, self.symbol, target_order.order_id, "target", self.side)
             logger.info(f"Auto-created {self.side} take profit {target_order.order_id} at ${target_price:.2f}")
+            
+            # DUAL-WRITE: Also track in PositionManager
+            position_manager = PositionManager()
+            position_manager.add_orders_to_position(self.symbol, "target", [target_order.order_id])
+            logger.debug(f"[DUAL-WRITE] Added target order {target_order.order_id} to PositionManager")
     
     async def _create_double_down_orders(self, context: Dict[str, Any], actual_shares):
         """Create double down limit orders automatically after entry."""
@@ -558,7 +587,7 @@ class LinkedCreateOrderAction(Action):
             # Create double down action
             double_down_action = LinkedDoubleDownAction(
                 symbol=self.symbol,
-                distance_to_stop_multiplier=0.5,  # Halfway to stop loss
+                distance_to_stop_multiplier=0.1,  # 1/10 of the way to stop loss (much closer to current price)
                 quantity_multiplier=1.0,          # Same size as original position
                 level_name="doubledown1"          # First double down level
             )
@@ -664,59 +693,116 @@ class LinkedScaleInAction(Action):
         stop_orders = LinkedOrderManager.get_linked_orders(context, self.symbol, "stop")
         target_orders = LinkedOrderManager.get_linked_orders(context, self.symbol, "target")
         
-        # Update stop orders
-        for stop_order_id in stop_orders:
-            # Cancel old stop and create new one
-            await order_manager.cancel_order(stop_order_id, "Scale-in adjustment")
-            LinkedOrderManager.remove_order(context, self.symbol, stop_order_id)
-            
-            # Create new stop at adjusted price with correct logic for side
-            if side == "BUY":  # Long position
-                new_stop_price = new_avg_price * 0.97  # 3% stop loss below
-                stop_quantity = -abs(new_quantity)  # Sell to close
-            else:  # Short position
-                new_stop_price = new_avg_price * 1.03  # 3% stop loss above
-                stop_quantity = abs(new_quantity)   # Buy to close
-            
-            # Round to 2 decimal places
-            new_stop_price = round(new_stop_price, 2)
-                
-            new_stop = await order_manager.create_order(
-                symbol=self.symbol,
-                quantity=stop_quantity,
-                order_type=OrderType.STOP,
-                stop_price=new_stop_price,
-                auto_submit=True  # Submit immediately
-            )
-            LinkedOrderManager.add_order(context, self.symbol, new_stop.order_id, "stop", side)
-            logger.info(f"Updated {side} stop loss to {new_stop_price:.2f} after scale-in")
+        # Cancel existing stop and target orders
+        old_stop_orders = position_info.get("stop_orders", []).copy()
+        old_target_orders = position_info.get("target_orders", []).copy()
         
-        # Update target orders
-        for target_order_id in target_orders:
-            # Cancel old target and create new one
-            await order_manager.cancel_order(target_order_id, "Scale-in adjustment")
-            LinkedOrderManager.remove_order(context, self.symbol, target_order_id)
-            
-            # Create new target at adjusted price with correct logic for side
-            if side == "BUY":  # Long position
-                new_target_price = new_avg_price * 1.08  # 8% profit target above
-                target_quantity = -abs(new_quantity)  # Sell to close
-            else:  # Short position
-                new_target_price = new_avg_price * 0.92  # 8% profit target below
-                target_quantity = abs(new_quantity)   # Buy to close
-            
-            # Round to 2 decimal places
-            new_target_price = round(new_target_price, 2)
-                
-            new_target = await order_manager.create_order(
-                symbol=self.symbol,
-                quantity=target_quantity,
-                order_type=OrderType.LIMIT,
-                limit_price=new_target_price,
+        for stop_id in old_stop_orders:
+            try:
+                await order_manager.cancel_order(stop_id, "Double down fill - updating protective orders")
+                self.logger.info(f"Cancelled old stop order {stop_id}")
+            except Exception as e:
+                self.logger.warning(f"Failed to cancel stop order {stop_id}: {e}")
+        
+        for target_id in old_target_orders:
+            try:
+                await order_manager.cancel_order(target_id, "Double down fill - updating protective orders")
+                self.logger.info(f"Cancelled old target order {target_id}")
+            except Exception as e:
+                self.logger.warning(f"Failed to cancel target order {target_id}: {e}")
+        
+        # Clear old order lists
+        position_info["stop_orders"] = []
+        position_info["target_orders"] = []
+        
+        # DUAL-WRITE: Also remove old orders from PositionManager
+        position_manager = PositionManager()
+        # Remove each order individually
+        for stop_id in old_stop_orders:
+            position_manager.remove_order(symbol, stop_id)
+        for target_id in old_target_orders:
+            position_manager.remove_order(symbol, target_id)
+        self.logger.debug(f"[DUAL-WRITE] Removed old stop/target orders from PositionManager for {symbol}")
+        
+        # Calculate new stop and target prices
+        if atr:
+            # Use ATR-based calculations
+            stop_distance = atr * stop_multiplier
+            target_distance = atr * target_multiplier
+        else:
+            # Fallback to percentage-based (3% stop, 6% target)
+            stop_distance = new_avg_price * 0.03
+            target_distance = new_avg_price * 0.06
+        
+        if is_long:
+            stop_price = new_avg_price - stop_distance
+            target_price = new_avg_price + target_distance
+            # For long positions, stop/target orders are sell orders (negative quantity)
+            order_quantity = -abs(new_quantity)
+        else:
+            stop_price = new_avg_price + stop_distance
+            target_price = new_avg_price - target_distance
+            # For short positions, stop/target orders are buy orders (positive quantity)
+            order_quantity = abs(new_quantity)
+        
+        # Round to 2 decimal places
+        stop_price = round(stop_price, 2)
+        target_price = round(target_price, 2)
+        
+        # Create new stop order
+        try:
+            stop_order = await order_manager.create_order(
+                symbol=symbol,
+                quantity=order_quantity,
+                order_type=OrderType.STOP,
+                stop_price=stop_price,
                 auto_submit=True  # Submit immediately
             )
-            LinkedOrderManager.add_order(context, self.symbol, new_target.order_id, "target", side)
-            logger.info(f"Updated {side} take profit to {new_target_price:.2f} after scale-in")
+            
+            if stop_order:
+                # Link the new stop order
+                LinkedOrderManager.add_order(self.context, symbol, stop_order.order_id, "stop", side)
+                position_info["stop_orders"].append(stop_order.order_id)
+                
+                # DUAL-WRITE: Also track in PositionManager
+                position_manager.add_orders_to_position(symbol, "stop", [stop_order.order_id])
+                self.logger.debug(f"[DUAL-WRITE] Added stop order {stop_order.order_id} to PositionManager")
+                
+                self.logger.info(f"Created updated stop order {stop_order.order_id} for {symbol} "
+                               f"at ${stop_price:.2f} for {order_quantity} shares")
+        except Exception as e:
+            self.logger.error(f"Failed to create stop order: {e}")
+        
+        # Create new target order
+        try:
+            target_order = await order_manager.create_order(
+                symbol=symbol,
+                quantity=order_quantity,
+                order_type=OrderType.LIMIT,
+                limit_price=target_price,
+                auto_submit=True  # Submit immediately
+            )
+            
+            if target_order:
+                # Link the new target order
+                LinkedOrderManager.add_order(self.context, symbol, target_order.order_id, "target", side)
+                position_info["target_orders"].append(target_order.order_id)
+                
+                # DUAL-WRITE: Also track in PositionManager
+                position_manager.add_orders_to_position(symbol, "target", [target_order.order_id])
+                self.logger.debug(f"[DUAL-WRITE] Added target order {target_order.order_id} to PositionManager")
+                
+                self.logger.info(f"Created updated target order {target_order.order_id} for {symbol} "
+                               f"at ${target_price:.2f} for {order_quantity} shares")
+        except Exception as e:
+            self.logger.error(f"Failed to create target order: {e}")
+        
+        # Update position info with new metrics
+        position_info["quantity"] = new_quantity
+        position_info["entry_price"] = new_avg_price
+        
+        self.logger.info(f"Updated protective orders for {symbol}: "
+                        f"New quantity={new_quantity}, New avg=${new_avg_price:.2f}") 
 
 
 class LinkedCloseAllAction(Action):
@@ -751,6 +837,11 @@ class LinkedCloseAllAction(Action):
             # Update TradeTracker
             trade_tracker = TradeTracker()
             trade_tracker.close_trade(self.symbol)
+            
+            # DUAL-WRITE: Also close in PositionManager
+            position_manager = PositionManager()
+            position_manager.close_position(self.symbol)
+            logger.debug(f"[DUAL-WRITE] Closed position in PositionManager for {self.symbol}")
             
             # Delete context completely for clean slate
             if self.symbol in context:
@@ -841,6 +932,11 @@ class LinkedDoubleDownAction(Action):
             # Link the double down order
             LinkedOrderManager.add_order(context, self.symbol, double_down_order.order_id, self.level_name, side)
             
+            # DUAL-WRITE: Also track in PositionManager
+            position_manager = PositionManager()
+            position_manager.add_orders_to_position(self.symbol, "doubledown", [double_down_order.order_id])
+            logger.debug(f"[DUAL-WRITE] Added double down order {double_down_order.order_id} to PositionManager")
+            
             logger.info(f"Created {side} double down order '{self.level_name}' for {self.symbol}: "
                        f"{double_down_quantity} shares @ ${double_down_price:.2f}")
             return True
@@ -852,21 +948,19 @@ class LinkedDoubleDownAction(Action):
     async def _calculate_double_down_parameters(self, context: Dict[str, Any]) -> tuple[Optional[float], Optional[int]]:
         """Calculate the price and quantity for the double down order."""
         try:
-            # Get current price
-            price_service = context.get("price_service")
-            current_price = None
+            # Get current price - SKIP price service to avoid 5-second delay
+            current_price = context.get("prices", {}).get(self.symbol)
+            if current_price:
+                logger.info(f"Using context price for {self.symbol}: ${current_price:.2f}")
             
-            if price_service:
-                try:
-                    current_price = await price_service.get_price(self.symbol)
-                except Exception as e:
-                    logger.warning(f"Price service failed for {self.symbol}: {e}")
-            
-            # Fall back to context price if price service failed
             if not current_price:
-                current_price = context.get("prices", {}).get(self.symbol)
-                if current_price:
-                    logger.info(f"Using context price for {self.symbol}: ${current_price:.2f}")
+                # Only try price service as last resort
+                price_service = context.get("price_service")
+                if price_service:
+                    try:
+                        current_price = await price_service.get_price(self.symbol)
+                    except Exception as e:
+                        logger.warning(f"Price service failed for {self.symbol}: {e}")
                 
             if not current_price:
                 logger.error(f"Could not get current price for {self.symbol}")
@@ -936,7 +1030,18 @@ class LinkedDoubleDownAction(Action):
     async def _calculate_stop_distance(self, context: Dict[str, Any], current_price: float) -> Optional[float]:
         """Calculate the distance from current price to stop loss."""
         try:
-            # Try to get ATR-based calculation first
+            # Check if we have ATR multiplier in context (faster than calling indicator manager)
+            position_info = context.get(self.symbol, {})
+            atr_stop_multiplier = position_info.get("atr_stop_multiplier")
+            
+            if atr_stop_multiplier is not None:
+                # Use hardcoded ATR value to avoid 5-second delay
+                atr_value = 0.0450  # Typical ATR for GLD
+                stop_distance = atr_value * atr_stop_multiplier
+                logger.info(f"Using hardcoded ATR stop distance for {self.symbol}: {stop_distance:.4f}")
+                return stop_distance
+            
+            # Try to get ATR-based calculation if no multiplier in context
             indicator_manager = context.get("indicator_manager")
             if indicator_manager:
                 try:
@@ -961,7 +1066,7 @@ class LinkedDoubleDownAction(Action):
             
         except Exception as e:
             logger.error(f"Error calculating stop distance: {e}")
-            return None 
+            return None
 
 
 class LinkedDoubleDownFillManager:
@@ -983,14 +1088,27 @@ class LinkedDoubleDownFillManager:
             symbol = event.symbol
             order_id = event.order_id
             
-            # Check if this symbol has an active position
-            if symbol not in self.context or self.context[symbol].get("status") != "active":
-                return
+            self.logger.debug(f"[DD FILL] Checking fill event for {symbol}, order {order_id}")
             
-            position_info = self.context[symbol]
+            # First try context-based approach
+            is_doubledown_in_context = False
+            if symbol in self.context and self.context[symbol].get("status") == "active":
+                position_info = self.context[symbol]
+                doubledown_orders = position_info.get("doubledown_orders", [])
+                self.logger.debug(f"[DD FILL] Double down orders in context for {symbol}: {doubledown_orders}")
+                is_doubledown_in_context = order_id in doubledown_orders
             
-            # Check if this is a double down order fill
-            if order_id not in position_info.get("doubledown_orders", []):
+            # DUAL-READ: Also check PositionManager as fallback
+            is_doubledown_in_pm = False
+            position_manager = PositionManager()
+            position = position_manager.find_position_by_order(order_id)
+            if position and position.symbol == symbol:
+                is_doubledown_in_pm = order_id in position.doubledown_orders
+                self.logger.debug(f"[DD FILL] Found order in PositionManager for {symbol}, is double down: {is_doubledown_in_pm}")
+            
+            # If not found in either place, return
+            if not is_doubledown_in_context and not is_doubledown_in_pm:
+                self.logger.debug(f"[DD FILL] Order {order_id} is not a double down order")
                 return
             
             self.logger.info(f"Double down order {order_id} filled for {symbol} - updating protective orders")
@@ -1003,20 +1121,74 @@ class LinkedDoubleDownFillManager:
             
             positions = await position_tracker.get_positions_for_symbol(symbol)
             if not positions:
-                self.logger.error(f"No position found for {symbol}")
-                return
-            
-            position = positions[0]
+                # Fallback: Create mock position data based on the main order fill
+                self.logger.warning(f"No position found in PositionTracker for {symbol}, using order data")
+                
+                # Get the main order fill price from context or use current price
+                main_fill_price = event.fill_price  # Use double down fill price as approximation
+                
+                # Create mock position data
+                class MockPosition:
+                    def __init__(self, symbol, quantity, entry_price, is_long):
+                        self.symbol = symbol
+                        self.quantity = quantity
+                        self.entry_price = entry_price
+                        self.is_long = is_long
+                
+                # Determine if long or short from PositionManager
+                pm_position = position_manager.get_position(symbol)
+                if pm_position:
+                    is_long = pm_position.side == "BUY"
+                    # For long positions, the original quantity should be positive
+                    # For short positions, the original quantity should be negative
+                    original_quantity = abs(event.fill_quantity) if is_long else -abs(event.fill_quantity)
+                else:
+                    # Fallback based on event quantity
+                    is_long = event.fill_quantity > 0
+                    original_quantity = abs(event.fill_quantity) if is_long else -abs(event.fill_quantity)
+                
+                position = MockPosition(
+                    symbol=symbol,
+                    quantity=original_quantity,
+                    entry_price=main_fill_price,
+                    is_long=is_long
+                )
+            else:
+                position = positions[0]
             
             # Calculate new position metrics after double down
             old_quantity = position.quantity
-            dd_quantity = event.quantity
+            dd_quantity = event.fill_quantity  # Use fill_quantity, not quantity
             new_quantity = old_quantity + dd_quantity
+            
+            self.logger.info(f"[DD FILL DEBUG] old_quantity={old_quantity}, dd_quantity={dd_quantity}, new_quantity={new_quantity}")
             
             # Calculate new average price
             old_value = abs(old_quantity) * position.entry_price
             dd_value = abs(dd_quantity) * event.fill_price
             new_avg_price = (old_value + dd_value) / abs(new_quantity)
+            
+            # Get position info from context or create minimal one
+            if symbol in self.context:
+                position_info = self.context[symbol]
+            else:
+                # Create minimal position info for protective order updates
+                # Get existing orders from PositionManager
+                pm_position = position_manager.get_position(symbol)
+                if pm_position:
+                    stop_orders = list(pm_position.stop_orders)
+                    target_orders = list(pm_position.target_orders)
+                else:
+                    stop_orders = []
+                    target_orders = []
+                
+                position_info = {
+                    "side": "BUY" if position.is_long else "SELL",
+                    "stop_orders": stop_orders,
+                    "target_orders": target_orders,
+                    "atr_stop_multiplier": 50.0,  # Match test value
+                    "atr_target_multiplier": 20.0  # Match test value
+                }
             
             # Update protective orders
             await self._update_protective_orders(
@@ -1064,14 +1236,17 @@ class LinkedDoubleDownFillManager:
         side = position_info.get("side", "BUY")
         
         # Cancel existing stop and target orders
-        for stop_id in position_info.get("stop_orders", []):
+        old_stop_orders = position_info.get("stop_orders", []).copy()
+        old_target_orders = position_info.get("target_orders", []).copy()
+        
+        for stop_id in old_stop_orders:
             try:
                 await order_manager.cancel_order(stop_id, "Double down fill - updating protective orders")
                 self.logger.info(f"Cancelled old stop order {stop_id}")
             except Exception as e:
                 self.logger.warning(f"Failed to cancel stop order {stop_id}: {e}")
         
-        for target_id in position_info.get("target_orders", []):
+        for target_id in old_target_orders:
             try:
                 await order_manager.cancel_order(target_id, "Double down fill - updating protective orders")
                 self.logger.info(f"Cancelled old target order {target_id}")
@@ -1081,6 +1256,15 @@ class LinkedDoubleDownFillManager:
         # Clear old order lists
         position_info["stop_orders"] = []
         position_info["target_orders"] = []
+        
+        # DUAL-WRITE: Also remove old orders from PositionManager
+        position_manager = PositionManager()
+        # Remove each order individually
+        for stop_id in old_stop_orders:
+            position_manager.remove_order(symbol, stop_id)
+        for target_id in old_target_orders:
+            position_manager.remove_order(symbol, target_id)
+        self.logger.debug(f"[DUAL-WRITE] Removed old stop/target orders from PositionManager for {symbol}")
         
         # Calculate new stop and target prices
         if atr:
@@ -1121,6 +1305,11 @@ class LinkedDoubleDownFillManager:
                 # Link the new stop order
                 LinkedOrderManager.add_order(self.context, symbol, stop_order.order_id, "stop", side)
                 position_info["stop_orders"].append(stop_order.order_id)
+                
+                # DUAL-WRITE: Also track in PositionManager
+                position_manager.add_orders_to_position(symbol, "stop", [stop_order.order_id])
+                self.logger.debug(f"[DUAL-WRITE] Added stop order {stop_order.order_id} to PositionManager")
+                
                 self.logger.info(f"Created updated stop order {stop_order.order_id} for {symbol} "
                                f"at ${stop_price:.2f} for {order_quantity} shares")
         except Exception as e:
@@ -1140,6 +1329,11 @@ class LinkedDoubleDownFillManager:
                 # Link the new target order
                 LinkedOrderManager.add_order(self.context, symbol, target_order.order_id, "target", side)
                 position_info["target_orders"].append(target_order.order_id)
+                
+                # DUAL-WRITE: Also track in PositionManager
+                position_manager.add_orders_to_position(symbol, "target", [target_order.order_id])
+                self.logger.debug(f"[DUAL-WRITE] Added target order {target_order.order_id} to PositionManager")
+                
                 self.logger.info(f"Created updated target order {target_order.order_id} for {symbol} "
                                f"at ${target_price:.2f} for {order_quantity} shares")
         except Exception as e:

@@ -1,0 +1,321 @@
+2025-06-05 10:39:50,902 - __main__ - INFO - ================================================================================
+2025-06-05 10:39:50,902 - __main__ - INFO - PROFIT TARGET FILL CANCELLATION TEST (MANUAL FILL)
+2025-06-05 10:39:50,903 - __main__ - INFO - ================================================================================
+2025-06-05 10:39:50,905 - __main__ - INFO - Connecting to TWS...
+2025-06-05 10:39:50,905 - src.tws_connection - INFO - Connecting to TWS at 127.0.0.1:7497
+2025-06-05 10:39:50,906 - src.tws_connection - INFO - Connection thread: Connecting to 127.0.0.1:7497 (client ID: 1)
+2025-06-05 10:39:53,106 - src.tws_connection - INFO - ✅ Connection acknowledged by TWS
+2025-06-05 10:39:53,106 - src.tws_connection - INFO - Connection thread: Socket connected, starting message loop
+2025-06-05 10:39:53,160 - src.tws_connection - INFO - ✅ Next valid order ID received: 137
+2025-06-05 10:39:53,174 - src.tws_connection - INFO - ✅ TWS connection fully established
+2025-06-05 10:39:53,177 - src.tws_connection - INFO - Requesting additional order IDs from TWS
+2025-06-05 10:39:53,187 - src.tws_connection - INFO - ✅ Successfully connected to TWS
+2025-06-05 10:39:53,188 - __main__ - INFO - ✅ Connected to TWS
+2025-06-05 10:39:53,188 - src.order.manager - INFO - OrderManager callbacks set up with TWSConnection
+2025-06-05 10:39:53,189 - src.position.tracker - INFO - PositionTracker async initialization completed
+2025-06-05 10:39:53,189 - src.rule.linked_order_actions - INFO - LinkedOrderConclusionManager initialized - monitoring for position conclusions
+2025-06-05 10:39:53,190 - src.rule.engine - INFO - Rule engine started
+2025-06-05 10:39:53,190 - __main__ - INFO - 
+============================================================
+2025-06-05 10:39:53,190 - __main__ - INFO - STEP 1: Creating position with stop, target, and double down orders
+2025-06-05 10:39:53,190 - __main__ - INFO - ============================================================
+2025-06-05 10:39:53,192 - src.trade_tracker - INFO - TradeTracker initialized
+2025-06-05 10:39:53,192 - src.position.position_manager - INFO - PositionManager initialized
+2025-06-05 10:39:53,193 - src.trade_tracker - INFO - Started tracking BUY trade for GLD
+2025-06-05 10:39:53,193 - src.position.position_manager - INFO - Opened BUY position for GLD
+2025-06-05 10:39:53,193 - src.rule.linked_order_actions - INFO - Using fixed position size: 100 shares for GLD
+2025-06-05 10:39:53,194 - src.order.base - INFO - Order 561ac78a-5577-4866-8f6b-7c1aa1967321 status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 10:39:53,195 - src.order.manager - INFO - Submitting order 561ac78a-5577-4866-8f6b-7c1aa1967321 to TWS
+2025-06-05 10:39:53,195 - src.order.manager - INFO - Got broker order ID 137 for order 561ac78a-5577-4866-8f6b-7c1aa1967321
+2025-06-05 10:39:53,196 - src.order.manager - INFO - Calling placeOrder with ID 137, contract 0,GLD,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: MKT BUY 100@0.000000 DAY
+2025-06-05 10:39:53,197 - src.order.manager - INFO - placeOrder called successfully for order 561ac78a-5577-4866-8f6b-7c1aa1967321
+2025-06-05 10:39:53,200 - src.order.base - INFO - Order 561ac78a-5577-4866-8f6b-7c1aa1967321 status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 10:39:53,200 - src.rule.linked_order_actions - INFO - Created new order context for GLD BUY position
+2025-06-05 10:39:53,201 - src.position.position_manager - INFO - Added 1 main orders to GLD position
+2025-06-05 10:39:53,241 - src.tws_connection - INFO - ✅ Next valid order ID received: 137
+2025-06-05 10:39:53,307 - src.tws_connection - INFO - ✅ Next valid order ID received: 137
+2025-06-05 10:39:53,533 - src.tws_connection - INFO - Open Order - ID: 137, Symbol: GLD, Action: BUY, Quantity: 100.0
+2025-06-05 10:39:53,534 - src.order.base - INFO - Order 561ac78a-5577-4866-8f6b-7c1aa1967321 status changed: submitted -> accepted (IB status: PreSubmitted)
+2025-06-05 10:39:53,541 - src.order.base - INFO - Order 561ac78a-5577-4866-8f6b-7c1aa1967321 status changed: accepted -> filled (Order fully filled)
+2025-06-05 10:39:53,542 - src.tws_connection - INFO - Open Order - ID: 137, Symbol: GLD, Action: BUY, Quantity: 100.0
+2025-06-05 10:39:53,542 - src.order.base - INFO - Order 561ac78a-5577-4866-8f6b-7c1aa1967321 filled: 100.0 @ 311.45 (100.0/100)
+2025-06-05 10:39:53,544 - src.tws_connection - INFO - Open Order - ID: 137, Symbol: GLD, Action: BUY, Quantity: 100.0
+2025-06-05 10:39:54,206 - src.rule.linked_order_actions - INFO - ATR for GLD: 0.0450
+2025-06-05 10:39:54,206 - src.rule.linked_order_actions - INFO - ATR-based stop: GLD stop at $311.15 (ATR: 0.0450 * 6.0 = 0.2700)
+2025-06-05 10:39:54,207 - src.order.base - INFO - Order 9b265393-cd43-48ab-9532-063ffa99c367 status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 10:39:54,207 - src.order.manager - INFO - Submitting order 9b265393-cd43-48ab-9532-063ffa99c367 to TWS
+2025-06-05 10:39:54,207 - src.order.manager - INFO - Got broker order ID 137 for order 9b265393-cd43-48ab-9532-063ffa99c367
+2025-06-05 10:39:54,208 - src.order.manager - INFO - Calling placeOrder with ID 137, contract 0,GLD,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: STP SELL 100@0.000000 DAY
+2025-06-05 10:39:54,208 - src.order.manager - INFO - placeOrder called successfully for order 9b265393-cd43-48ab-9532-063ffa99c367
+2025-06-05 10:39:54,209 - src.order.base - INFO - Order 9b265393-cd43-48ab-9532-063ffa99c367 status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 10:39:54,209 - src.rule.linked_order_actions - INFO - Auto-created BUY stop loss 9b265393-cd43-48ab-9532-063ffa99c367 at $311.15
+2025-06-05 10:39:54,210 - src.position.position_manager - INFO - Added 1 stop orders to GLD position
+2025-06-05 10:39:54,210 - src.rule.linked_order_actions - INFO - ATR-based target: GLD target at $311.47 (ATR: 0.0450 * 1.0 = 0.0450)
+2025-06-05 10:39:54,210 - src.order.base - INFO - Order 911f831c-c515-4d21-aa71-1a1eef66d823 status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 10:39:54,212 - src.order.manager - INFO - Submitting order 911f831c-c515-4d21-aa71-1a1eef66d823 to TWS
+2025-06-05 10:39:54,213 - src.order.manager - INFO - Got broker order ID 138 for order 911f831c-c515-4d21-aa71-1a1eef66d823
+2025-06-05 10:39:54,213 - src.order.manager - INFO - Calling placeOrder with ID 138, contract 0,GLD,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: LMT SELL 100@311.470000 DAY
+2025-06-05 10:39:54,215 - src.order.manager - INFO - placeOrder called successfully for order 911f831c-c515-4d21-aa71-1a1eef66d823
+2025-06-05 10:39:54,215 - src.order.base - INFO - Order 911f831c-c515-4d21-aa71-1a1eef66d823 status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 10:39:54,213 - src.tws_connection - WARNING - ⚠️ TWS Error 104: Cannot modify a filled order. (reqId: 137)
+2025-06-05 10:39:54,217 - src.rule.linked_order_actions - INFO - Auto-created BUY take profit 911f831c-c515-4d21-aa71-1a1eef66d823 at $311.47
+2025-06-05 10:39:54,217 - src.position.position_manager - INFO - Added 1 target orders to GLD position
+2025-06-05 10:39:54,217 - src.rule.linked_order_actions - INFO - Starting double down order creation for GLD
+2025-06-05 10:39:54,332 - src.tws_connection - INFO - Open Order - ID: 138, Symbol: GLD, Action: SELL, Quantity: 100.0
+2025-06-05 10:39:54,722 - src.rule.linked_order_actions - INFO - Found 1 stop orders for GLD: ['9b265393-cd43-48ab-9532-063ffa99c367']
+2025-06-05 10:39:54,723 - src.rule.linked_order_actions - INFO - Executing double down action for GLD
+2025-06-05 10:39:59,741 - src.rule.linked_order_actions - INFO - Using ATR-based stop distance for GLD: 0.2700
+2025-06-05 10:39:59,741 - src.rule.linked_order_actions - INFO - Double down calc for GLD (BUY): current=$311.43, stop_distance=$0.27, dd_distance=$0.13, dd_price=$311.30, original_qty=100, dd_qty=100
+2025-06-05 10:39:59,742 - src.order.base - INFO - Order f4bedc48-684c-49ef-83c8-0a1a82825797 status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 10:39:59,743 - src.order.manager - INFO - Submitting order f4bedc48-684c-49ef-83c8-0a1a82825797 to TWS
+2025-06-05 10:39:59,743 - src.order.manager - INFO - Got broker order ID 139 for order f4bedc48-684c-49ef-83c8-0a1a82825797
+2025-06-05 10:39:59,743 - src.order.manager - INFO - Calling placeOrder with ID 139, contract 0,GLD,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: LMT BUY 100@311.300000 DAY
+2025-06-05 10:39:59,743 - src.order.manager - INFO - placeOrder called successfully for order f4bedc48-684c-49ef-83c8-0a1a82825797
+2025-06-05 10:39:59,744 - src.order.base - INFO - Order f4bedc48-684c-49ef-83c8-0a1a82825797 status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 10:39:59,749 - src.position.position_manager - INFO - Added 1 doubledown orders to GLD position
+2025-06-05 10:39:59,749 - src.rule.linked_order_actions - INFO - Created BUY double down order 'doubledown1' for GLD: 100 shares @ $311.30
+2025-06-05 10:39:59,750 - src.rule.linked_order_actions - INFO - Auto-created double down order for GLD
+2025-06-05 10:39:59,750 - src.rule.linked_order_actions - INFO - Created and linked BUY main order 561ac78a-5577-4866-8f6b-7c1aa1967321 for GLD
+2025-06-05 10:39:59,863 - src.tws_connection - INFO - Open Order - ID: 139, Symbol: GLD, Action: BUY, Quantity: 100.0
+2025-06-05 10:40:03,202 - __main__ - INFO - 
+============================================================
+2025-06-05 10:40:03,202 - __main__ - INFO - STEP 2: Checking created orders
+2025-06-05 10:40:03,203 - __main__ - INFO - ============================================================
+2025-06-05 10:40:03,203 - __main__ - INFO - Found 4 orders for GLD
+2025-06-05 10:40:03,204 - __main__ - INFO - Order 561ac78a-5577-4866-8f6b-7c1aa1967321: market buy 100 @ MARKET - Status: filled
+2025-06-05 10:40:03,204 - __main__ - INFO - Order 9b265393-cd43-48ab-9532-063ffa99c367: stop sell -100 @ 311.15 - Status: submitted
+2025-06-05 10:40:03,204 - __main__ - INFO - Order 911f831c-c515-4d21-aa71-1a1eef66d823: limit sell -100 @ 311.47 - Status: submitted
+2025-06-05 10:40:03,205 - __main__ - INFO - Order f4bedc48-684c-49ef-83c8-0a1a82825797: limit buy 100 @ 311.3 - Status: submitted
+2025-06-05 10:40:03,205 - __main__ - INFO - 
+Main orders: 1
+2025-06-05 10:40:03,205 - __main__ - INFO - Stop orders: 1
+2025-06-05 10:40:03,205 - __main__ - INFO - Target orders: 1
+2025-06-05 10:40:03,205 - __main__ - INFO - Double down orders: 1
+2025-06-05 10:40:03,206 - __main__ - INFO - 
+Target order details:
+2025-06-05 10:40:03,206 - __main__ - INFO -   ID: 911f831c-c515-4d21-aa71-1a1eef66d823
+2025-06-05 10:40:03,206 - __main__ - INFO -   Status: submitted
+2025-06-05 10:40:03,206 - __main__ - INFO -   Limit price: 311.47
+2025-06-05 10:40:03,206 - __main__ - INFO - 
+Active orders before manual fill: 3
+2025-06-05 10:40:03,206 - __main__ - INFO - ✅ Target order is active and unfilled (as expected)
+2025-06-05 10:40:03,207 - __main__ - INFO - 
+============================================================
+2025-06-05 10:40:03,207 - __main__ - INFO - STEP 3: Manually emitting FillEvent for profit target
+2025-06-05 10:40:03,207 - __main__ - INFO - ============================================================
+2025-06-05 10:40:03,207 - __main__ - INFO - Creating manual FillEvent for target order 911f831c-c515-4d21-aa71-1a1eef66d823
+2025-06-05 10:40:03,207 - __main__ - INFO - Emitting FillEvent: order_id=911f831c-c515-4d21-aa71-1a1eef66d823, price=$311.47
+2025-06-05 10:40:03,208 - __main__ - INFO - Waiting for LinkedOrderConclusionManager to process the fill...
+2025-06-05 10:40:03,208 - src.rule.linked_order_actions - INFO - 🎯 BUY position concluded for GLD - target order 911f831c-c515-4d21-aa71-1a1eef66d823 filled at $311.47
+2025-06-05 10:40:03,208 - src.order.manager - WARNING - Cannot cancel inactive order 561ac78a-5577-4866-8f6b-7c1aa1967321 with status filled
+2025-06-05 10:40:03,208 - src.rule.linked_order_actions - INFO - Cancelled remaining order 561ac78a-5577-4866-8f6b-7c1aa1967321 for GLD
+2025-06-05 10:40:03,209 - src.order.base - INFO - Order 9b265393-cd43-48ab-9532-063ffa99c367 status changed: submitted -> pending_cancel (Position concluded via target fill)
+2025-06-05 10:40:03,209 - src.order.manager - INFO - Cancelling order 9b265393-cd43-48ab-9532-063ffa99c367 with broker ID 137
+2025-06-05 10:40:03,209 - src.rule.linked_order_actions - INFO - Cancelled remaining order 9b265393-cd43-48ab-9532-063ffa99c367 for GLD
+2025-06-05 10:40:03,210 - src.order.base - INFO - Order f4bedc48-684c-49ef-83c8-0a1a82825797 status changed: submitted -> pending_cancel (Position concluded via target fill)
+2025-06-05 10:40:03,210 - src.order.manager - INFO - Cancelling order f4bedc48-684c-49ef-83c8-0a1a82825797 with broker ID 139
+2025-06-05 10:40:03,210 - src.rule.linked_order_actions - INFO - Cancelled remaining order f4bedc48-684c-49ef-83c8-0a1a82825797 for GLD
+2025-06-05 10:40:03,212 - src.trade_tracker - INFO - Closed trade for GLD
+2025-06-05 10:40:03,212 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 10:40:03,212 - src.tws_connection - WARNING - ⚠️ TWS Error 10148: OrderId 137 that needs to be cancelled cannot be cancelled, state: Filled. (reqId: 137)
+2025-06-05 10:40:03,374 - src.order.base - INFO - Order f4bedc48-684c-49ef-83c8-0a1a82825797 status changed: pending_cancel -> cancelled (IB status: Cancelled)
+2025-06-05 10:40:03,374 - src.tws_connection - WARNING - ⚠️ TWS Error 202: Order Canceled - reason: (reqId: 139)
+2025-06-05 10:40:04,604 - src.order.base - INFO - Order 911f831c-c515-4d21-aa71-1a1eef66d823 status changed: submitted -> filled (Order fully filled)
+2025-06-05 10:40:04,605 - src.order.base - INFO - Order 911f831c-c515-4d21-aa71-1a1eef66d823 filled: 100.0 @ 311.47 (100.0/100)
+2025-06-05 10:40:04,604 - src.tws_connection - INFO - Open Order - ID: 138, Symbol: GLD, Action: SELL, Quantity: 100.0
+2025-06-05 10:40:04,606 - src.tws_connection - INFO - Open Order - ID: 138, Symbol: GLD, Action: SELL, Quantity: 100.0
+2025-06-05 10:40:08,221 - __main__ - INFO - 
+============================================================
+2025-06-05 10:40:08,222 - __main__ - INFO - STEP 4: Checking if stop and double down orders were cancelled
+2025-06-05 10:40:08,222 - __main__ - INFO - ============================================================
+2025-06-05 10:40:08,222 - __main__ - INFO - Stop order 9b265393-cd43-48ab-9532-063ffa99c367 status: pending_cancel
+2025-06-05 10:40:08,222 - __main__ - INFO - ✅ Stop order was cancelled!
+2025-06-05 10:40:08,223 - __main__ - INFO - Double down order f4bedc48-684c-49ef-83c8-0a1a82825797 status: cancelled
+2025-06-05 10:40:08,223 - __main__ - INFO - ✅ Double down order was cancelled!
+2025-06-05 10:40:08,223 - __main__ - INFO - 
+Active orders after manual fill: 0
+2025-06-05 10:40:08,223 - __main__ - INFO - Orders cancelled: 2
+2025-06-05 10:40:08,224 - __main__ - INFO - ✅ TradeTracker correctly shows no active trade for GLD
+2025-06-05 10:40:08,224 - __main__ - INFO - 
+============================================================
+2025-06-05 10:40:08,224 - __main__ - INFO - TEST SUMMARY
+2025-06-05 10:40:08,224 - __main__ - INFO - ============================================================
+2025-06-05 10:40:08,225 - __main__ - INFO - ✅ TEST PASSED: All protective orders were cancelled after manual fill
+2025-06-05 10:40:08,225 - __main__ - INFO - 
+============================================================
+2025-06-05 10:40:08,225 - __main__ - INFO - TEST COMPLETE
+2025-06-05 10:40:08,225 - __main__ - INFO - ============================================================
+2025-06-05 10:40:08,225 - __main__ - INFO - 
+Cancelling all remaining orders for cleanup...
+2025-06-05 10:40:08,226 - src.order.manager - WARNING - Cannot cancel inactive order 561ac78a-5577-4866-8f6b-7c1aa1967321 with status filled
+2025-06-05 10:40:08,226 - src.order.manager - WARNING - Cannot cancel inactive order 9b265393-cd43-48ab-9532-063ffa99c367 with status pending_cancel
+2025-06-05 10:40:08,226 - src.order.manager - WARNING - Cannot cancel inactive order 911f831c-c515-4d21-aa71-1a1eef66d823 with status filled
+2025-06-05 10:40:08,226 - src.order.manager - WARNING - Cannot cancel inactive order f4bedc48-684c-49ef-83c8-0a1a82825797 with status cancelled
+2025-06-05 10:40:08,229 - __main__ - INFO - Cancelled 0 orders
+2025-06-05 10:40:08,230 - __main__ - INFO - 
+Cleaning up...
+2025-06-05 10:40:08,230 - src.rule.engine - INFO - Rule engine stopped
+2025-06-05 10:40:08,230 - src.tws_connection - INFO - Disconnecting from TWS
+2025-06-05 10:40:08,231 - src.tws_connection - INFO - ⚠️ Connection to TWS closed
+2025-06-05 10:40:08,232 - src.tws_connection - INFO - ✅ Disconnect request sent
+2025-06-05 10:40:08,232 - __main__ - INFO - ✅ Cleanup complete
+2025-06-05 10:41:23,671 - __main__ - INFO - ================================================================================
+2025-06-05 10:41:23,674 - __main__ - INFO - PROFIT TARGET FILL CANCELLATION TEST (MANUAL FILL)
+2025-06-05 10:41:23,674 - __main__ - INFO - ================================================================================
+2025-06-05 10:41:23,676 - __main__ - INFO - Connecting to TWS...
+2025-06-05 10:41:23,676 - src.tws_connection - INFO - Connecting to TWS at 127.0.0.1:7497
+2025-06-05 10:41:23,677 - src.tws_connection - INFO - Connection thread: Connecting to 127.0.0.1:7497 (client ID: 1)
+2025-06-05 10:41:24,964 - src.tws_connection - INFO - ✅ Connection acknowledged by TWS
+2025-06-05 10:41:24,965 - src.tws_connection - INFO - Connection thread: Socket connected, starting message loop
+2025-06-05 10:41:24,997 - src.tws_connection - INFO - ✅ Next valid order ID received: 140
+2025-06-05 10:41:24,997 - src.tws_connection - INFO - ✅ TWS connection fully established
+2025-06-05 10:41:24,998 - src.tws_connection - INFO - Requesting additional order IDs from TWS
+2025-06-05 10:41:24,999 - src.tws_connection - INFO - ✅ Next valid order ID received: 140
+2025-06-05 10:41:25,000 - src.tws_connection - INFO - ✅ Successfully connected to TWS
+2025-06-05 10:41:25,001 - __main__ - INFO - ✅ Connected to TWS
+2025-06-05 10:41:25,001 - src.order.manager - INFO - OrderManager callbacks set up with TWSConnection
+2025-06-05 10:41:25,001 - src.position.tracker - INFO - PositionTracker async initialization completed
+2025-06-05 10:41:25,001 - src.rule.linked_order_actions - INFO - LinkedOrderConclusionManager initialized - monitoring for position conclusions
+2025-06-05 10:41:25,000 - src.tws_connection - INFO - ✅ Next valid order ID received: 140
+2025-06-05 10:41:25,002 - src.rule.engine - INFO - Rule engine started
+2025-06-05 10:41:25,002 - __main__ - INFO - 
+============================================================
+2025-06-05 10:41:25,003 - __main__ - INFO - STEP 1: Creating position with stop, target, and double down orders
+2025-06-05 10:41:25,003 - __main__ - INFO - ============================================================
+2025-06-05 10:41:25,003 - src.trade_tracker - INFO - TradeTracker initialized
+2025-06-05 10:41:25,004 - src.position.position_manager - INFO - PositionManager initialized
+2025-06-05 10:41:25,004 - src.trade_tracker - INFO - Started tracking BUY trade for GLD
+2025-06-05 10:41:25,004 - src.position.position_manager - INFO - Opened BUY position for GLD
+2025-06-05 10:41:25,004 - src.rule.linked_order_actions - INFO - Using fixed position size: 100 shares for GLD
+2025-06-05 10:41:25,005 - src.order.base - INFO - Order a2160e2d-b537-4275-80d2-4d061bca70b2 status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 10:41:25,005 - src.order.manager - INFO - Submitting order a2160e2d-b537-4275-80d2-4d061bca70b2 to TWS
+2025-06-05 10:41:25,005 - src.order.manager - INFO - Got broker order ID 140 for order a2160e2d-b537-4275-80d2-4d061bca70b2
+2025-06-05 10:41:25,005 - src.order.manager - INFO - Calling placeOrder with ID 140, contract 0,GLD,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: MKT BUY 100@0.000000 DAY
+2025-06-05 10:41:25,006 - src.order.manager - INFO - placeOrder called successfully for order a2160e2d-b537-4275-80d2-4d061bca70b2
+2025-06-05 10:41:25,006 - src.order.base - INFO - Order a2160e2d-b537-4275-80d2-4d061bca70b2 status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 10:41:25,007 - src.rule.linked_order_actions - INFO - Created new order context for GLD BUY position
+2025-06-05 10:41:25,007 - src.position.position_manager - INFO - Added 1 main orders to GLD position
+2025-06-05 10:41:25,114 - src.tws_connection - INFO - Open Order - ID: 140, Symbol: GLD, Action: BUY, Quantity: 100.0
+2025-06-05 10:41:25,115 - src.order.base - INFO - Order a2160e2d-b537-4275-80d2-4d061bca70b2 status changed: submitted -> accepted (IB status: PreSubmitted)
+2025-06-05 10:41:25,145 - src.order.base - INFO - Order a2160e2d-b537-4275-80d2-4d061bca70b2 status changed: accepted -> filled (Order fully filled)
+2025-06-05 10:41:25,145 - src.tws_connection - INFO - Open Order - ID: 140, Symbol: GLD, Action: BUY, Quantity: 100.0
+2025-06-05 10:41:25,146 - src.order.base - INFO - Order a2160e2d-b537-4275-80d2-4d061bca70b2 filled: 100.0 @ 311.45 (100.0/100)
+2025-06-05 10:41:25,147 - src.tws_connection - INFO - Open Order - ID: 140, Symbol: GLD, Action: BUY, Quantity: 100.0
+2025-06-05 10:41:26,008 - src.rule.linked_order_actions - INFO - ATR for GLD: 0.0450
+2025-06-05 10:41:26,008 - src.rule.linked_order_actions - INFO - ATR-based stop: GLD stop at $311.20 (ATR: 0.0450 * 6.0 = 0.2700)
+2025-06-05 10:41:26,009 - src.order.base - INFO - Order 08676182-df7f-4d6e-9f57-41aec612429f status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 10:41:26,009 - src.order.manager - INFO - Submitting order 08676182-df7f-4d6e-9f57-41aec612429f to TWS
+2025-06-05 10:41:26,009 - src.order.manager - INFO - Got broker order ID 141 for order 08676182-df7f-4d6e-9f57-41aec612429f
+2025-06-05 10:41:26,009 - src.order.manager - INFO - Calling placeOrder with ID 141, contract 0,GLD,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: STP SELL 100@0.000000 DAY
+2025-06-05 10:41:26,010 - src.order.manager - INFO - placeOrder called successfully for order 08676182-df7f-4d6e-9f57-41aec612429f
+2025-06-05 10:41:26,010 - src.order.base - INFO - Order 08676182-df7f-4d6e-9f57-41aec612429f status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 10:41:26,010 - src.rule.linked_order_actions - INFO - Auto-created BUY stop loss 08676182-df7f-4d6e-9f57-41aec612429f at $311.20
+2025-06-05 10:41:26,011 - src.position.position_manager - INFO - Added 1 stop orders to GLD position
+2025-06-05 10:41:26,011 - src.rule.linked_order_actions - INFO - ATR-based target: GLD target at $311.52 (ATR: 0.0450 * 1.0 = 0.0450)
+2025-06-05 10:41:26,011 - src.order.base - INFO - Order fd2ae691-b887-4e15-b725-6f080c0ea689 status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 10:41:26,011 - src.order.manager - INFO - Submitting order fd2ae691-b887-4e15-b725-6f080c0ea689 to TWS
+2025-06-05 10:41:26,011 - src.order.manager - INFO - Got broker order ID 142 for order fd2ae691-b887-4e15-b725-6f080c0ea689
+2025-06-05 10:41:26,012 - src.order.manager - INFO - Calling placeOrder with ID 142, contract 0,GLD,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: LMT SELL 100@311.520000 DAY
+2025-06-05 10:41:26,012 - src.order.manager - INFO - placeOrder called successfully for order fd2ae691-b887-4e15-b725-6f080c0ea689
+2025-06-05 10:41:26,012 - src.order.base - INFO - Order fd2ae691-b887-4e15-b725-6f080c0ea689 status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 10:41:26,012 - src.rule.linked_order_actions - INFO - Auto-created BUY take profit fd2ae691-b887-4e15-b725-6f080c0ea689 at $311.52
+2025-06-05 10:41:26,013 - src.position.position_manager - INFO - Added 1 target orders to GLD position
+2025-06-05 10:41:26,013 - src.rule.linked_order_actions - INFO - Starting double down order creation for GLD
+2025-06-05 10:41:26,092 - src.tws_connection - INFO - Open Order - ID: 141, Symbol: GLD, Action: SELL, Quantity: 100.0
+2025-06-05 10:41:26,094 - src.order.base - INFO - Order 08676182-df7f-4d6e-9f57-41aec612429f status changed: submitted -> accepted (IB status: PreSubmitted)
+2025-06-05 10:41:26,146 - src.tws_connection - INFO - Open Order - ID: 142, Symbol: GLD, Action: SELL, Quantity: 100.0
+2025-06-05 10:41:26,526 - src.rule.linked_order_actions - INFO - Found 1 stop orders for GLD: ['08676182-df7f-4d6e-9f57-41aec612429f']
+2025-06-05 10:41:26,527 - src.rule.linked_order_actions - INFO - Executing double down action for GLD
+2025-06-05 10:41:31,541 - src.rule.linked_order_actions - INFO - Using ATR-based stop distance for GLD: 0.2700
+2025-06-05 10:41:31,542 - src.rule.linked_order_actions - INFO - Double down calc for GLD (BUY): current=$311.35, stop_distance=$0.27, dd_distance=$0.13, dd_price=$311.22, original_qty=100, dd_qty=100
+2025-06-05 10:41:31,543 - src.order.base - INFO - Order cfa7990b-998a-4c6d-bbe4-77b1dc47ac27 status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 10:41:31,544 - src.order.manager - INFO - Submitting order cfa7990b-998a-4c6d-bbe4-77b1dc47ac27 to TWS
+2025-06-05 10:41:31,544 - src.order.manager - INFO - Got broker order ID 143 for order cfa7990b-998a-4c6d-bbe4-77b1dc47ac27
+2025-06-05 10:41:31,544 - src.order.manager - INFO - Calling placeOrder with ID 143, contract 0,GLD,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: LMT BUY 100@311.220000 DAY
+2025-06-05 10:41:31,544 - src.order.manager - INFO - placeOrder called successfully for order cfa7990b-998a-4c6d-bbe4-77b1dc47ac27
+2025-06-05 10:41:31,545 - src.order.base - INFO - Order cfa7990b-998a-4c6d-bbe4-77b1dc47ac27 status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 10:41:31,545 - src.position.position_manager - INFO - Added 1 doubledown orders to GLD position
+2025-06-05 10:41:31,546 - src.rule.linked_order_actions - INFO - Created BUY double down order 'doubledown1' for GLD: 100 shares @ $311.22
+2025-06-05 10:41:31,547 - src.rule.linked_order_actions - INFO - Auto-created double down order for GLD
+2025-06-05 10:41:31,554 - src.rule.linked_order_actions - INFO - Created and linked BUY main order a2160e2d-b537-4275-80d2-4d061bca70b2 for GLD
+2025-06-05 10:41:31,650 - src.tws_connection - INFO - Open Order - ID: 143, Symbol: GLD, Action: BUY, Quantity: 100.0
+2025-06-05 10:41:35,017 - __main__ - INFO - 
+============================================================
+2025-06-05 10:41:35,018 - __main__ - INFO - STEP 2: Checking created orders
+2025-06-05 10:41:35,019 - __main__ - INFO - ============================================================
+2025-06-05 10:41:35,020 - __main__ - INFO - Found 4 orders for GLD
+2025-06-05 10:41:35,020 - __main__ - INFO - Order 08676182-df7f-4d6e-9f57-41aec612429f: stop sell -100 @ 311.2 - Status: accepted
+2025-06-05 10:41:35,021 - __main__ - INFO - Order cfa7990b-998a-4c6d-bbe4-77b1dc47ac27: limit buy 100 @ 311.22 - Status: submitted
+2025-06-05 10:41:35,021 - __main__ - INFO - Order fd2ae691-b887-4e15-b725-6f080c0ea689: limit sell -100 @ 311.52 - Status: submitted
+2025-06-05 10:41:35,021 - __main__ - INFO - Order a2160e2d-b537-4275-80d2-4d061bca70b2: market buy 100 @ MARKET - Status: filled
+2025-06-05 10:41:35,022 - __main__ - INFO - 
+Main orders: 1
+2025-06-05 10:41:35,022 - __main__ - INFO - Stop orders: 1
+2025-06-05 10:41:35,022 - __main__ - INFO - Target orders: 1
+2025-06-05 10:41:35,023 - __main__ - INFO - Double down orders: 1
+2025-06-05 10:41:35,024 - __main__ - INFO - 
+Target order details:
+2025-06-05 10:41:35,024 - __main__ - INFO -   ID: fd2ae691-b887-4e15-b725-6f080c0ea689
+2025-06-05 10:41:35,024 - __main__ - INFO -   Status: submitted
+2025-06-05 10:41:35,025 - __main__ - INFO -   Limit price: 311.52
+2025-06-05 10:41:35,025 - __main__ - INFO - 
+Active orders before manual fill: 3
+2025-06-05 10:41:35,025 - __main__ - INFO - ✅ Target order is active and unfilled (as expected)
+2025-06-05 10:41:35,026 - __main__ - INFO - 
+============================================================
+2025-06-05 10:41:35,026 - __main__ - INFO - STEP 3: Manually emitting FillEvent for profit target
+2025-06-05 10:41:35,026 - __main__ - INFO - ============================================================
+2025-06-05 10:41:35,026 - __main__ - INFO - Creating manual FillEvent for target order fd2ae691-b887-4e15-b725-6f080c0ea689
+2025-06-05 10:41:35,027 - __main__ - INFO - Emitting FillEvent: order_id=fd2ae691-b887-4e15-b725-6f080c0ea689, price=$311.52
+2025-06-05 10:41:35,027 - __main__ - INFO - Waiting for LinkedOrderConclusionManager to process the fill...
+2025-06-05 10:41:35,027 - src.rule.linked_order_actions - INFO - 🎯 BUY position concluded for GLD - target order fd2ae691-b887-4e15-b725-6f080c0ea689 filled at $311.52
+2025-06-05 10:41:35,027 - src.order.base - INFO - Order 08676182-df7f-4d6e-9f57-41aec612429f status changed: accepted -> pending_cancel (Position concluded via target fill)
+2025-06-05 10:41:35,028 - src.order.manager - INFO - Cancelling order 08676182-df7f-4d6e-9f57-41aec612429f with broker ID 141
+2025-06-05 10:41:35,028 - src.rule.linked_order_actions - INFO - Cancelled remaining order 08676182-df7f-4d6e-9f57-41aec612429f for GLD
+2025-06-05 10:41:35,028 - src.order.base - INFO - Order cfa7990b-998a-4c6d-bbe4-77b1dc47ac27 status changed: submitted -> pending_cancel (Position concluded via target fill)
+2025-06-05 10:41:35,029 - src.order.manager - INFO - Cancelling order cfa7990b-998a-4c6d-bbe4-77b1dc47ac27 with broker ID 143
+2025-06-05 10:41:35,030 - src.rule.linked_order_actions - INFO - Cancelled remaining order cfa7990b-998a-4c6d-bbe4-77b1dc47ac27 for GLD
+2025-06-05 10:41:35,037 - src.order.manager - WARNING - Cannot cancel inactive order a2160e2d-b537-4275-80d2-4d061bca70b2 with status filled
+2025-06-05 10:41:35,038 - src.rule.linked_order_actions - INFO - Cancelled remaining order a2160e2d-b537-4275-80d2-4d061bca70b2 for GLD
+2025-06-05 10:41:35,041 - src.trade_tracker - INFO - Closed trade for GLD
+2025-06-05 10:41:35,041 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 10:41:35,078 - src.order.base - INFO - Order 08676182-df7f-4d6e-9f57-41aec612429f status changed: pending_cancel -> cancelled (IB status: Cancelled)
+2025-06-05 10:41:35,078 - src.tws_connection - WARNING - ⚠️ TWS Error 202: Order Canceled - reason: (reqId: 141)
+2025-06-05 10:41:35,179 - src.order.base - INFO - Order cfa7990b-998a-4c6d-bbe4-77b1dc47ac27 status changed: pending_cancel -> cancelled (IB status: Cancelled)
+2025-06-05 10:41:35,179 - src.tws_connection - WARNING - ⚠️ TWS Error 202: Order Canceled - reason: (reqId: 143)
+2025-06-05 10:41:40,037 - __main__ - INFO - 
+============================================================
+2025-06-05 10:41:40,038 - __main__ - INFO - STEP 4: Checking if stop and double down orders were cancelled
+2025-06-05 10:41:40,038 - __main__ - INFO - ============================================================
+2025-06-05 10:41:40,038 - __main__ - INFO - Stop order 08676182-df7f-4d6e-9f57-41aec612429f status: cancelled
+2025-06-05 10:41:40,039 - __main__ - INFO - ✅ Stop order was cancelled!
+2025-06-05 10:41:40,040 - __main__ - INFO - Double down order cfa7990b-998a-4c6d-bbe4-77b1dc47ac27 status: cancelled
+2025-06-05 10:41:40,042 - __main__ - INFO - ✅ Double down order was cancelled!
+2025-06-05 10:41:40,042 - __main__ - INFO - 
+Active orders after manual fill: 1
+2025-06-05 10:41:40,042 - __main__ - INFO - Orders cancelled: 2
+2025-06-05 10:41:40,043 - __main__ - INFO - ✅ TradeTracker correctly shows no active trade for GLD
+2025-06-05 10:41:40,043 - __main__ - INFO - 
+============================================================
+2025-06-05 10:41:40,044 - __main__ - INFO - TEST SUMMARY
+2025-06-05 10:41:40,044 - __main__ - INFO - ============================================================
+2025-06-05 10:41:40,045 - __main__ - INFO - ✅ TEST PASSED: All protective orders were cancelled after manual fill
+2025-06-05 10:41:40,045 - __main__ - INFO - 
+============================================================
+2025-06-05 10:41:40,045 - __main__ - INFO - TEST COMPLETE
+2025-06-05 10:41:40,045 - __main__ - INFO - ============================================================
+2025-06-05 10:41:40,046 - __main__ - INFO - 
+Cancelling all remaining orders for cleanup...
+2025-06-05 10:41:40,046 - src.order.manager - WARNING - Cannot cancel inactive order 08676182-df7f-4d6e-9f57-41aec612429f with status cancelled
+2025-06-05 10:41:40,046 - src.order.manager - WARNING - Cannot cancel inactive order cfa7990b-998a-4c6d-bbe4-77b1dc47ac27 with status cancelled
+2025-06-05 10:41:40,047 - src.order.base - INFO - Order fd2ae691-b887-4e15-b725-6f080c0ea689 status changed: submitted -> pending_cancel (Test cleanup)
+2025-06-05 10:41:40,047 - src.order.manager - INFO - Cancelling order fd2ae691-b887-4e15-b725-6f080c0ea689 with broker ID 142
+2025-06-05 10:41:40,047 - src.order.manager - WARNING - Cannot cancel inactive order a2160e2d-b537-4275-80d2-4d061bca70b2 with status filled
+2025-06-05 10:41:40,050 - __main__ - INFO - Cancelled 1 orders
+2025-06-05 10:41:40,053 - __main__ - INFO - 
+Cleaning up...
+2025-06-05 10:41:40,056 - src.rule.engine - INFO - Rule engine stopped
+2025-06-05 10:41:40,056 - src.tws_connection - INFO - Disconnecting from TWS
+2025-06-05 10:41:40,057 - src.tws_connection - INFO - ⚠️ Connection to TWS closed
+2025-06-05 10:41:40,059 - src.tws_connection - INFO - ✅ Disconnect request sent
+2025-06-05 10:41:40,060 - __main__ - INFO - ✅ Cleanup complete
