@@ -44,6 +44,10 @@ class Position:
     current_quantity: float = 0
     total_quantity: float = 0
     
+    # ATR parameters for stop/target calculation
+    atr_stop_multiplier: Optional[float] = None
+    atr_target_multiplier: Optional[float] = None
+    
     # Metadata for reconciliation
     metadata: Dict[str, any] = field(default_factory=dict)
     
@@ -199,6 +203,14 @@ class PositionManager:
                 return position
             return None
     
+    async def find_active_position_side(self, symbol: str) -> Optional[str]:
+        """Find the side of active position for a symbol."""
+        with self._position_lock:
+            position = self._positions.get(symbol)
+            if position and position.status == PositionStatus.ACTIVE:
+                return position.side
+            return None
+    
     def close_position(self, symbol: str):
         """Mark position as closed."""
         with self._position_lock:
@@ -272,6 +284,18 @@ class PositionManager:
                 position.current_quantity = quantity
                 position.total_quantity = quantity
                 logger.debug(f"Updated {symbol} position: price={entry_price}, qty={quantity}")
+    
+    def update_position_atr_params(self, symbol: str, atr_stop_multiplier: Optional[float] = None, 
+                                   atr_target_multiplier: Optional[float] = None):
+        """Update position ATR parameters."""
+        with self._position_lock:
+            position = self._positions.get(symbol)
+            if position:
+                if atr_stop_multiplier is not None:
+                    position.atr_stop_multiplier = atr_stop_multiplier
+                if atr_target_multiplier is not None:
+                    position.atr_target_multiplier = atr_target_multiplier
+                logger.debug(f"Updated {symbol} ATR params: stop={atr_stop_multiplier}, target={atr_target_multiplier}")
     
     def clear_all(self):
         """Clear all positions (for testing)."""

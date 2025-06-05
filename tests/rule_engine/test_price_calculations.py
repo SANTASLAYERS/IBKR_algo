@@ -124,12 +124,18 @@ class TestPriceCalculations:
         
         # Mock existing profitable position
         mock_position = Mock()
+        mock_position.symbol = "AAPL"
         mock_position.quantity = 100
         mock_position.entry_price = 150.0
         mock_position.current_price = 155.0
         mock_position.unrealized_pnl_pct = 0.033  # 3.3% profit
         mock_position.status = PositionStatus.OPEN
         mock_position.is_long = True
+        mock_position.side = "BUY"
+        mock_position.main_order_ids = ["ORDER123"]
+        mock_position.stop_order_ids = ["STOP123"]
+        mock_position.target_order_ids = ["TARGET123"]
+        mock_position.scale_order_ids = []
         
         context["position_tracker"].get_positions_for_symbol.return_value = [mock_position]
         
@@ -139,16 +145,6 @@ class TestPriceCalculations:
         context["order_manager"].create_and_submit_order.return_value = mock_order
         context["order_manager"].create_order.return_value = mock_order
         context["order_manager"].cancel_order.return_value = True
-        
-        # Setup existing context
-        context["AAPL"] = {
-            "side": "BUY",
-            "main_orders": ["ORDER123"],
-            "stop_orders": ["STOP123"],
-            "target_orders": ["TARGET123"],
-            "scale_orders": [],
-            "status": "active"
-        }
         
         # Execute scale-in
         scale_action = LinkedScaleInAction(
@@ -182,25 +178,31 @@ class TestEODClosure:
             "position_tracker": AsyncMock()
         }
         
-        # Setup AAPL long position
-        context["AAPL"] = {
-            "side": "BUY",
-            "main_orders": ["AAPL_MAIN"],
-            "stop_orders": ["AAPL_STOP"],
-            "target_orders": ["AAPL_TARGET"],
-            "scale_orders": [],
-            "status": "active"
-        }
+        # Mock AAPL long position
+        mock_aapl_position = Mock()
+        mock_aapl_position.symbol = "AAPL"
+        mock_aapl_position.side = "BUY"
+        mock_aapl_position.main_order_ids = ["AAPL_MAIN"]
+        mock_aapl_position.stop_order_ids = ["AAPL_STOP"]
+        mock_aapl_position.target_order_ids = ["AAPL_TARGET"]
+        mock_aapl_position.scale_order_ids = []
+        mock_aapl_position.status = PositionStatus.OPEN
         
-        # Setup MSFT short position
-        context["MSFT"] = {
-            "side": "SELL",
-            "main_orders": ["MSFT_MAIN"],
-            "stop_orders": ["MSFT_STOP"],
-            "target_orders": ["MSFT_TARGET"],
-            "scale_orders": ["MSFT_SCALE"],
-            "status": "active"
-        }
+        # Mock MSFT short position
+        mock_msft_position = Mock()
+        mock_msft_position.symbol = "MSFT"
+        mock_msft_position.side = "SELL"
+        mock_msft_position.main_order_ids = ["MSFT_MAIN"]
+        mock_msft_position.stop_order_ids = ["MSFT_STOP"]
+        mock_msft_position.target_order_ids = ["MSFT_TARGET"]
+        mock_msft_position.scale_order_ids = ["MSFT_SCALE"]
+        mock_msft_position.status = PositionStatus.OPEN
+        
+        # Setup position tracker to return positions
+        context["position_tracker"].get_positions_for_symbol.side_effect = lambda sym: {
+            "AAPL": [mock_aapl_position],
+            "MSFT": [mock_msft_position]
+        }.get(sym, [])
         
         context["order_manager"].cancel_order.return_value = True
         
@@ -219,9 +221,9 @@ class TestEODClosure:
         cancel_calls = context["order_manager"].cancel_order.call_args_list
         assert len(cancel_calls) >= 6  # 3 AAPL orders + 4 MSFT orders (including scale)
         
-        # Verify contexts were deleted (not just marked as closed)
-        assert "AAPL" not in context
-        assert "MSFT" not in context
+        # Verify positions were closed
+        assert mock_aapl_position.close.called
+        assert mock_msft_position.close.called
 
 
 # ===== INTEGRATION TESTS =====
@@ -244,6 +246,17 @@ class TestIntegrationScenarios:
         mock_order.order_id = "ORDER123"
         context["order_manager"].create_and_submit_order.return_value = mock_order
         context["order_manager"].create_order.return_value = mock_order
+        
+        # Mock position tracker to return no existing positions initially
+        context["position_tracker"].get_positions_for_symbol.return_value = []
+        
+        # Mock position creation
+        mock_position = Mock()
+        mock_position.symbol = "AAPL"
+        mock_position.side = "BUY"
+        mock_position.main_order_ids = []
+        mock_position.status = PositionStatus.OPEN
+        context["position_tracker"].create_position.return_value = mock_position
         
         # 1. Create buy rule and execute
         buy_rule = create_buy_rule(
@@ -271,11 +284,19 @@ class TestIntegrationScenarios:
         buy_result = await buy_rule.action.execute(context)
         assert buy_result is True
         
-        # Verify initial setup
-        assert context["AAPL"]["side"] == "BUY"
-        assert len(context["AAPL"]["main_orders"]) == 1
+        # Verify position was created
+        assert context["position_tracker"].create_position.called
+        create_call = context["position_tracker"].create_position.call_args
+        assert create_call[1]["symbol"] == "AAPL"
+        assert create_call[1]["side"] == "BUY"
         
         # 2. Test scale-in rule execution
+        # Update mock to return existing position
+        context["position_tracker"].get_positions_for_symbol.return_value = [mock_position]
+        mock_position.quantity = 100
+        mock_position.entry_price = 150.0
+        mock_position.is_long = True
+        
         scale_rule = create_scale_in_rule("AAPL", scale_quantity=50, price_offset=0.02)
         
         # Scale-in should trigger on same BUY signal with lower priority
@@ -303,6 +324,17 @@ class TestIntegrationScenarios:
         context["order_manager"].create_and_submit_order.return_value = mock_order
         context["order_manager"].create_order.return_value = mock_order
         
+        # Mock position tracker to return no existing positions initially
+        context["position_tracker"].get_positions_for_symbol.return_value = []
+        
+        # Mock position creation
+        mock_position = Mock()
+        mock_position.symbol = "AAPL"
+        mock_position.side = "SELL"
+        mock_position.main_order_ids = []
+        mock_position.status = PositionStatus.OPEN
+        context["position_tracker"].create_position.return_value = mock_position
+        
         # 1. Create short rule and execute
         short_rule = create_short_rule(
             symbol="AAPL",
@@ -329,15 +361,23 @@ class TestIntegrationScenarios:
         short_result = await short_rule.action.execute(context)
         assert short_result is True
         
-        # Verify initial setup
-        assert context["AAPL"]["side"] == "SELL"
-        assert len(context["AAPL"]["main_orders"]) == 1
+        # Verify position was created
+        assert context["position_tracker"].create_position.called
+        create_call = context["position_tracker"].create_position.call_args
+        assert create_call[1]["symbol"] == "AAPL"
+        assert create_call[1]["side"] == "SELL"
         
         # Verify short order quantity is negative
         main_call = context["order_manager"].create_and_submit_order.call_args
         assert main_call[1]["quantity"] == -100  # Negative for short
         
         # 2. Test scale-in for short position
+        # Update mock to return existing position
+        context["position_tracker"].get_positions_for_symbol.return_value = [mock_position]
+        mock_position.quantity = -100  # Negative for short
+        mock_position.entry_price = 150.0
+        mock_position.is_long = False
+        
         scale_rule = create_scale_in_rule("AAPL", scale_quantity=50, price_offset=0.02)
         
         scale_result = await scale_rule.action.execute(context)
@@ -363,6 +403,26 @@ class TestIntegrationScenarios:
         mock_order.order_id = "ORDER123"
         context["order_manager"].create_and_submit_order.return_value = mock_order
         context["order_manager"].create_order.return_value = mock_order
+        
+        # Mock position tracker to return no existing positions initially
+        context["position_tracker"].get_positions_for_symbol.return_value = []
+        
+        # Create mock positions for each symbol
+        positions = {}
+        
+        def create_mock_position(symbol, side):
+            pos = Mock()
+            pos.symbol = symbol
+            pos.side = side
+            pos.main_order_ids = []
+            pos.status = PositionStatus.OPEN
+            positions[symbol] = pos
+            return pos
+        
+        # Mock position creation
+        context["position_tracker"].create_position.side_effect = lambda **kwargs: create_mock_position(
+            kwargs["symbol"], kwargs["side"]
+        )
         
         # Create rules for multiple symbols
         symbols_and_sides = [
@@ -398,15 +458,15 @@ class TestIntegrationScenarios:
             action_result = await rule.action.execute(context)
             assert action_result is True
             
-            # Verify context created with correct side
+            # Verify position created with correct side
             expected_side = "BUY" if signal == "BUY" else "SELL"
-            assert context[symbol]["side"] == expected_side
-            assert context[symbol]["status"] == "active"
+            assert positions[symbol].side == expected_side
+            assert positions[symbol].status == PositionStatus.OPEN
         
         # Verify all three positions exist independently
-        assert "AAPL" in context and context["AAPL"]["side"] == "BUY"
-        assert "MSFT" in context and context["MSFT"]["side"] == "SELL"
-        assert "TSLA" in context and context["TSLA"]["side"] == "BUY"
+        assert "AAPL" in positions and positions["AAPL"].side == "BUY"
+        assert "MSFT" in positions and positions["MSFT"].side == "SELL"
+        assert "TSLA" in positions and positions["TSLA"].side == "BUY"
 
 
 # ===== EDGE CASE TESTS =====
@@ -445,12 +505,22 @@ class TestEdgeCases:
         """Test handling of negative quantity inputs."""
         context = {
             "order_manager": AsyncMock(),
+            "position_tracker": AsyncMock(),
             "prices": {"AAPL": 150.0}
         }
+        
+        # Mock no existing positions
+        context["position_tracker"].get_positions_for_symbol.return_value = []
         
         mock_order = Mock()
         mock_order.order_id = "ORDER123"
         context["order_manager"].create_and_submit_order.return_value = mock_order
+        
+        # Mock position creation
+        mock_position = Mock()
+        mock_position.symbol = "AAPL"
+        mock_position.main_order_ids = []
+        context["position_tracker"].create_position.return_value = mock_position
         
         # Test BUY with negative input - should become positive
         buy_action = LinkedCreateOrderAction(
@@ -467,7 +537,7 @@ class TestEdgeCases:
         
         # Reset for next test
         context["order_manager"].reset_mock()
-        del context["AAPL"]  # Clear context
+        context["position_tracker"].reset_mock()
         
         # Test SELL with negative input - should become negative
         sell_action = LinkedCreateOrderAction(

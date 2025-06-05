@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Simple Context Check Test
-========================
+Simple Position Check Test
+==========================
 
 This test simply:
 1. Places a single BUY order
-2. Checks that the context is properly created
+2. Checks that the position is properly created in PositionTracker
 3. Verifies all the expected fields are present
 """
 
@@ -34,55 +34,60 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('test_simple_context.log'),
+        logging.FileHandler('test_simple_position.log'),
         logging.StreamHandler()
     ]
 )
 logger = logging.getLogger(__name__)
 
 
-def print_context_details(context: dict, symbol: str):
-    """Print detailed context information for a symbol."""
+def print_position_details(position_tracker: PositionTracker, symbol: str):
+    """Print detailed position information for a symbol."""
     logger.info("\n" + "="*80)
-    logger.info(f"CONTEXT DETAILS FOR {symbol}")
+    logger.info(f"POSITION DETAILS FOR {symbol}")
     logger.info("="*80)
     
-    if symbol in context:
-        symbol_context = context[symbol]
-        logger.info(f"✅ Context exists for {symbol}")
-        logger.info(f"\nContext structure:")
-        logger.info(json.dumps(symbol_context, indent=2, default=str))
+    positions = asyncio.run(position_tracker.get_positions_for_symbol(symbol))
+    
+    if positions:
+        logger.info(f"✅ Found {len(positions)} position(s) for {symbol}")
         
-        # Check expected fields
-        expected_fields = ["side", "main_orders", "stop_orders", "target_orders", 
-                          "scale_orders", "doubledown_orders", "status"]
-        
-        logger.info(f"\nField validation:")
-        for field in expected_fields:
-            if field in symbol_context:
-                value = symbol_context[field]
-                if isinstance(value, list):
-                    logger.info(f"  ✅ {field}: {len(value)} items - {value}")
-                else:
-                    logger.info(f"  ✅ {field}: {value}")
-            else:
-                logger.info(f"  ❌ {field}: MISSING")
-        
-        # Additional fields
-        logger.info(f"\nAdditional fields:")
-        for field, value in symbol_context.items():
-            if field not in expected_fields:
-                logger.info(f"  • {field}: {value}")
+        for i, position in enumerate(positions):
+            logger.info(f"\nPosition {i+1}:")
+            logger.info(f"  Symbol: {position.symbol}")
+            logger.info(f"  Side: {position.side}")
+            logger.info(f"  Status: {position.status}")
+            logger.info(f"  Quantity: {position.quantity}")
+            logger.info(f"  Entry Price: {position.entry_price}")
+            
+            # Check order IDs
+            logger.info(f"\nOrder IDs:")
+            logger.info(f"  Main orders: {len(position.main_order_ids)} - {position.main_order_ids}")
+            logger.info(f"  Stop orders: {len(position.stop_order_ids)} - {position.stop_order_ids}")
+            logger.info(f"  Target orders: {len(position.target_order_ids)} - {position.target_order_ids}")
+            logger.info(f"  Scale orders: {len(position.scale_order_ids)} - {position.scale_order_ids}")
+            logger.info(f"  Double down orders: {len(position.doubledown_order_ids)} - {position.doubledown_order_ids}")
+            
+            # Check ATR multipliers
+            logger.info(f"\nATR Multipliers:")
+            logger.info(f"  Stop ATR multiplier: {position.atr_stop_multiplier}")
+            logger.info(f"  Target ATR multiplier: {position.atr_target_multiplier}")
+            
+            # Additional fields
+            logger.info(f"\nAdditional fields:")
+            logger.info(f"  Position ID: {position.position_id}")
+            logger.info(f"  Created at: {position.created_at}")
+            logger.info(f"  Updated at: {position.updated_at}")
                 
     else:
-        logger.error(f"❌ No context found for {symbol}")
+        logger.error(f"❌ No positions found for {symbol}")
     
     logger.info("="*80 + "\n")
 
 
-async def test_simple_context():
-    """Test that context is properly created after placing an order."""
-    logger.info("Starting simple context test...")
+async def test_simple_position():
+    """Test that position is properly created after placing an order."""
+    logger.info("Starting simple position test...")
     
     # Create event bus
     event_bus = EventBus()
@@ -157,9 +162,9 @@ async def test_simple_context():
         )
         
         buy_rule = Rule(
-            rule_id="slv_context_test",
-            name="SLV Context Test",
-            description="Test rule to verify context creation",
+            rule_id="slv_position_test",
+            name="SLV Position Test",
+            description="Test rule to verify position creation",
             condition=buy_condition,
             action=buy_action,
             priority=100
@@ -169,9 +174,9 @@ async def test_simple_context():
         rule_engine.register_rule(buy_rule)
         await rule_engine.start()
         
-        # Check context BEFORE signal
-        logger.info("\n📋 CHECKING CONTEXT BEFORE SIGNAL:")
-        print_context_details(rule_engine.context, "SLV")
+        # Check position BEFORE signal
+        logger.info("\n📋 CHECKING POSITION BEFORE SIGNAL:")
+        print_position_details(position_tracker, "SLV")
         
         # Send a BUY signal
         logger.info("\n📡 SENDING BUY SIGNAL FOR SLV...")
@@ -189,18 +194,9 @@ async def test_simple_context():
         logger.info("⏳ Waiting for order processing...")
         await asyncio.sleep(3)
         
-        # Check context AFTER signal
-        logger.info("\n📋 CHECKING CONTEXT AFTER SIGNAL:")
-        
-        # Debug: Print all keys in context
-        logger.info(f"Context keys: {list(rule_engine.context.keys())}")
-        
-        # Check if SLV is in any form
-        for key in rule_engine.context.keys():
-            if isinstance(key, str) and 'SLV' in key.upper():
-                logger.info(f"Found SLV-related key: {key}")
-        
-        print_context_details(rule_engine.context, "SLV")
+        # Check position AFTER signal
+        logger.info("\n📋 CHECKING POSITION AFTER SIGNAL:")
+        print_position_details(position_tracker, "SLV")
         
         # Get order details
         logger.info("\n📊 ORDER SUMMARY:")
@@ -211,22 +207,28 @@ async def test_simple_context():
             logger.info(f"  Order {order.order_id}: {order.symbol} {order.side.value if order.side else 'N/A'} "
                        f"{abs(order.quantity)} @ {order.order_type.value} - Status: {order.status.value}")
         
-        # Final context check
-        if "SLV" in rule_engine.context:
-            slv_context = rule_engine.context["SLV"]
+        # Final position check
+        positions = await position_tracker.get_positions_for_symbol("SLV")
+        if positions:
+            position = positions[0]  # Should only be one position
             
-            # Verify the context has the expected structure
-            has_all_fields = all(field in slv_context for field in 
-                               ["side", "main_orders", "stop_orders", "target_orders", "status"])
+            # Verify the position has the expected structure
+            has_all_fields = all([
+                hasattr(position, 'side'),
+                hasattr(position, 'main_order_ids'),
+                hasattr(position, 'stop_order_ids'),
+                hasattr(position, 'target_order_ids'),
+                hasattr(position, 'status')
+            ])
             
             if has_all_fields:
-                logger.info("\n✅ Context verification PASSED - all expected fields present")
+                logger.info("\n✅ Position verification PASSED - all expected fields present")
                 
                 # Count orders
-                main_count = len(slv_context.get("main_orders", []))
-                stop_count = len(slv_context.get("stop_orders", []))
-                target_count = len(slv_context.get("target_orders", []))
-                dd_count = len(slv_context.get("doubledown_orders", []))
+                main_count = len(position.main_order_ids)
+                stop_count = len(position.stop_order_ids)
+                target_count = len(position.target_order_ids)
+                dd_count = len(position.doubledown_order_ids)
                 
                 logger.info(f"  Main orders: {main_count}")
                 logger.info(f"  Stop orders: {stop_count}")
@@ -235,14 +237,14 @@ async def test_simple_context():
                 
                 return True
             else:
-                logger.error("\n❌ Context verification FAILED - missing expected fields")
+                logger.error("\n❌ Position verification FAILED - missing expected fields")
                 return False
         else:
-            logger.error("\n❌ Context verification FAILED - no context created for SLV")
+            logger.error("\n❌ Position verification FAILED - no position created for SLV")
             return False
         
     except Exception as e:
-        logger.error(f"Error during context test: {e}", exc_info=True)
+        logger.error(f"Error during position test: {e}", exc_info=True)
         return False
         
     finally:
@@ -263,22 +265,22 @@ async def test_simple_context():
 
 async def main():
     """Main test function."""
-    success = await test_simple_context()
+    success = await test_simple_position()
     
     if success:
-        logger.info("\n✅ Context test completed successfully!")
+        logger.info("\n✅ Position test completed successfully!")
     else:
-        logger.error("\n❌ Context test failed!")
+        logger.error("\n❌ Position test failed!")
 
 
 if __name__ == "__main__":
     print("\n" + "="*80)
-    print("SIMPLE CONTEXT VERIFICATION TEST")
+    print("SIMPLE POSITION VERIFICATION TEST")
     print("="*80)
     print("\nThis test will:")
     print("1. Connect to TWS")
     print("2. Place a single BUY order for SLV")
-    print("3. Verify the context is properly created")
+    print("3. Verify the position is properly created in PositionTracker")
     print("4. Check all expected fields are present")
     print("\nNOTE: This will create REAL orders in TWS")
     print("="*80 + "\n")

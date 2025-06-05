@@ -20829,3 +20829,1210 @@ of version 954.1 or newer:  TWS: 7497; IB Gateway: 4002
 2025-06-05 11:30:12,659 - src.tws_connection - INFO - Connection thread: Socket connected, starting message loop
 2025-06-05 11:30:12,659 - src.tws_connection - WARNING - Not connected to TWS
 2025-06-05 11:30:12,660 - src.tws_connection - INFO - Connection thread: Message loop ended
+2025-06-05 14:44:53,939 - __main__ - INFO - 🚀 Initializing Trading Application...
+2025-06-05 14:44:53,940 - __main__ - INFO - No feature flags currently active
+2025-06-05 14:44:53,942 - __main__ - INFO - Connecting to TWS...
+2025-06-05 14:44:53,942 - src.tws_connection - INFO - Connecting to TWS at 127.0.0.1:7497
+2025-06-05 14:44:53,943 - src.tws_connection - INFO - Connection thread: Connecting to 127.0.0.1:7497 (client ID: 1)
+2025-06-05 14:44:55,495 - src.tws_connection - INFO - ✅ Connection acknowledged by TWS
+2025-06-05 14:44:55,495 - src.tws_connection - INFO - Connection thread: Socket connected, starting message loop
+2025-06-05 14:44:55,517 - src.tws_connection - INFO - ✅ Next valid order ID received: 286
+2025-06-05 14:44:55,517 - src.tws_connection - INFO - ✅ TWS connection fully established
+2025-06-05 14:44:55,518 - src.tws_connection - INFO - Requesting additional order IDs from TWS
+2025-06-05 14:44:55,519 - src.tws_connection - INFO - ✅ Successfully connected to TWS
+2025-06-05 14:44:55,520 - __main__ - INFO - ✅ Connected to TWS
+2025-06-05 14:44:55,520 - src.position.position_manager - INFO - PositionManager initialized
+2025-06-05 14:44:55,520 - __main__ - INFO - ✅ PositionManager initialized (dual-write enabled)
+2025-06-05 14:44:55,521 - src.order.manager - INFO - OrderManager callbacks set up with TWSConnection
+2025-06-05 14:44:55,521 - src.position.tracker - INFO - PositionTracker async initialization completed
+2025-06-05 14:44:55,521 - src.rule.linked_order_actions - INFO - LinkedOrderConclusionManager initialized - monitoring for position conclusions
+2025-06-05 14:44:55,521 - src.rule.linked_order_actions - INFO - CooldownResetManager initialized - monitoring for stop loss fills
+2025-06-05 14:44:55,522 - LinkedDoubleDownFillManager - INFO - LinkedDoubleDownFillManager initialized
+2025-06-05 14:44:55,522 - __main__ - ERROR - Failed to initialize API client: Base URL is required. Provide it directly or set API_BASE_URL environment variable.
+2025-06-05 14:44:55,522 - __main__ - ERROR - ❌ Fatal error: Base URL is required. Provide it directly or set API_BASE_URL environment variable.
+2025-06-05 14:44:55,523 - __main__ - INFO - ⏹️ Stopping trading system...
+2025-06-05 14:44:55,523 - src.rule.engine - WARNING - Rule engine is not running
+2025-06-05 14:44:55,523 - src.tws_connection - INFO - Disconnecting from TWS
+2025-06-05 14:44:55,524 - src.tws_connection - INFO - ⚠️ Connection to TWS closed
+2025-06-05 14:44:55,524 - src.tws_connection - INFO - ✅ Disconnect request sent
+2025-06-05 14:44:55,525 - __main__ - INFO - ✅ Trading system stopped
+2025-06-05 14:45:31,580 - __main__ - INFO - 🚀 Initializing Trading Application...
+2025-06-05 14:45:31,580 - __main__ - INFO - No feature flags currently active
+2025-06-05 14:45:31,582 - __main__ - INFO - Connecting to TWS...
+2025-06-05 14:45:31,582 - src.tws_connection - INFO - Connecting to TWS at 127.0.0.1:7497
+2025-06-05 14:45:31,583 - src.tws_connection - INFO - Connection thread: Connecting to 127.0.0.1:7497 (client ID: 1)
+2025-06-05 14:45:32,851 - src.tws_connection - INFO - ✅ Connection acknowledged by TWS
+2025-06-05 14:45:32,852 - src.tws_connection - INFO - Connection thread: Socket connected, starting message loop
+2025-06-05 14:45:32,871 - src.tws_connection - INFO - ✅ Next valid order ID received: 286
+2025-06-05 14:45:32,872 - src.tws_connection - INFO - ✅ TWS connection fully established
+2025-06-05 14:45:32,872 - src.tws_connection - INFO - Requesting additional order IDs from TWS
+2025-06-05 14:45:32,875 - src.tws_connection - INFO - ✅ Successfully connected to TWS
+2025-06-05 14:45:32,876 - __main__ - INFO - ✅ Connected to TWS
+2025-06-05 14:45:32,876 - src.position.position_manager - INFO - PositionManager initialized
+2025-06-05 14:45:32,877 - __main__ - INFO - ✅ PositionManager initialized (dual-write enabled)
+2025-06-05 14:45:32,877 - src.order.manager - INFO - OrderManager callbacks set up with TWSConnection
+2025-06-05 14:45:32,877 - src.position.tracker - INFO - PositionTracker async initialization completed
+2025-06-05 14:45:32,878 - src.rule.linked_order_actions - INFO - LinkedOrderConclusionManager initialized - monitoring for position conclusions
+2025-06-05 14:45:32,878 - src.rule.linked_order_actions - INFO - CooldownResetManager initialized - monitoring for stop loss fills
+2025-06-05 14:45:32,878 - LinkedDoubleDownFillManager - INFO - LinkedDoubleDownFillManager initialized
+2025-06-05 14:45:32,953 - src.tws_connection - INFO - ✅ Next valid order ID received: 286
+2025-06-05 14:45:33,052 - src.tws_connection - INFO - ✅ Next valid order ID received: 286
+2025-06-05 14:45:33,292 - __main__ - INFO - ✅ API client initialized
+2025-06-05 14:45:33,293 - __main__ - INFO - ✅ All components initialized
+2025-06-05 14:45:33,293 - __main__ - INFO - 📋 Setting up trading strategies...
+2025-06-05 14:45:33,293 - __main__ - INFO - 📊 Created strategy for CVNA (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:45:33,293 - __main__ - INFO - 📊 Created strategy for UVXY (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:45:33,294 - __main__ - INFO - 📊 Created strategy for SOXL (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:45:33,294 - __main__ - INFO - 📊 Created strategy for SOXS (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:45:33,294 - __main__ - INFO - 📊 Created strategy for TQQQ (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:45:33,295 - __main__ - INFO - 📊 Created strategy for SQQQ (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:45:33,295 - __main__ - INFO - 📊 Created strategy for GLD (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:45:33,296 - __main__ - INFO - 📊 Created strategy for SLV (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:45:33,296 - __main__ - INFO - 📅 Created end-of-day closure rule
+2025-06-05 14:45:33,296 - __main__ - INFO - ✅ Created strategies for 8 tickers
+2025-06-05 14:45:33,296 - __main__ - INFO - 🔥 Starting trading system...
+2025-06-05 14:45:33,297 - src.api.monitor - INFO - OptionsFlowMonitor configured with tickers: CVNA, UVXY, SOXL, SOXS, TQQQ, SQQQ, GLD, SLV
+2025-06-05 14:45:33,297 - src.rule.engine - INFO - Rule engine started
+2025-06-05 14:45:33,297 - src.api.monitor - INFO - OptionsFlowMonitor started
+2025-06-05 14:45:33,298 - __main__ - INFO - 🚀 TRADING SYSTEM ACTIVE!
+2025-06-05 14:45:33,298 - __main__ - INFO - 📊 Monitoring tickers: CVNA, UVXY, SOXL, SOXS, TQQQ, SQQQ, GLD, SLV
+2025-06-05 14:45:33,299 - __main__ - INFO - 📋 Rules registered: 24
+2025-06-05 14:45:33,299 - __main__ - INFO - ⚡ Waiting for prediction signals...
+2025-06-05 14:45:33,301 - __main__ - INFO - 💰 Current positions: 0
+2025-06-05 14:45:33,301 - __main__ - INFO - 💰 Total value: $0.00
+2025-06-05 14:45:33,301 - __main__ - INFO - 💰 Unrealized P&L: $0.00
+2025-06-05 14:45:33,301 - __main__ - ERROR - Error in monitoring loop: type object 'FeatureFlags' has no attribute 'RECONCILIATION_ENABLED'
+2025-06-05 14:45:33,302 - __main__ - INFO - ⏹️ Stopping trading system...
+2025-06-05 14:45:33,302 - src.api.monitor - INFO - OptionsFlowMonitor stopped
+2025-06-05 14:45:33,302 - src.rule.engine - INFO - Rule engine stopped
+2025-06-05 14:45:33,302 - src.tws_connection - INFO - Disconnecting from TWS
+2025-06-05 14:45:33,302 - src.tws_connection - INFO - ⚠️ Connection to TWS closed
+2025-06-05 14:45:33,303 - src.tws_connection - INFO - ✅ Disconnect request sent
+2025-06-05 14:45:33,304 - __main__ - INFO - ✅ Trading system stopped
+2025-06-05 14:45:39,472 - __main__ - INFO - 🚀 Initializing Trading Application...
+2025-06-05 14:45:39,473 - __main__ - INFO - No feature flags currently active
+2025-06-05 14:45:39,475 - __main__ - INFO - Connecting to TWS...
+2025-06-05 14:45:39,475 - src.tws_connection - INFO - Connecting to TWS at 127.0.0.1:7497
+2025-06-05 14:45:39,476 - src.tws_connection - INFO - Connection thread: Connecting to 127.0.0.1:7497 (client ID: 1)
+2025-06-05 14:45:40,880 - src.tws_connection - INFO - ✅ Connection acknowledged by TWS
+2025-06-05 14:45:40,881 - src.tws_connection - INFO - Connection thread: Socket connected, starting message loop
+2025-06-05 14:45:40,905 - src.tws_connection - INFO - ✅ Next valid order ID received: 286
+2025-06-05 14:45:40,905 - src.tws_connection - INFO - ✅ TWS connection fully established
+2025-06-05 14:45:40,905 - src.tws_connection - INFO - Requesting additional order IDs from TWS
+2025-06-05 14:45:40,906 - src.tws_connection - INFO - ✅ Next valid order ID received: 286
+2025-06-05 14:45:40,907 - src.tws_connection - INFO - ✅ Successfully connected to TWS
+2025-06-05 14:45:40,908 - src.tws_connection - INFO - ✅ Next valid order ID received: 286
+2025-06-05 14:45:40,909 - __main__ - INFO - ✅ Connected to TWS
+2025-06-05 14:45:40,910 - src.position.position_manager - INFO - PositionManager initialized
+2025-06-05 14:45:40,910 - __main__ - INFO - ✅ PositionManager initialized (dual-write enabled)
+2025-06-05 14:45:40,911 - src.order.manager - INFO - OrderManager callbacks set up with TWSConnection
+2025-06-05 14:45:40,911 - src.position.tracker - INFO - PositionTracker async initialization completed
+2025-06-05 14:45:40,912 - src.rule.linked_order_actions - INFO - LinkedOrderConclusionManager initialized - monitoring for position conclusions
+2025-06-05 14:45:40,912 - src.rule.linked_order_actions - INFO - CooldownResetManager initialized - monitoring for stop loss fills
+2025-06-05 14:45:40,912 - LinkedDoubleDownFillManager - INFO - LinkedDoubleDownFillManager initialized
+2025-06-05 14:45:41,250 - __main__ - INFO - ✅ API client initialized
+2025-06-05 14:45:41,250 - __main__ - INFO - ✅ All components initialized
+2025-06-05 14:45:41,250 - __main__ - INFO - 📋 Setting up trading strategies...
+2025-06-05 14:45:41,251 - __main__ - INFO - 📊 Created strategy for CVNA (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:45:41,251 - __main__ - INFO - 📊 Created strategy for UVXY (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:45:41,251 - __main__ - INFO - 📊 Created strategy for SOXL (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:45:41,252 - __main__ - INFO - 📊 Created strategy for SOXS (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:45:41,252 - __main__ - INFO - 📊 Created strategy for TQQQ (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:45:41,252 - __main__ - INFO - 📊 Created strategy for SQQQ (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:45:41,253 - __main__ - INFO - 📊 Created strategy for GLD (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:45:41,253 - __main__ - INFO - 📊 Created strategy for SLV (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:45:41,253 - __main__ - INFO - 📅 Created end-of-day closure rule
+2025-06-05 14:45:41,253 - __main__ - INFO - ✅ Created strategies for 8 tickers
+2025-06-05 14:45:41,253 - __main__ - INFO - 🔥 Starting trading system...
+2025-06-05 14:45:41,254 - src.api.monitor - INFO - OptionsFlowMonitor configured with tickers: CVNA, UVXY, SOXL, SOXS, TQQQ, SQQQ, GLD, SLV
+2025-06-05 14:45:41,254 - src.rule.engine - INFO - Rule engine started
+2025-06-05 14:45:41,254 - src.api.monitor - INFO - OptionsFlowMonitor started
+2025-06-05 14:45:41,254 - __main__ - INFO - 🚀 TRADING SYSTEM ACTIVE!
+2025-06-05 14:45:41,254 - __main__ - INFO - 📊 Monitoring tickers: CVNA, UVXY, SOXL, SOXS, TQQQ, SQQQ, GLD, SLV
+2025-06-05 14:45:41,254 - __main__ - INFO - 📋 Rules registered: 24
+2025-06-05 14:45:41,255 - __main__ - INFO - ⚡ Waiting for prediction signals...
+2025-06-05 14:45:41,255 - __main__ - INFO - 💰 Current positions: 0
+2025-06-05 14:45:41,255 - __main__ - INFO - 💰 Total value: $0.00
+2025-06-05 14:45:41,255 - __main__ - INFO - 💰 Unrealized P&L: $0.00
+2025-06-05 14:45:41,256 - __main__ - ERROR - Error in monitoring loop: type object 'FeatureFlags' has no attribute 'RECONCILIATION_ENABLED'
+2025-06-05 14:45:41,257 - __main__ - INFO - ⏹️ Stopping trading system...
+2025-06-05 14:45:41,257 - src.api.monitor - INFO - OptionsFlowMonitor stopped
+2025-06-05 14:45:41,257 - src.rule.engine - INFO - Rule engine stopped
+2025-06-05 14:45:41,258 - src.tws_connection - INFO - Disconnecting from TWS
+2025-06-05 14:45:41,258 - src.tws_connection - INFO - ⚠️ Connection to TWS closed
+2025-06-05 14:45:41,259 - src.tws_connection - INFO - ✅ Disconnect request sent
+2025-06-05 14:45:41,260 - __main__ - INFO - ✅ Trading system stopped
+2025-06-05 14:46:16,438 - __main__ - INFO - 🚀 Initializing Trading Application...
+2025-06-05 14:46:16,439 - __main__ - INFO - Feature Flags:
+2025-06-05 14:46:16,439 - __main__ - INFO -   RECONCILIATION_ENABLED: False
+2025-06-05 14:46:16,440 - __main__ - INFO - Connecting to TWS...
+2025-06-05 14:46:16,441 - src.tws_connection - INFO - Connecting to TWS at 127.0.0.1:7497
+2025-06-05 14:46:16,442 - src.tws_connection - INFO - Connection thread: Connecting to 127.0.0.1:7497 (client ID: 1)
+2025-06-05 14:46:18,100 - src.tws_connection - INFO - ✅ Connection acknowledged by TWS
+2025-06-05 14:46:18,101 - src.tws_connection - INFO - Connection thread: Socket connected, starting message loop
+2025-06-05 14:46:18,120 - src.tws_connection - INFO - ✅ Next valid order ID received: 286
+2025-06-05 14:46:18,120 - src.tws_connection - INFO - ✅ TWS connection fully established
+2025-06-05 14:46:18,120 - src.tws_connection - INFO - Requesting additional order IDs from TWS
+2025-06-05 14:46:18,121 - src.tws_connection - INFO - ✅ Next valid order ID received: 286
+2025-06-05 14:46:18,121 - src.tws_connection - INFO - ✅ Successfully connected to TWS
+2025-06-05 14:46:18,122 - src.tws_connection - INFO - ✅ Next valid order ID received: 286
+2025-06-05 14:46:18,122 - __main__ - INFO - ✅ Connected to TWS
+2025-06-05 14:46:18,123 - src.position.position_manager - INFO - PositionManager initialized
+2025-06-05 14:46:18,123 - __main__ - INFO - ✅ PositionManager initialized (dual-write enabled)
+2025-06-05 14:46:18,123 - src.order.manager - INFO - OrderManager callbacks set up with TWSConnection
+2025-06-05 14:46:18,123 - src.position.tracker - INFO - PositionTracker async initialization completed
+2025-06-05 14:46:18,124 - src.rule.linked_order_actions - INFO - LinkedOrderConclusionManager initialized - monitoring for position conclusions
+2025-06-05 14:46:18,124 - src.rule.linked_order_actions - INFO - CooldownResetManager initialized - monitoring for stop loss fills
+2025-06-05 14:46:18,125 - LinkedDoubleDownFillManager - INFO - LinkedDoubleDownFillManager initialized
+2025-06-05 14:46:18,420 - __main__ - INFO - ✅ API client initialized
+2025-06-05 14:46:18,420 - __main__ - INFO - ✅ All components initialized
+2025-06-05 14:46:18,421 - __main__ - INFO - 📋 Setting up trading strategies...
+2025-06-05 14:46:18,421 - __main__ - INFO - 📊 Created strategy for CVNA (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:46:18,421 - __main__ - INFO - 📊 Created strategy for UVXY (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:46:18,421 - __main__ - INFO - 📊 Created strategy for SOXL (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:46:18,421 - __main__ - INFO - 📊 Created strategy for SOXS (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:46:18,422 - __main__ - INFO - 📊 Created strategy for TQQQ (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:46:18,422 - __main__ - INFO - 📊 Created strategy for SQQQ (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:46:18,422 - __main__ - INFO - 📊 Created strategy for GLD (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:46:18,422 - __main__ - INFO - 📊 Created strategy for SLV (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:46:18,423 - __main__ - INFO - 📅 Created end-of-day closure rule
+2025-06-05 14:46:18,423 - __main__ - INFO - ✅ Created strategies for 8 tickers
+2025-06-05 14:46:18,423 - __main__ - INFO - 🔥 Starting trading system...
+2025-06-05 14:46:18,423 - src.api.monitor - INFO - OptionsFlowMonitor configured with tickers: CVNA, UVXY, SOXL, SOXS, TQQQ, SQQQ, GLD, SLV
+2025-06-05 14:46:18,424 - src.rule.engine - INFO - Rule engine started
+2025-06-05 14:46:18,424 - src.api.monitor - INFO - OptionsFlowMonitor started
+2025-06-05 14:46:18,424 - __main__ - INFO - 🚀 TRADING SYSTEM ACTIVE!
+2025-06-05 14:46:18,424 - __main__ - INFO - 📊 Monitoring tickers: CVNA, UVXY, SOXL, SOXS, TQQQ, SQQQ, GLD, SLV
+2025-06-05 14:46:18,424 - __main__ - INFO - 📋 Rules registered: 24
+2025-06-05 14:46:18,425 - __main__ - INFO - ⚡ Waiting for prediction signals...
+2025-06-05 14:46:18,425 - __main__ - INFO - 💰 Current positions: 0
+2025-06-05 14:46:18,425 - __main__ - INFO - 💰 Total value: $0.00
+2025-06-05 14:46:18,425 - __main__ - INFO - 💰 Unrealized P&L: $0.00
+2025-06-05 14:46:19,645 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=CVNA&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:46:20,072 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SLV&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:46:20,074 - src.api.monitor - INFO - High confidence prediction for SLV: BUY (0.84)
+2025-06-05 14:46:20,075 - src.trade_tracker - INFO - TradeTracker initialized
+2025-06-05 14:46:20,076 - src.trade_tracker - INFO - Started tracking BUY trade for SLV
+2025-06-05 14:46:20,076 - src.position.position_manager - INFO - Opened BUY position for SLV
+2025-06-05 14:46:20,444 - src.position.sizer - INFO - BUY position size: 309 shares @ $32.36 = $9999.24 (100.0% of $10000.00 allocation)
+2025-06-05 14:46:20,445 - src.order.base - INFO - Order 019d92fd-10f5-4e4f-84a8-125834b2b01b status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 14:46:20,446 - src.order.manager - INFO - Submitting order 019d92fd-10f5-4e4f-84a8-125834b2b01b to TWS
+2025-06-05 14:46:20,446 - src.order.manager - INFO - Got broker order ID 286 for order 019d92fd-10f5-4e4f-84a8-125834b2b01b
+2025-06-05 14:46:20,447 - src.order.manager - INFO - Calling placeOrder with ID 286, contract 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: MKT BUY 309@0.000000 DAY
+2025-06-05 14:46:20,450 - src.order.manager - INFO - placeOrder called successfully for order 019d92fd-10f5-4e4f-84a8-125834b2b01b
+2025-06-05 14:46:20,451 - src.order.base - INFO - Order 019d92fd-10f5-4e4f-84a8-125834b2b01b status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 14:46:20,452 - src.position.position_manager - INFO - Added 1 main orders to SLV position
+2025-06-05 14:46:20,495 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXS&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:46:20,496 - src.api.monitor - INFO - High confidence prediction for SOXS: NEUTRAL (0.75)
+2025-06-05 14:46:20,610 - src.tws_connection - INFO - Open Order - ID: 286, Symbol: SLV, Action: BUY, Quantity: 309.0
+2025-06-05 14:46:20,616 - src.tws_connection - INFO - Open Order - ID: 286, Symbol: SLV, Action: BUY, Quantity: 309.0
+2025-06-05 14:46:20,620 - src.tws_connection - INFO - Open Order - ID: 286, Symbol: SLV, Action: BUY, Quantity: 309.0
+2025-06-05 14:46:20,630 - src.rule.linked_order_actions - INFO - ATR for SLV: 0.0129
+2025-06-05 14:46:20,630 - src.rule.linked_order_actions - INFO - ATR-based stop: SLV stop at $32.28 (ATR: 0.0129 * 6.0 = 0.0771)
+2025-06-05 14:46:20,631 - src.order.base - INFO - Order 63e2296e-348a-4135-8611-cfa9fb52928d status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 14:46:20,631 - src.order.manager - INFO - Submitting order 63e2296e-348a-4135-8611-cfa9fb52928d to TWS
+2025-06-05 14:46:20,631 - src.order.manager - INFO - Got broker order ID 287 for order 63e2296e-348a-4135-8611-cfa9fb52928d
+2025-06-05 14:46:20,631 - src.order.manager - INFO - Calling placeOrder with ID 287, contract 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: STP SELL 309@0.000000 DAY
+2025-06-05 14:46:20,631 - src.order.manager - INFO - placeOrder called successfully for order 63e2296e-348a-4135-8611-cfa9fb52928d
+2025-06-05 14:46:20,632 - src.order.base - INFO - Order 63e2296e-348a-4135-8611-cfa9fb52928d status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 14:46:20,632 - src.position.position_manager - INFO - Added 1 stop orders to SLV position
+2025-06-05 14:46:20,632 - src.rule.linked_order_actions - INFO - Auto-created BUY stop loss 63e2296e-348a-4135-8611-cfa9fb52928d at $32.28
+2025-06-05 14:46:20,632 - src.rule.linked_order_actions - INFO - ATR-based target: SLV target at $32.37 (ATR: 0.0129 * 1.0 = 0.0129)
+2025-06-05 14:46:20,633 - src.order.base - INFO - Order aee8757d-94d2-4145-be62-b0b03d4ae2ec status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 14:46:20,633 - src.order.manager - INFO - Submitting order aee8757d-94d2-4145-be62-b0b03d4ae2ec to TWS
+2025-06-05 14:46:20,633 - src.order.manager - INFO - Got broker order ID 288 for order aee8757d-94d2-4145-be62-b0b03d4ae2ec
+2025-06-05 14:46:20,633 - src.order.manager - INFO - Calling placeOrder with ID 288, contract 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: LMT SELL 309@32.370000 DAY
+2025-06-05 14:46:20,634 - src.order.manager - INFO - placeOrder called successfully for order aee8757d-94d2-4145-be62-b0b03d4ae2ec
+2025-06-05 14:46:20,634 - src.order.base - INFO - Order aee8757d-94d2-4145-be62-b0b03d4ae2ec status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 14:46:20,635 - src.position.position_manager - INFO - Added 1 target orders to SLV position
+2025-06-05 14:46:20,636 - src.rule.linked_order_actions - INFO - Auto-created BUY take profit aee8757d-94d2-4145-be62-b0b03d4ae2ec at $32.37
+2025-06-05 14:46:20,636 - src.rule.linked_order_actions - INFO - Starting double down order creation for SLV
+2025-06-05 14:46:20,637 - src.order.base - INFO - Order 019d92fd-10f5-4e4f-84a8-125834b2b01b status changed: submitted -> accepted (IB status: PreSubmitted)
+2025-06-05 14:46:20,638 - src.order.base - INFO - Order 019d92fd-10f5-4e4f-84a8-125834b2b01b status changed: accepted -> filled (Order fully filled)
+2025-06-05 14:46:20,638 - src.order.base - INFO - Order 019d92fd-10f5-4e4f-84a8-125834b2b01b filled: 309.0 @ 32.36 (309.0/309)
+2025-06-05 14:46:20,707 - src.tws_connection - INFO - Open Order - ID: 287, Symbol: SLV, Action: SELL, Quantity: 309.0
+2025-06-05 14:46:20,708 - src.order.base - INFO - Order 63e2296e-348a-4135-8611-cfa9fb52928d status changed: submitted -> accepted (IB status: PreSubmitted)
+2025-06-05 14:46:20,755 - src.tws_connection - INFO - Open Order - ID: 288, Symbol: SLV, Action: SELL, Quantity: 309.0
+2025-06-05 14:46:20,910 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=UVXY&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:46:21,147 - src.rule.linked_order_actions - INFO - Found 1 stop orders for SLV: ['63e2296e-348a-4135-8611-cfa9fb52928d']
+2025-06-05 14:46:21,148 - src.rule.linked_order_actions - INFO - Executing double down action for SLV
+2025-06-05 14:46:21,221 - src.rule.linked_order_actions - INFO - Using ATR-based stop distance for SLV: 0.0771
+2025-06-05 14:46:21,222 - src.rule.linked_order_actions - INFO - Double down calc for SLV (BUY): current=$32.36, stop_distance=$0.08, dd_distance=$0.01, dd_price=$32.35, original_qty=309, dd_qty=309
+2025-06-05 14:46:21,223 - src.order.base - INFO - Order ceb89581-d53a-4903-b707-24dc7b1beb95 status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 14:46:21,224 - src.order.manager - INFO - Submitting order ceb89581-d53a-4903-b707-24dc7b1beb95 to TWS
+2025-06-05 14:46:21,224 - src.order.manager - INFO - Got broker order ID 289 for order ceb89581-d53a-4903-b707-24dc7b1beb95
+2025-06-05 14:46:21,224 - src.order.manager - INFO - Calling placeOrder with ID 289, contract 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: LMT BUY 309@32.350000 DAY
+2025-06-05 14:46:21,225 - src.order.manager - INFO - placeOrder called successfully for order ceb89581-d53a-4903-b707-24dc7b1beb95
+2025-06-05 14:46:21,226 - src.order.base - INFO - Order ceb89581-d53a-4903-b707-24dc7b1beb95 status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 14:46:21,226 - src.position.position_manager - INFO - Added 1 doubledown orders to SLV position
+2025-06-05 14:46:21,227 - src.rule.linked_order_actions - INFO - Created BUY double down order 'doubledown1' for SLV: 309 shares @ $32.35
+2025-06-05 14:46:21,227 - src.rule.linked_order_actions - INFO - Auto-created double down order for SLV
+2025-06-05 14:46:21,227 - src.rule.linked_order_actions - INFO - Created and linked BUY main order 019d92fd-10f5-4e4f-84a8-125834b2b01b for SLV
+2025-06-05 14:46:21,228 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:46:21,318 - src.tws_connection - INFO - Open Order - ID: 289, Symbol: SLV, Action: BUY, Quantity: 309.0
+2025-06-05 14:46:22,155 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=GLD&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:46:22,904 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=TQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:46:23,562 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXL&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:47:06,361 - src.order.base - INFO - Order ceb89581-d53a-4903-b707-24dc7b1beb95 status changed: submitted -> filled (Order fully filled)
+2025-06-05 14:47:06,362 - src.order.base - INFO - Order ceb89581-d53a-4903-b707-24dc7b1beb95 filled: 309.0 @ 32.35 (309.0/309)
+2025-06-05 14:47:06,363 - LinkedDoubleDownFillManager - INFO - Double down order ceb89581-d53a-4903-b707-24dc7b1beb95 filled for SLV - updating protective orders
+2025-06-05 14:47:06,363 - LinkedDoubleDownFillManager - WARNING - No position found in PositionTracker for SLV, using order data
+2025-06-05 14:47:06,361 - src.tws_connection - INFO - Open Order - ID: 289, Symbol: SLV, Action: BUY, Quantity: 309.0
+2025-06-05 14:47:06,363 - LinkedDoubleDownFillManager - INFO - [DD FILL DEBUG] old_quantity=309.0, dd_quantity=309.0, new_quantity=618.0
+2025-06-05 14:47:06,391 - LinkedDoubleDownFillManager - INFO - ATR for SLV: 0.0129
+2025-06-05 14:47:06,395 - src.order.base - INFO - Order 63e2296e-348a-4135-8611-cfa9fb52928d status changed: accepted -> pending_cancel (Double down fill - updating protective orders)
+2025-06-05 14:47:06,396 - src.order.manager - INFO - Cancelling order 63e2296e-348a-4135-8611-cfa9fb52928d with broker ID 287
+2025-06-05 14:47:06,396 - LinkedDoubleDownFillManager - INFO - Cancelled old stop order 63e2296e-348a-4135-8611-cfa9fb52928d
+2025-06-05 14:47:06,396 - src.order.base - INFO - Order aee8757d-94d2-4145-be62-b0b03d4ae2ec status changed: submitted -> pending_cancel (Double down fill - updating protective orders)
+2025-06-05 14:47:06,397 - src.order.manager - INFO - Cancelling order aee8757d-94d2-4145-be62-b0b03d4ae2ec with broker ID 288
+2025-06-05 14:47:06,398 - LinkedDoubleDownFillManager - INFO - Cancelled old target order aee8757d-94d2-4145-be62-b0b03d4ae2ec
+2025-06-05 14:47:06,398 - src.order.base - INFO - Order 907040fd-a6eb-4e2f-aad9-14d4405e5e00 status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 14:47:06,398 - src.order.manager - INFO - Submitting order 907040fd-a6eb-4e2f-aad9-14d4405e5e00 to TWS
+2025-06-05 14:47:06,399 - src.order.manager - INFO - Got broker order ID 290 for order 907040fd-a6eb-4e2f-aad9-14d4405e5e00
+2025-06-05 14:47:06,400 - src.order.manager - INFO - Calling placeOrder with ID 290, contract 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: STP SELL 618@0.000000 DAY
+2025-06-05 14:47:06,400 - src.order.manager - INFO - placeOrder called successfully for order 907040fd-a6eb-4e2f-aad9-14d4405e5e00
+2025-06-05 14:47:06,400 - src.order.base - INFO - Order 907040fd-a6eb-4e2f-aad9-14d4405e5e00 status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 14:47:06,401 - src.position.position_manager - INFO - Added 1 stop orders to SLV position
+2025-06-05 14:47:06,401 - LinkedDoubleDownFillManager - INFO - Created updated stop order 907040fd-a6eb-4e2f-aad9-14d4405e5e00 for SLV at $32.27 for -618.0 shares
+2025-06-05 14:47:06,401 - src.order.base - INFO - Order 9deb8629-e46f-4855-bbad-5fca6a2a3bdb status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 14:47:06,402 - src.order.manager - INFO - Submitting order 9deb8629-e46f-4855-bbad-5fca6a2a3bdb to TWS
+2025-06-05 14:47:06,402 - src.order.manager - INFO - Got broker order ID 291 for order 9deb8629-e46f-4855-bbad-5fca6a2a3bdb
+2025-06-05 14:47:06,403 - src.order.manager - INFO - Calling placeOrder with ID 291, contract 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: LMT SELL 618@32.360000 DAY
+2025-06-05 14:47:06,405 - src.order.manager - INFO - placeOrder called successfully for order 9deb8629-e46f-4855-bbad-5fca6a2a3bdb
+2025-06-05 14:47:06,406 - src.order.base - INFO - Order 9deb8629-e46f-4855-bbad-5fca6a2a3bdb status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 14:47:06,407 - src.position.position_manager - INFO - Added 1 target orders to SLV position
+2025-06-05 14:47:06,407 - LinkedDoubleDownFillManager - INFO - Created updated target order 9deb8629-e46f-4855-bbad-5fca6a2a3bdb for SLV at $32.36 for -618.0 shares
+2025-06-05 14:47:06,408 - LinkedDoubleDownFillManager - INFO - Updated protective orders for SLV: New quantity=618.0, New avg=$32.35
+2025-06-05 14:47:06,411 - src.tws_connection - INFO - Open Order - ID: 289, Symbol: SLV, Action: BUY, Quantity: 309.0
+2025-06-05 14:47:06,438 - src.order.base - INFO - Order 63e2296e-348a-4135-8611-cfa9fb52928d status changed: pending_cancel -> cancelled (IB status: Cancelled)
+2025-06-05 14:47:06,437 - src.tws_connection - WARNING - ⚠️ TWS Error 202: Order Canceled - reason: (reqId: 287)
+2025-06-05 14:47:06,556 - src.order.base - INFO - Order aee8757d-94d2-4145-be62-b0b03d4ae2ec status changed: pending_cancel -> cancelled (IB status: Cancelled)
+2025-06-05 14:47:06,556 - src.tws_connection - WARNING - ⚠️ TWS Error 202: Order Canceled - reason: (reqId: 288)
+2025-06-05 14:47:06,677 - src.tws_connection - INFO - Open Order - ID: 290, Symbol: SLV, Action: SELL, Quantity: 618.0
+2025-06-05 14:47:06,679 - src.order.base - INFO - Order 907040fd-a6eb-4e2f-aad9-14d4405e5e00 status changed: submitted -> accepted (IB status: PreSubmitted)
+2025-06-05 14:47:06,809 - src.tws_connection - INFO - Open Order - ID: 291, Symbol: SLV, Action: SELL, Quantity: 618.0
+2025-06-05 14:47:24,866 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=CVNA&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:47:25,631 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SLV&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:47:25,633 - src.api.monitor - INFO - High confidence prediction for SLV: BUY (0.88)
+2025-06-05 14:47:25,965 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXS&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:47:26,224 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=UVXY&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:47:26,225 - src.api.monitor - INFO - High confidence prediction for UVXY: NEUTRAL (0.76)
+2025-06-05 14:47:26,498 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:47:26,753 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=GLD&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:47:27,017 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=TQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:47:27,305 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXL&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:48:27,660 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=CVNA&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:48:27,933 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SLV&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:48:27,933 - src.api.monitor - INFO - High confidence prediction for SLV: BUY (0.85)
+2025-06-05 14:48:28,181 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXS&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:48:28,443 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=UVXY&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:48:28,444 - src.api.monitor - INFO - High confidence prediction for UVXY: NEUTRAL (0.85)
+2025-06-05 14:48:28,950 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:48:29,707 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=GLD&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:48:30,525 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=TQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:48:31,158 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXL&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:49:32,678 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=CVNA&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:49:33,797 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SLV&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:49:33,801 - src.api.monitor - INFO - High confidence prediction for SLV: BUY (0.87)
+2025-06-05 14:49:33,805 - src.rule.linked_order_actions - INFO - Ignoring BUY signal for SLV - already have active BUY trade
+2025-06-05 14:49:34,254 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXS&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:49:34,840 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=UVXY&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:49:34,841 - src.api.monitor - INFO - High confidence prediction for UVXY: NEUTRAL (0.85)
+2025-06-05 14:49:35,434 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:49:36,242 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=GLD&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:49:36,885 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=TQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:49:36,886 - src.api.monitor - INFO - High confidence prediction for TQQQ: NEUTRAL (0.83)
+2025-06-05 14:49:37,821 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXL&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:50:38,497 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=CVNA&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:50:38,907 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SLV&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:50:38,908 - src.api.monitor - INFO - High confidence prediction for SLV: BUY (0.77)
+2025-06-05 14:50:39,348 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXS&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:50:39,707 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=UVXY&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:50:39,708 - src.api.monitor - INFO - High confidence prediction for UVXY: NEUTRAL (0.88)
+2025-06-05 14:50:39,990 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:50:40,245 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=GLD&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:50:40,504 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=TQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:50:40,747 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXL&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:51:41,105 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=CVNA&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:51:41,373 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SLV&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:51:41,792 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXS&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:51:41,794 - src.api.monitor - INFO - High confidence prediction for SOXS: NEUTRAL (0.77)
+2025-06-05 14:51:42,759 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=UVXY&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:51:42,760 - src.api.monitor - INFO - High confidence prediction for UVXY: NEUTRAL (0.93)
+2025-06-05 14:51:43,414 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:51:43,686 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=GLD&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:51:43,938 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=TQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:51:43,939 - src.api.monitor - INFO - High confidence prediction for TQQQ: NEUTRAL (0.94)
+2025-06-05 14:51:44,191 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXL&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:52:07,782 - src.order.base - INFO - Order 9deb8629-e46f-4855-bbad-5fca6a2a3bdb status changed: submitted -> filled (Order fully filled)
+2025-06-05 14:52:07,783 - src.order.base - INFO - Order 9deb8629-e46f-4855-bbad-5fca6a2a3bdb filled: 618.0 @ 32.36 (618.0/618.0)
+2025-06-05 14:52:07,784 - src.rule.linked_order_actions - INFO - 🎯 BUY position concluded for SLV - target order 9deb8629-e46f-4855-bbad-5fca6a2a3bdb filled at $32.36
+2025-06-05 14:52:07,785 - src.order.manager - WARNING - Cannot cancel inactive order ceb89581-d53a-4903-b707-24dc7b1beb95 with status filled
+2025-06-05 14:52:07,785 - src.rule.linked_order_actions - INFO - Cancelled remaining order ceb89581-d53a-4903-b707-24dc7b1beb95 for SLV
+2025-06-05 14:52:07,785 - src.order.base - INFO - Order 907040fd-a6eb-4e2f-aad9-14d4405e5e00 status changed: accepted -> pending_cancel (Position concluded via target fill)
+2025-06-05 14:52:07,786 - src.order.manager - INFO - Cancelling order 907040fd-a6eb-4e2f-aad9-14d4405e5e00 with broker ID 290
+2025-06-05 14:52:07,787 - src.rule.linked_order_actions - INFO - Cancelled remaining order 907040fd-a6eb-4e2f-aad9-14d4405e5e00 for SLV
+2025-06-05 14:52:07,787 - src.order.manager - WARNING - Cannot cancel inactive order 019d92fd-10f5-4e4f-84a8-125834b2b01b with status filled
+2025-06-05 14:52:07,788 - src.rule.linked_order_actions - INFO - Cancelled remaining order 019d92fd-10f5-4e4f-84a8-125834b2b01b for SLV
+2025-06-05 14:52:07,789 - src.trade_tracker - INFO - Closed trade for SLV
+2025-06-05 14:52:07,789 - src.position.position_manager - INFO - Closed position for SLV
+2025-06-05 14:52:07,800 - src.tws_connection - INFO - Open Order - ID: 291, Symbol: SLV, Action: SELL, Quantity: 618.0
+2025-06-05 14:52:07,803 - src.tws_connection - INFO - Open Order - ID: 291, Symbol: SLV, Action: SELL, Quantity: 618.0
+2025-06-05 14:52:07,844 - src.order.base - INFO - Order 907040fd-a6eb-4e2f-aad9-14d4405e5e00 status changed: pending_cancel -> cancelled (IB status: Cancelled)
+2025-06-05 14:52:07,845 - src.tws_connection - WARNING - ⚠️ TWS Error 202: Order Canceled - reason: (reqId: 290)
+2025-06-05 14:52:44,537 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=CVNA&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:52:44,792 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SLV&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:52:44,793 - src.api.monitor - INFO - High confidence prediction for SLV: NEUTRAL (0.89)
+2025-06-05 14:52:45,067 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXS&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:52:45,249 - __main__ - INFO - 🛑 Received shutdown signal
+2025-06-05 14:52:45,249 - __main__ - INFO - ⏹️ Stopping trading system...
+2025-06-05 14:52:45,250 - src.api.monitor - INFO - OptionsFlowMonitor stopped
+2025-06-05 14:52:45,251 - src.rule.engine - INFO - Rule engine stopped
+2025-06-05 14:52:45,251 - src.tws_connection - INFO - Disconnecting from TWS
+2025-06-05 14:52:45,252 - src.tws_connection - INFO - ⚠️ Connection to TWS closed
+2025-06-05 14:52:45,266 - src.tws_connection - INFO - ✅ Disconnect request sent
+2025-06-05 14:52:45,267 - __main__ - INFO - ✅ Trading system stopped
+2025-06-05 14:52:45,309 - src.tws_connection - WARNING - Not connected to TWS
+2025-06-05 14:52:45,309 - src.tws_connection - INFO - Connection thread: Message loop ended
+2025-06-05 14:53:04,160 - __main__ - INFO - 🚀 Initializing Trading Application...
+2025-06-05 14:53:04,160 - __main__ - INFO - Feature Flags:
+2025-06-05 14:53:04,160 - __main__ - INFO -   RECONCILIATION_ENABLED: False
+2025-06-05 14:53:04,161 - __main__ - INFO - Connecting to TWS...
+2025-06-05 14:53:04,161 - src.tws_connection - INFO - Connecting to TWS at 127.0.0.1:7497
+2025-06-05 14:53:04,162 - src.tws_connection - INFO - Connection thread: Connecting to 127.0.0.1:7497 (client ID: 1)
+2025-06-05 14:53:07,748 - src.tws_connection - INFO - ✅ Connection acknowledged by TWS
+2025-06-05 14:53:07,755 - src.tws_connection - INFO - Connection thread: Socket connected, starting message loop
+2025-06-05 14:53:07,760 - src.tws_connection - INFO - ✅ Next valid order ID received: 292
+2025-06-05 14:53:07,761 - src.tws_connection - INFO - ✅ TWS connection fully established
+2025-06-05 14:53:07,761 - src.tws_connection - INFO - Requesting additional order IDs from TWS
+2025-06-05 14:53:07,761 - src.tws_connection - INFO - ✅ Next valid order ID received: 292
+2025-06-05 14:53:07,765 - src.tws_connection - INFO - ✅ Successfully connected to TWS
+2025-06-05 14:53:07,765 - src.tws_connection - INFO - ✅ Next valid order ID received: 292
+2025-06-05 14:53:07,766 - __main__ - INFO - ✅ Connected to TWS
+2025-06-05 14:53:07,766 - src.position.position_manager - INFO - PositionManager initialized
+2025-06-05 14:53:07,766 - __main__ - INFO - ✅ PositionManager initialized (dual-write enabled)
+2025-06-05 14:53:07,766 - src.order.manager - INFO - OrderManager callbacks set up with TWSConnection
+2025-06-05 14:53:07,767 - src.position.tracker - INFO - PositionTracker async initialization completed
+2025-06-05 14:53:07,767 - src.rule.linked_order_actions - INFO - LinkedOrderConclusionManager initialized - monitoring for position conclusions
+2025-06-05 14:53:07,767 - src.rule.linked_order_actions - INFO - CooldownResetManager initialized - monitoring for stop loss fills
+2025-06-05 14:53:07,767 - LinkedDoubleDownFillManager - INFO - LinkedDoubleDownFillManager initialized
+2025-06-05 14:53:08,070 - __main__ - INFO - ✅ API client initialized
+2025-06-05 14:53:08,070 - __main__ - INFO - ✅ All components initialized
+2025-06-05 14:53:08,070 - __main__ - INFO - 📋 Setting up trading strategies...
+2025-06-05 14:53:08,070 - __main__ - INFO - 📊 Created strategy for CVNA (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:53:08,071 - __main__ - INFO - 📊 Created strategy for UVXY (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:53:08,071 - __main__ - INFO - 📊 Created strategy for SOXL (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:53:08,071 - __main__ - INFO - 📊 Created strategy for SOXS (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:53:08,071 - __main__ - INFO - 📊 Created strategy for TQQQ (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:53:08,071 - __main__ - INFO - 📊 Created strategy for SQQQ (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:53:08,072 - __main__ - INFO - 📊 Created strategy for GLD (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:53:08,072 - __main__ - INFO - 📊 Created strategy for SLV (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 14:53:08,072 - __main__ - INFO - 📅 Created end-of-day closure rule
+2025-06-05 14:53:08,072 - __main__ - INFO - ✅ Created strategies for 8 tickers
+2025-06-05 14:53:08,072 - __main__ - INFO - 🔥 Starting trading system...
+2025-06-05 14:53:08,073 - src.api.monitor - INFO - OptionsFlowMonitor configured with tickers: CVNA, UVXY, SOXL, SOXS, TQQQ, SQQQ, GLD, SLV
+2025-06-05 14:53:08,073 - src.rule.engine - INFO - Rule engine started
+2025-06-05 14:53:08,073 - src.api.monitor - INFO - OptionsFlowMonitor started
+2025-06-05 14:53:08,073 - __main__ - INFO - 🚀 TRADING SYSTEM ACTIVE!
+2025-06-05 14:53:08,073 - __main__ - INFO - 📊 Monitoring tickers: CVNA, UVXY, SOXL, SOXS, TQQQ, SQQQ, GLD, SLV
+2025-06-05 14:53:08,074 - __main__ - INFO - 📋 Rules registered: 24
+2025-06-05 14:53:08,074 - __main__ - INFO - ⚡ Waiting for prediction signals...
+2025-06-05 14:53:08,074 - __main__ - INFO - 💰 Current positions: 0
+2025-06-05 14:53:08,074 - __main__ - INFO - 💰 Total value: $0.00
+2025-06-05 14:53:08,074 - __main__ - INFO - 💰 Unrealized P&L: $0.00
+2025-06-05 14:53:08,809 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:53:09,288 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXL&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:53:09,651 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=UVXY&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:53:09,652 - src.api.monitor - INFO - High confidence prediction for UVXY: NEUTRAL (0.92)
+2025-06-05 14:53:10,616 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=CVNA&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:53:11,585 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SLV&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:53:11,586 - src.api.monitor - INFO - High confidence prediction for SLV: NEUTRAL (0.90)
+2025-06-05 14:53:12,270 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXS&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:53:12,718 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=GLD&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:53:12,719 - src.api.monitor - INFO - High confidence prediction for GLD: NEUTRAL (0.86)
+2025-06-05 14:53:13,135 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=TQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:54:14,443 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:54:15,163 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXL&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:54:15,868 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=UVXY&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:54:15,869 - src.api.monitor - INFO - High confidence prediction for UVXY: NEUTRAL (0.92)
+2025-06-05 14:54:16,571 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=CVNA&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:54:17,393 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SLV&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:54:17,397 - src.api.monitor - INFO - High confidence prediction for SLV: NEUTRAL (0.90)
+2025-06-05 14:54:17,976 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXS&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:54:18,621 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=GLD&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:54:19,211 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=TQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:54:19,213 - src.api.monitor - INFO - High confidence prediction for TQQQ: NEUTRAL (0.95)
+2025-06-05 14:55:19,575 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:55:20,180 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXL&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:55:20,774 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=UVXY&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:55:20,775 - src.api.monitor - INFO - High confidence prediction for UVXY: NEUTRAL (0.87)
+2025-06-05 14:55:21,990 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=CVNA&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:55:23,330 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SLV&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:55:24,013 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXS&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:55:24,400 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=GLD&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:55:24,401 - src.api.monitor - INFO - High confidence prediction for GLD: NEUTRAL (0.84)
+2025-06-05 14:55:24,673 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=TQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:55:24,674 - src.api.monitor - INFO - High confidence prediction for TQQQ: NEUTRAL (0.96)
+2025-06-05 14:55:47,241 - src.tws_connection - WARNING - ⚠️ TWS Error 1100: Connectivity between IBKR and Trader Workstation has been lost. (reqId: -1)
+2025-06-05 14:56:01,772 - src.tws_connection - WARNING - ⚠️ TWS Error 2157: Sec-def data farm connection is broken:secdefil (reqId: -1)
+2025-06-05 14:56:01,852 - src.tws_connection - WARNING - ⚠️ TWS Error 2103: Market data farm connection is broken:usfarm (reqId: -1)
+2025-06-05 14:56:01,856 - src.tws_connection - WARNING - ⚠️ TWS Error 2103: Market data farm connection is broken:usfuture (reqId: -1)
+2025-06-05 14:56:01,862 - src.tws_connection - WARNING - ⚠️ TWS Error 2103: Market data farm connection is broken:cashfarm (reqId: -1)
+2025-06-05 14:56:01,868 - src.tws_connection - WARNING - ⚠️ TWS Error 2103: Market data farm connection is broken:usfarm.nj (reqId: -1)
+2025-06-05 14:56:01,871 - src.tws_connection - WARNING - ⚠️ TWS Error 2105: HMDS data farm connection is broken:ushmds (reqId: -1)
+2025-06-05 14:56:03,999 - src.tws_connection - WARNING - ⚠️ TWS Error 1102: Connectivity between IBKR and Trader Workstation has been restored - data maintained. All data farms are connected: usfarm.nj; usfuture; cashfarm; usfarm; ushmds; secdefil. (reqId: -1)
+2025-06-05 14:56:18,436 - __main__ - INFO - ⏹️ Stopping trading system...
+2025-06-05 14:56:18,436 - src.api.monitor - WARNING - OptionsFlowMonitor not running
+2025-06-05 14:56:18,437 - src.rule.engine - WARNING - Rule engine is not running
+2025-06-05 14:56:18,437 - __main__ - INFO - ✅ Trading system stopped
+2025-06-05 14:56:25,044 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:56:25,307 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXL&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:56:25,564 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=UVXY&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:56:25,565 - src.api.monitor - INFO - High confidence prediction for UVXY: NEUTRAL (0.82)
+2025-06-05 14:56:26,209 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=CVNA&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:56:26,210 - src.api.monitor - INFO - High confidence prediction for CVNA: NEUTRAL (0.89)
+2025-06-05 14:56:27,080 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SLV&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:56:27,083 - src.api.monitor - INFO - High confidence prediction for SLV: NEUTRAL (0.88)
+2025-06-05 14:56:27,807 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXS&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:56:27,808 - src.api.monitor - INFO - High confidence prediction for SOXS: NEUTRAL (0.81)
+2025-06-05 14:56:28,378 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=GLD&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:56:28,805 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=TQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:57:29,471 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:57:30,336 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXL&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:57:30,338 - src.api.monitor - INFO - High confidence prediction for SOXL: NEUTRAL (0.78)
+2025-06-05 14:57:30,821 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=UVXY&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:57:30,822 - src.api.monitor - INFO - High confidence prediction for UVXY: NEUTRAL (0.88)
+2025-06-05 14:57:31,130 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=CVNA&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:57:31,132 - src.api.monitor - INFO - High confidence prediction for CVNA: NEUTRAL (0.82)
+2025-06-05 14:57:31,389 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SLV&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:57:31,390 - src.api.monitor - INFO - High confidence prediction for SLV: NEUTRAL (0.86)
+2025-06-05 14:57:31,656 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXS&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:57:31,908 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=GLD&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:57:32,155 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=TQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:57:32,156 - src.api.monitor - INFO - High confidence prediction for TQQQ: NEUTRAL (0.89)
+2025-06-05 14:58:32,874 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:58:33,251 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXL&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:58:33,587 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=UVXY&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:58:33,589 - src.api.monitor - INFO - High confidence prediction for UVXY: NEUTRAL (0.85)
+2025-06-05 14:58:34,085 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=CVNA&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:58:34,086 - src.api.monitor - INFO - High confidence prediction for CVNA: NEUTRAL (0.89)
+2025-06-05 14:58:34,459 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SLV&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:58:34,787 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXS&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:58:35,147 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=GLD&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:58:35,521 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=TQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:58:35,522 - src.api.monitor - INFO - High confidence prediction for TQQQ: NEUTRAL (0.94)
+2025-06-05 14:59:36,121 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:59:36,620 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXL&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:59:37,108 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=UVXY&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:59:37,110 - src.api.monitor - INFO - High confidence prediction for UVXY: NEUTRAL (0.84)
+2025-06-05 14:59:37,556 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=CVNA&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:59:37,557 - src.api.monitor - INFO - High confidence prediction for CVNA: NEUTRAL (0.78)
+2025-06-05 14:59:38,126 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SLV&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:59:38,127 - src.api.monitor - INFO - High confidence prediction for SLV: NEUTRAL (0.80)
+2025-06-05 14:59:38,854 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXS&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:59:39,419 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=GLD&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:59:40,041 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=TQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 14:59:40,044 - src.api.monitor - INFO - High confidence prediction for TQQQ: NEUTRAL (0.96)
+2025-06-05 15:00:40,772 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 15:00:41,474 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXL&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 15:00:42,350 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=UVXY&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 15:00:42,351 - src.api.monitor - INFO - High confidence prediction for UVXY: NEUTRAL (0.82)
+2025-06-05 15:00:43,176 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=CVNA&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 15:00:43,178 - src.api.monitor - INFO - High confidence prediction for CVNA: NEUTRAL (0.77)
+2025-06-05 15:00:43,675 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SLV&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 15:00:43,676 - src.api.monitor - INFO - High confidence prediction for SLV: NEUTRAL (0.86)
+2025-06-05 15:00:44,025 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXS&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 15:00:44,373 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=GLD&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 15:00:44,375 - src.api.monitor - INFO - High confidence prediction for GLD: NEUTRAL (0.78)
+2025-06-05 15:00:44,746 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=TQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 15:00:44,749 - src.api.monitor - INFO - High confidence prediction for TQQQ: NEUTRAL (0.99)
+2025-06-05 15:01:45,121 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 15:01:46,068 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXL&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 15:01:47,020 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=UVXY&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 15:01:47,021 - src.api.monitor - INFO - High confidence prediction for UVXY: NEUTRAL (0.83)
+2025-06-05 15:01:47,621 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=CVNA&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 15:01:47,622 - src.api.monitor - INFO - High confidence prediction for CVNA: NEUTRAL (0.79)
+2025-06-05 15:01:48,059 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SLV&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 15:01:48,067 - src.api.monitor - INFO - High confidence prediction for SLV: NEUTRAL (0.88)
+2025-06-05 15:01:49,035 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=SOXS&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 15:01:50,035 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=GLD&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 15:01:51,015 - httpx - INFO - HTTP Request: GET https://toine-todo-list-4ef27f1146af.herokuapp.com/api/v1/prediction/latest?ticker=TQQQ&use_default_only=false "HTTP/1.1 200 OK"
+2025-06-05 15:01:51,018 - src.api.monitor - INFO - High confidence prediction for TQQQ: NEUTRAL (0.99)
+2025-06-05 15:02:00,739 - __main__ - INFO - 🛑 Received shutdown signal
+2025-06-05 15:02:00,740 - __main__ - INFO - ⏹️ Stopping trading system...
+2025-06-05 15:02:00,740 - src.api.monitor - INFO - OptionsFlowMonitor stopped
+2025-06-05 15:02:00,741 - src.rule.engine - INFO - Rule engine stopped
+2025-06-05 15:02:00,741 - src.tws_connection - INFO - Disconnecting from TWS
+2025-06-05 15:02:00,742 - src.tws_connection - INFO - ⚠️ Connection to TWS closed
+2025-06-05 15:02:00,743 - src.tws_connection - INFO - ✅ Disconnect request sent
+2025-06-05 15:02:00,746 - __main__ - INFO - ✅ Trading system stopped
+2025-06-05 15:02:00,898 - src.tws_connection - WARNING - Not connected to TWS
+2025-06-05 15:02:00,900 - src.tws_connection - INFO - Connection thread: Message loop ended
+2025-06-05 15:03:03,055 - __main__ - INFO - 🚀 Initializing Trading Application...
+2025-06-05 15:03:03,056 - __main__ - INFO - Feature Flags:
+2025-06-05 15:03:03,056 - __main__ - INFO -   RECONCILIATION_ENABLED: False
+2025-06-05 15:03:03,057 - __main__ - INFO - Connecting to TWS...
+2025-06-05 15:03:03,057 - src.tws_connection - INFO - Connecting to TWS at 127.0.0.1:7497
+2025-06-05 15:03:03,058 - src.tws_connection - INFO - Connection thread: Connecting to 127.0.0.1:7497 (client ID: 1)
+2025-06-05 15:03:04,148 - src.tws_connection - INFO - ✅ Connection acknowledged by TWS
+2025-06-05 15:03:04,149 - src.tws_connection - INFO - Connection thread: Socket connected, starting message loop
+2025-06-05 15:03:04,181 - src.tws_connection - INFO - ✅ Next valid order ID received: 296
+2025-06-05 15:03:04,182 - src.tws_connection - INFO - ✅ TWS connection fully established
+2025-06-05 15:03:04,183 - src.tws_connection - INFO - Requesting additional order IDs from TWS
+2025-06-05 15:03:04,183 - src.tws_connection - INFO - ✅ Next valid order ID received: 296
+2025-06-05 15:03:04,184 - src.tws_connection - INFO - ✅ Successfully connected to TWS
+2025-06-05 15:03:04,185 - src.tws_connection - INFO - ✅ Next valid order ID received: 296
+2025-06-05 15:03:04,185 - __main__ - INFO - ✅ Connected to TWS
+2025-06-05 15:03:04,185 - src.position.position_manager - INFO - PositionManager initialized
+2025-06-05 15:03:04,185 - __main__ - INFO - ✅ PositionManager initialized (dual-write enabled)
+2025-06-05 15:03:04,186 - src.order.manager - INFO - OrderManager callbacks set up with TWSConnection
+2025-06-05 15:03:04,186 - src.position.tracker - INFO - PositionTracker async initialization completed
+2025-06-05 15:03:04,187 - src.rule.linked_order_actions - INFO - LinkedOrderConclusionManager initialized - monitoring for position conclusions
+2025-06-05 15:03:04,187 - src.rule.linked_order_actions - INFO - CooldownResetManager initialized - monitoring for stop loss fills
+2025-06-05 15:03:04,188 - LinkedDoubleDownFillManager - INFO - LinkedDoubleDownFillManager initialized
+2025-06-05 15:03:04,547 - __main__ - INFO - ✅ API client initialized
+2025-06-05 15:03:04,548 - __main__ - INFO - ✅ All components initialized
+2025-06-05 15:03:04,548 - __main__ - INFO - 📋 Setting up trading strategies...
+2025-06-05 15:03:04,548 - __main__ - INFO - 📊 Created strategy for CVNA (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 15:03:04,548 - __main__ - INFO - 📊 Created strategy for UVXY (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 15:03:04,549 - __main__ - INFO - 📊 Created strategy for SOXL (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 15:03:04,549 - __main__ - INFO - 📊 Created strategy for SOXS (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 15:03:04,549 - __main__ - INFO - 📊 Created strategy for TQQQ (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 15:03:04,549 - __main__ - INFO - 📊 Created strategy for SQQQ (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 15:03:04,550 - __main__ - INFO - 📊 Created strategy for GLD (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 15:03:04,550 - __main__ - INFO - 📊 Created strategy for SLV (confidence >= 0.5, auto double down @ 50% to stop)
+2025-06-05 15:03:04,550 - __main__ - INFO - 📅 Created end-of-day closure rule
+2025-06-05 15:03:04,550 - __main__ - INFO - ✅ Created strategies for 8 tickers
+2025-06-05 15:03:04,551 - __main__ - INFO - 🔥 Starting trading system...
+2025-06-05 15:03:04,551 - src.api.monitor - INFO - OptionsFlowMonitor configured with tickers: CVNA, UVXY, SOXL, SOXS, TQQQ, SQQQ, GLD, SLV
+2025-06-05 15:03:04,551 - src.rule.engine - INFO - Rule engine started
+2025-06-05 15:03:04,551 - src.api.monitor - INFO - OptionsFlowMonitor started
+2025-06-05 15:03:04,551 - __main__ - INFO - 🚀 TRADING SYSTEM ACTIVE!
+2025-06-05 15:03:04,552 - __main__ - INFO - 📊 Monitoring tickers: CVNA, UVXY, SOXL, SOXS, TQQQ, SQQQ, GLD, SLV
+2025-06-05 15:03:04,552 - __main__ - INFO - 📋 Rules registered: 24
+2025-06-05 15:03:04,552 - __main__ - INFO - ⚡ Waiting for prediction signals...
+2025-06-05 15:03:04,552 - __main__ - INFO - 💰 Current positions: 0
+2025-06-05 15:03:04,552 - __main__ - INFO - 💰 Total value: $0.00
+2025-06-05 15:03:04,553 - __main__ - INFO - 💰 Unrealized P&L: $0.00
+2025-06-05 15:03:05,600 - src.api.monitor - INFO - New prediction: GLD NEUTRAL (0.87)
+2025-06-05 15:03:06,599 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.77)
+2025-06-05 15:03:08,089 - __main__ - INFO - ⏹️ Stopping trading system...
+2025-06-05 15:03:08,091 - src.api.monitor - WARNING - OptionsFlowMonitor not running
+2025-06-05 15:03:08,091 - src.rule.engine - WARNING - Rule engine is not running
+2025-06-05 15:03:08,091 - __main__ - INFO - ✅ Trading system stopped
+2025-06-05 15:03:10,280 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.98)
+2025-06-05 15:03:11,892 - src.api.monitor - INFO - New prediction: SLV NEUTRAL (0.82)
+2025-06-05 15:03:12,859 - src.api.monitor - INFO - New prediction: UVXY NEUTRAL (0.83)
+2025-06-05 15:04:14,162 - src.api.monitor - INFO - New prediction: GLD NEUTRAL (0.87)
+2025-06-05 15:04:14,421 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.84)
+2025-06-05 15:04:14,958 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.98)
+2025-06-05 15:04:15,240 - src.api.monitor - INFO - New prediction: SLV NEUTRAL (0.78)
+2025-06-05 15:04:15,546 - src.api.monitor - INFO - New prediction: UVXY NEUTRAL (0.88)
+2025-06-05 15:05:16,613 - src.api.monitor - INFO - New prediction: GLD NEUTRAL (0.89)
+2025-06-05 15:05:17,621 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.95)
+2025-06-05 15:05:18,248 - src.api.monitor - INFO - New prediction: SQQQ NEUTRAL (0.78)
+2025-06-05 15:05:18,861 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.97)
+2025-06-05 15:05:19,474 - src.api.monitor - INFO - New prediction: SLV NEUTRAL (0.82)
+2025-06-05 15:05:20,089 - src.api.monitor - INFO - New prediction: UVXY NEUTRAL (0.88)
+2025-06-05 15:05:21,015 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (0.77)
+2025-06-05 15:06:22,804 - src.api.monitor - INFO - New prediction: GLD NEUTRAL (0.89)
+2025-06-05 15:06:24,156 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.94)
+2025-06-05 15:06:25,420 - src.api.monitor - INFO - New prediction: SQQQ NEUTRAL (0.84)
+2025-06-05 15:06:26,309 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.99)
+2025-06-05 15:06:26,826 - src.api.monitor - INFO - New prediction: SLV NEUTRAL (0.80)
+2025-06-05 15:06:27,266 - src.api.monitor - INFO - New prediction: UVXY NEUTRAL (0.81)
+2025-06-05 15:06:27,697 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (0.81)
+2025-06-05 15:07:28,328 - src.api.monitor - INFO - New prediction: GLD NEUTRAL (0.91)
+2025-06-05 15:07:28,580 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.99)
+2025-06-05 15:07:28,986 - src.api.monitor - INFO - New prediction: SQQQ NEUTRAL (0.91)
+2025-06-05 15:07:30,356 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.97)
+2025-06-05 15:07:33,437 - src.api.monitor - INFO - New prediction: UVXY NEUTRAL (0.77)
+2025-06-05 15:07:34,528 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (0.88)
+2025-06-05 15:08:35,653 - src.api.monitor - INFO - New prediction: GLD NEUTRAL (0.95)
+2025-06-05 15:08:36,014 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.98)
+2025-06-05 15:08:36,418 - src.api.monitor - INFO - New prediction: SQQQ NEUTRAL (0.83)
+2025-06-05 15:08:37,227 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.97)
+2025-06-05 15:08:39,325 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (0.86)
+2025-06-05 15:09:41,654 - src.api.monitor - INFO - New prediction: GLD NEUTRAL (0.93)
+2025-06-05 15:09:42,584 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.94)
+2025-06-05 15:09:43,267 - src.api.monitor - INFO - New prediction: SQQQ NEUTRAL (0.80)
+2025-06-05 15:09:43,720 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.99)
+2025-06-05 15:09:44,617 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (0.87)
+2025-06-05 15:10:45,353 - src.api.monitor - INFO - New prediction: GLD NEUTRAL (0.94)
+2025-06-05 15:10:45,623 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.94)
+2025-06-05 15:10:45,883 - src.api.monitor - INFO - New prediction: SQQQ NEUTRAL (0.86)
+2025-06-05 15:10:46,176 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.98)
+2025-06-05 15:10:46,988 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (0.79)
+2025-06-05 15:11:48,440 - src.api.monitor - INFO - New prediction: GLD NEUTRAL (0.95)
+2025-06-05 15:11:49,112 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.95)
+2025-06-05 15:11:49,614 - src.api.monitor - INFO - New prediction: SQQQ NEUTRAL (0.79)
+2025-06-05 15:11:50,021 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.99)
+2025-06-05 15:11:53,705 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (0.91)
+2025-06-05 15:12:54,873 - src.api.monitor - INFO - New prediction: GLD NEUTRAL (0.93)
+2025-06-05 15:12:55,294 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.98)
+2025-06-05 15:12:55,928 - src.api.monitor - INFO - New prediction: SQQQ NEUTRAL (0.84)
+2025-06-05 15:12:56,596 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.99)
+2025-06-05 15:13:00,317 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (0.94)
+2025-06-05 15:13:04,568 - __main__ - INFO - 💰 Current positions: 0
+2025-06-05 15:13:04,571 - __main__ - INFO - 💰 Total value: $0.00
+2025-06-05 15:13:04,572 - __main__ - INFO - 💰 Unrealized P&L: $0.00
+2025-06-05 15:14:02,195 - src.api.monitor - INFO - New prediction: GLD NEUTRAL (0.84)
+2025-06-05 15:14:02,837 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.98)
+2025-06-05 15:14:03,506 - src.api.monitor - INFO - New prediction: SQQQ NEUTRAL (0.77)
+2025-06-05 15:14:03,989 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.98)
+2025-06-05 15:14:04,693 - src.api.monitor - INFO - New prediction: UVXY NEUTRAL (0.87)
+2025-06-05 15:14:05,032 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (0.96)
+2025-06-05 15:15:05,991 - src.api.monitor - INFO - New prediction: GLD NEUTRAL (0.93)
+2025-06-05 15:15:06,952 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.95)
+2025-06-05 15:15:08,480 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.99)
+2025-06-05 15:15:09,174 - src.api.monitor - INFO - New prediction: UVXY NEUTRAL (0.94)
+2025-06-05 15:15:09,473 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (0.99)
+2025-06-05 15:16:10,375 - src.api.monitor - INFO - New prediction: GLD NEUTRAL (0.91)
+2025-06-05 15:16:10,755 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.96)
+2025-06-05 15:16:11,877 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (1.00)
+2025-06-05 15:16:13,748 - src.api.monitor - INFO - New prediction: UVXY NEUTRAL (0.94)
+2025-06-05 15:16:14,292 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (0.98)
+2025-06-05 15:17:15,298 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.96)
+2025-06-05 15:17:15,945 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.97)
+2025-06-05 15:17:16,222 - src.api.monitor - INFO - New prediction: SLV NEUTRAL (0.78)
+2025-06-05 15:17:16,768 - src.api.monitor - INFO - New prediction: UVXY NEUTRAL (0.96)
+2025-06-05 15:17:17,889 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (1.00)
+2025-06-05 15:18:20,260 - src.api.monitor - INFO - New prediction: GLD NEUTRAL (0.87)
+2025-06-05 15:18:21,021 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.95)
+2025-06-05 15:18:23,010 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.93)
+2025-06-05 15:18:24,715 - src.api.monitor - INFO - New prediction: UVXY NEUTRAL (0.91)
+2025-06-05 15:18:25,404 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (0.99)
+2025-06-05 15:19:26,595 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.93)
+2025-06-05 15:19:27,255 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.95)
+2025-06-05 15:19:27,585 - src.api.monitor - INFO - New prediction: SLV NEUTRAL (0.79)
+2025-06-05 15:19:28,411 - src.api.monitor - INFO - New prediction: UVXY NEUTRAL (0.96)
+2025-06-05 15:19:29,259 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (0.99)
+2025-06-05 15:20:32,065 - src.api.monitor - INFO - New prediction: GLD NEUTRAL (0.79)
+2025-06-05 15:20:33,090 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.96)
+2025-06-05 15:20:34,413 - src.api.monitor - INFO - New prediction: SQQQ NEUTRAL (0.86)
+2025-06-05 15:20:34,963 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.90)
+2025-06-05 15:20:36,757 - src.api.monitor - INFO - New prediction: UVXY NEUTRAL (0.96)
+2025-06-05 15:20:38,200 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (1.00)
+2025-06-05 15:21:41,805 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.92)
+2025-06-05 15:21:42,462 - src.api.monitor - INFO - New prediction: SQQQ NEUTRAL (0.90)
+2025-06-05 15:21:43,566 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.91)
+2025-06-05 15:21:44,580 - src.api.monitor - INFO - New prediction: SLV NEUTRAL (0.84)
+2025-06-05 15:21:45,564 - src.api.monitor - INFO - New prediction: UVXY NEUTRAL (0.94)
+2025-06-05 15:21:46,628 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (0.96)
+2025-06-05 15:22:51,807 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.95)
+2025-06-05 15:22:53,818 - src.api.monitor - INFO - New prediction: SQQQ NEUTRAL (0.93)
+2025-06-05 15:22:55,834 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.92)
+2025-06-05 15:22:58,038 - src.api.monitor - INFO - New prediction: SLV NEUTRAL (0.84)
+2025-06-05 15:23:00,266 - src.api.monitor - INFO - New prediction: UVXY NEUTRAL (0.94)
+2025-06-05 15:23:01,958 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (0.99)
+2025-06-05 15:23:04,584 - __main__ - INFO - 💰 Current positions: 0
+2025-06-05 15:23:04,585 - __main__ - INFO - 💰 Total value: $0.00
+2025-06-05 15:23:04,586 - __main__ - INFO - 💰 Unrealized P&L: $0.00
+2025-06-05 15:24:03,614 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.95)
+2025-06-05 15:24:04,112 - src.api.monitor - INFO - New prediction: SQQQ NEUTRAL (0.78)
+2025-06-05 15:24:04,980 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.88)
+2025-06-05 15:24:05,739 - src.api.monitor - INFO - New prediction: SLV NEUTRAL (0.84)
+2025-06-05 15:24:06,157 - src.api.monitor - INFO - New prediction: UVXY NEUTRAL (0.92)
+2025-06-05 15:24:06,817 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (0.90)
+2025-06-05 15:25:11,991 - src.api.monitor - INFO - New prediction: GLD SELL (0.75)
+2025-06-05 15:25:11,993 - src.trade_tracker - INFO - TradeTracker initialized
+2025-06-05 15:25:11,994 - src.trade_tracker - INFO - Started tracking SELL trade for GLD
+2025-06-05 15:25:11,995 - src.position.position_manager - INFO - Opened SELL position for GLD
+2025-06-05 15:25:12,134 - src.position.sizer - INFO - SELL position size: 32 shares @ $309.60 = $9907.20 (99.1% of $10000.00 allocation)
+2025-06-05 15:25:12,137 - src.order.base - INFO - Order 5e8d42b5-12b8-46bc-a7bb-f3ecb64ff0b8 status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 15:25:12,138 - src.order.manager - INFO - Submitting order 5e8d42b5-12b8-46bc-a7bb-f3ecb64ff0b8 to TWS
+2025-06-05 15:25:12,138 - src.order.manager - INFO - Got broker order ID 296 for order 5e8d42b5-12b8-46bc-a7bb-f3ecb64ff0b8
+2025-06-05 15:25:12,139 - src.order.manager - INFO - Calling placeOrder with ID 296, contract 0,GLD,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: MKT SELL 32@0.000000 DAY
+2025-06-05 15:25:12,140 - src.order.manager - INFO - placeOrder called successfully for order 5e8d42b5-12b8-46bc-a7bb-f3ecb64ff0b8
+2025-06-05 15:25:12,140 - src.order.base - INFO - Order 5e8d42b5-12b8-46bc-a7bb-f3ecb64ff0b8 status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 15:25:12,141 - src.position.position_manager - INFO - Added 1 main orders to GLD position
+2025-06-05 15:25:12,364 - src.tws_connection - INFO - Open Order - ID: 296, Symbol: GLD, Action: SELL, Quantity: 32.0
+2025-06-05 15:25:12,372 - src.rule.linked_order_actions - INFO - ATR for GLD: 0.0450
+2025-06-05 15:25:12,372 - src.rule.linked_order_actions - INFO - ATR-based stop: GLD stop at $309.89 (ATR: 0.0450 * 6.5 = 0.2925)
+2025-06-05 15:25:12,373 - src.order.base - INFO - Order 447d82ed-cb48-4e48-9984-4c2016bc8548 status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 15:25:12,373 - src.order.manager - INFO - Submitting order 447d82ed-cb48-4e48-9984-4c2016bc8548 to TWS
+2025-06-05 15:25:12,373 - src.order.manager - INFO - Got broker order ID 297 for order 447d82ed-cb48-4e48-9984-4c2016bc8548
+2025-06-05 15:25:12,374 - src.order.manager - INFO - Calling placeOrder with ID 297, contract 0,GLD,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: STP BUY 32@0.000000 DAY
+2025-06-05 15:25:12,374 - src.order.manager - INFO - placeOrder called successfully for order 447d82ed-cb48-4e48-9984-4c2016bc8548
+2025-06-05 15:25:12,376 - src.order.base - INFO - Order 447d82ed-cb48-4e48-9984-4c2016bc8548 status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 15:25:12,376 - src.position.position_manager - INFO - Added 1 stop orders to GLD position
+2025-06-05 15:25:12,376 - src.rule.linked_order_actions - INFO - Auto-created SELL stop loss 447d82ed-cb48-4e48-9984-4c2016bc8548 at $309.89
+2025-06-05 15:25:12,376 - src.rule.linked_order_actions - INFO - ATR-based target: GLD target at $309.47 (ATR: 0.0450 * 3.0 = 0.1350)
+2025-06-05 15:25:12,376 - src.order.base - INFO - Order 76bbaa63-146d-438b-85d2-109126ccce70 status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 15:25:12,376 - src.order.manager - INFO - Submitting order 76bbaa63-146d-438b-85d2-109126ccce70 to TWS
+2025-06-05 15:25:12,377 - src.order.manager - INFO - Got broker order ID 298 for order 76bbaa63-146d-438b-85d2-109126ccce70
+2025-06-05 15:25:12,377 - src.order.manager - INFO - Calling placeOrder with ID 298, contract 0,GLD,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: LMT BUY 32@309.470000 DAY
+2025-06-05 15:25:12,377 - src.order.manager - INFO - placeOrder called successfully for order 76bbaa63-146d-438b-85d2-109126ccce70
+2025-06-05 15:25:12,378 - src.order.base - INFO - Order 76bbaa63-146d-438b-85d2-109126ccce70 status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 15:25:12,378 - src.position.position_manager - INFO - Added 1 target orders to GLD position
+2025-06-05 15:25:12,378 - src.rule.linked_order_actions - INFO - Auto-created SELL take profit 76bbaa63-146d-438b-85d2-109126ccce70 at $309.47
+2025-06-05 15:25:12,378 - src.rule.linked_order_actions - INFO - Starting double down order creation for GLD
+2025-06-05 15:25:12,379 - src.order.base - INFO - Order 5e8d42b5-12b8-46bc-a7bb-f3ecb64ff0b8 status changed: submitted -> accepted (IB status: PreSubmitted)
+2025-06-05 15:25:12,419 - src.order.base - INFO - Order 5e8d42b5-12b8-46bc-a7bb-f3ecb64ff0b8 status changed: accepted -> filled (Order fully filled)
+2025-06-05 15:25:12,418 - src.tws_connection - INFO - Open Order - ID: 296, Symbol: GLD, Action: SELL, Quantity: 32.0
+2025-06-05 15:25:12,421 - src.order.base - INFO - Order 5e8d42b5-12b8-46bc-a7bb-f3ecb64ff0b8 filled: 32.0 @ 309.57 (32.0/32)
+2025-06-05 15:25:12,421 - src.tws_connection - INFO - Open Order - ID: 296, Symbol: GLD, Action: SELL, Quantity: 32.0
+2025-06-05 15:25:12,521 - src.tws_connection - INFO - Open Order - ID: 297, Symbol: GLD, Action: BUY, Quantity: 32.0
+2025-06-05 15:25:12,523 - src.order.base - INFO - Order 447d82ed-cb48-4e48-9984-4c2016bc8548 status changed: submitted -> accepted (IB status: PreSubmitted)
+2025-06-05 15:25:12,668 - src.tws_connection - INFO - Open Order - ID: 298, Symbol: GLD, Action: BUY, Quantity: 32.0
+2025-06-05 15:25:12,880 - src.rule.linked_order_actions - INFO - Found 1 stop orders for GLD: ['447d82ed-cb48-4e48-9984-4c2016bc8548']
+2025-06-05 15:25:12,881 - src.rule.linked_order_actions - INFO - Executing double down action for GLD
+2025-06-05 15:25:14,718 - src.rule.linked_order_actions - INFO - Using ATR-based stop distance for GLD: 0.2925
+2025-06-05 15:25:14,719 - src.rule.linked_order_actions - INFO - Double down calc for GLD (SELL): current=$309.56, stop_distance=$0.29, dd_distance=$0.15, dd_price=$309.71, original_qty=32, dd_qty=-32
+2025-06-05 15:25:14,720 - src.order.base - INFO - Order cba7dba0-9401-4559-94ef-0c0d3e2fb222 status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 15:25:14,720 - src.order.manager - INFO - Submitting order cba7dba0-9401-4559-94ef-0c0d3e2fb222 to TWS
+2025-06-05 15:25:14,721 - src.order.manager - INFO - Got broker order ID 299 for order cba7dba0-9401-4559-94ef-0c0d3e2fb222
+2025-06-05 15:25:14,721 - src.order.manager - INFO - Calling placeOrder with ID 299, contract 0,GLD,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: LMT SELL 32@309.710000 DAY
+2025-06-05 15:25:14,722 - src.order.manager - INFO - placeOrder called successfully for order cba7dba0-9401-4559-94ef-0c0d3e2fb222
+2025-06-05 15:25:14,722 - src.order.base - INFO - Order cba7dba0-9401-4559-94ef-0c0d3e2fb222 status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 15:25:14,723 - src.position.position_manager - INFO - Added 1 doubledown orders to GLD position
+2025-06-05 15:25:14,723 - src.rule.linked_order_actions - INFO - Created SELL double down order 'doubledown1' for GLD: -32 shares @ $309.71
+2025-06-05 15:25:14,723 - src.rule.linked_order_actions - INFO - Auto-created double down order for GLD
+2025-06-05 15:25:14,724 - src.rule.linked_order_actions - INFO - Created and linked SELL main order 5e8d42b5-12b8-46bc-a7bb-f3ecb64ff0b8 for GLD
+2025-06-05 15:25:14,725 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.96)
+2025-06-05 15:25:14,942 - src.tws_connection - INFO - Open Order - ID: 299, Symbol: GLD, Action: SELL, Quantity: 32.0
+2025-06-05 15:25:19,001 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.88)
+2025-06-05 15:25:21,957 - src.api.monitor - INFO - New prediction: SLV NEUTRAL (0.87)
+2025-06-05 15:25:25,920 - src.api.monitor - INFO - New prediction: UVXY NEUTRAL (0.89)
+2025-06-05 15:25:28,594 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (0.83)
+2025-06-05 15:26:29,729 - src.api.monitor - INFO - New prediction: SOXL NEUTRAL (0.78)
+2025-06-05 15:26:37,558 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.91)
+2025-06-05 15:26:39,723 - src.api.monitor - INFO - New prediction: SLV NEUTRAL (0.86)
+2025-06-05 15:26:41,408 - src.api.monitor - INFO - New prediction: UVXY NEUTRAL (0.84)
+2025-06-05 15:26:43,177 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (0.83)
+2025-06-05 15:27:22,282 - src.order.base - INFO - Order 76bbaa63-146d-438b-85d2-109126ccce70 status changed: submitted -> filled (Order fully filled)
+2025-06-05 15:27:22,282 - src.order.base - INFO - Order 76bbaa63-146d-438b-85d2-109126ccce70 filled: 32.0 @ 309.47 (32.0/32)
+2025-06-05 15:27:22,283 - src.rule.linked_order_actions - INFO - 🎯 SELL position concluded for GLD - target order 76bbaa63-146d-438b-85d2-109126ccce70 filled at $309.47
+2025-06-05 15:27:22,313 - src.order.base - INFO - Order 447d82ed-cb48-4e48-9984-4c2016bc8548 status changed: accepted -> pending_cancel (Position concluded via target fill)
+2025-06-05 15:27:22,314 - src.order.manager - INFO - Cancelling order 447d82ed-cb48-4e48-9984-4c2016bc8548 with broker ID 297
+2025-06-05 15:27:22,314 - src.rule.linked_order_actions - INFO - Cancelled remaining order 447d82ed-cb48-4e48-9984-4c2016bc8548 for GLD
+2025-06-05 15:27:22,315 - src.order.base - INFO - Order cba7dba0-9401-4559-94ef-0c0d3e2fb222 status changed: submitted -> pending_cancel (Position concluded via target fill)
+2025-06-05 15:27:22,317 - src.order.manager - INFO - Cancelling order cba7dba0-9401-4559-94ef-0c0d3e2fb222 with broker ID 299
+2025-06-05 15:27:22,320 - src.rule.linked_order_actions - INFO - Cancelled remaining order cba7dba0-9401-4559-94ef-0c0d3e2fb222 for GLD
+2025-06-05 15:27:22,320 - src.order.manager - WARNING - Cannot cancel inactive order 5e8d42b5-12b8-46bc-a7bb-f3ecb64ff0b8 with status filled
+2025-06-05 15:27:22,320 - src.rule.linked_order_actions - INFO - Cancelled remaining order 5e8d42b5-12b8-46bc-a7bb-f3ecb64ff0b8 for GLD
+2025-06-05 15:27:22,321 - src.trade_tracker - INFO - Closed trade for GLD
+2025-06-05 15:27:22,321 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:27:22,282 - src.tws_connection - INFO - Open Order - ID: 298, Symbol: GLD, Action: BUY, Quantity: 32.0
+2025-06-05 15:27:22,331 - src.tws_connection - INFO - Open Order - ID: 298, Symbol: GLD, Action: BUY, Quantity: 32.0
+2025-06-05 15:27:22,349 - src.order.base - INFO - Order 447d82ed-cb48-4e48-9984-4c2016bc8548 status changed: pending_cancel -> cancelled (IB status: Cancelled)
+2025-06-05 15:27:22,349 - src.tws_connection - WARNING - ⚠️ TWS Error 202: Order Canceled - reason: (reqId: 297)
+2025-06-05 15:27:22,398 - src.order.base - INFO - Order cba7dba0-9401-4559-94ef-0c0d3e2fb222 status changed: pending_cancel -> cancelled (IB status: Cancelled)
+2025-06-05 15:27:22,398 - src.tws_connection - WARNING - ⚠️ TWS Error 202: Order Canceled - reason: (reqId: 299)
+2025-06-05 15:27:43,549 - src.api.monitor - INFO - New prediction: SOXL NEUTRAL (0.85)
+2025-06-05 15:27:43,845 - src.api.monitor - INFO - New prediction: GLD NEUTRAL (0.89)
+2025-06-05 15:27:44,376 - src.api.monitor - INFO - New prediction: SQQQ NEUTRAL (0.76)
+2025-06-05 15:27:44,679 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.92)
+2025-06-05 15:27:44,993 - src.api.monitor - INFO - New prediction: SLV NEUTRAL (0.76)
+2025-06-05 15:27:45,331 - src.api.monitor - INFO - New prediction: UVXY NEUTRAL (0.79)
+2025-06-05 15:27:45,582 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (0.80)
+2025-06-05 15:28:45,945 - src.api.monitor - INFO - New prediction: SOXL NEUTRAL (0.80)
+2025-06-05 15:28:46,207 - src.api.monitor - INFO - New prediction: GLD NEUTRAL (0.81)
+2025-06-05 15:28:46,492 - src.api.monitor - INFO - New prediction: CVNA NEUTRAL (0.88)
+2025-06-05 15:28:46,755 - src.api.monitor - INFO - New prediction: SQQQ NEUTRAL (0.79)
+2025-06-05 15:28:47,041 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.91)
+2025-06-05 15:28:47,714 - src.api.monitor - INFO - New prediction: SLV NEUTRAL (0.80)
+2025-06-05 15:28:49,276 - src.api.monitor - INFO - New prediction: UVXY NEUTRAL (0.85)
+2025-06-05 15:28:51,041 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (0.82)
+2025-06-05 15:29:53,241 - src.api.monitor - INFO - New prediction: GLD NEUTRAL (0.87)
+2025-06-05 15:29:54,748 - src.api.monitor - INFO - New prediction: CVNA SELL (0.78)
+2025-06-05 15:29:54,749 - src.trade_tracker - INFO - Started tracking SELL trade for CVNA
+2025-06-05 15:29:54,751 - src.position.position_manager - INFO - Opened SELL position for CVNA
+2025-06-05 15:29:55,734 - src.position.sizer - INFO - SELL position size: 29 shares @ $342.65 = $9936.85 (99.4% of $10000.00 allocation)
+2025-06-05 15:29:55,735 - src.order.base - INFO - Order ea8dd6e7-60f7-4880-9772-3d8f74dbfd4c status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 15:29:55,735 - src.order.manager - INFO - Submitting order ea8dd6e7-60f7-4880-9772-3d8f74dbfd4c to TWS
+2025-06-05 15:29:55,736 - src.order.manager - INFO - Got broker order ID 300 for order ea8dd6e7-60f7-4880-9772-3d8f74dbfd4c
+2025-06-05 15:29:55,736 - src.order.manager - INFO - Calling placeOrder with ID 300, contract 0,CVNA,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: MKT SELL 29@0.000000 DAY
+2025-06-05 15:29:55,737 - src.order.manager - INFO - placeOrder called successfully for order ea8dd6e7-60f7-4880-9772-3d8f74dbfd4c
+2025-06-05 15:29:55,737 - src.order.base - INFO - Order ea8dd6e7-60f7-4880-9772-3d8f74dbfd4c status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 15:29:55,738 - src.position.position_manager - INFO - Added 1 main orders to CVNA position
+2025-06-05 15:29:55,952 - src.tws_connection - INFO - Open Order - ID: 300, Symbol: CVNA, Action: SELL, Quantity: 29.0
+2025-06-05 15:29:55,980 - src.order.base - INFO - Order ea8dd6e7-60f7-4880-9772-3d8f74dbfd4c status changed: submitted -> filled (Order fully filled)
+2025-06-05 15:29:55,980 - src.tws_connection - INFO - Open Order - ID: 300, Symbol: CVNA, Action: SELL, Quantity: 29.0
+2025-06-05 15:29:55,981 - src.order.base - INFO - Order ea8dd6e7-60f7-4880-9772-3d8f74dbfd4c filled: 29.0 @ 342.43 (29.0/29)
+2025-06-05 15:29:55,981 - src.tws_connection - INFO - Open Order - ID: 300, Symbol: CVNA, Action: SELL, Quantity: 29.0
+2025-06-05 15:29:56,281 - src.tws_connection - WARNING - ⚠️ TWS Error 2176: Warning: Your API version does not support fractional share size rules. Please upgrade to a minimum version 163. Trimmed value 351.96 to 351 (reqId: 1000)
+2025-06-05 15:29:56,439 - src.rule.linked_order_actions - INFO - ATR for CVNA: 0.2286
+2025-06-05 15:29:56,440 - src.rule.linked_order_actions - INFO - ATR-based stop: CVNA stop at $344.14 (ATR: 0.2286 * 6.5 = 1.4857)
+2025-06-05 15:29:56,440 - src.order.base - INFO - Order 0d6dfd67-bea7-4a57-9cc1-660ab98efa35 status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 15:29:56,441 - src.order.manager - INFO - Submitting order 0d6dfd67-bea7-4a57-9cc1-660ab98efa35 to TWS
+2025-06-05 15:29:56,441 - src.order.manager - INFO - Got broker order ID 301 for order 0d6dfd67-bea7-4a57-9cc1-660ab98efa35
+2025-06-05 15:29:56,442 - src.order.manager - INFO - Calling placeOrder with ID 301, contract 0,CVNA,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: STP BUY 29@0.000000 DAY
+2025-06-05 15:29:56,442 - src.order.manager - INFO - placeOrder called successfully for order 0d6dfd67-bea7-4a57-9cc1-660ab98efa35
+2025-06-05 15:29:56,443 - src.order.base - INFO - Order 0d6dfd67-bea7-4a57-9cc1-660ab98efa35 status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 15:29:56,443 - src.position.position_manager - INFO - Added 1 stop orders to CVNA position
+2025-06-05 15:29:56,443 - src.rule.linked_order_actions - INFO - Auto-created SELL stop loss 0d6dfd67-bea7-4a57-9cc1-660ab98efa35 at $344.14
+2025-06-05 15:29:56,444 - src.rule.linked_order_actions - INFO - ATR-based target: CVNA target at $341.96 (ATR: 0.2286 * 3.0 = 0.6857)
+2025-06-05 15:29:56,444 - src.order.base - INFO - Order 8633333b-ed40-4c47-82c1-cf859a720314 status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 15:29:56,444 - src.order.manager - INFO - Submitting order 8633333b-ed40-4c47-82c1-cf859a720314 to TWS
+2025-06-05 15:29:56,445 - src.order.manager - INFO - Got broker order ID 302 for order 8633333b-ed40-4c47-82c1-cf859a720314
+2025-06-05 15:29:56,445 - src.order.manager - INFO - Calling placeOrder with ID 302, contract 0,CVNA,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: LMT BUY 29@341.960000 DAY
+2025-06-05 15:29:56,446 - src.order.manager - INFO - placeOrder called successfully for order 8633333b-ed40-4c47-82c1-cf859a720314
+2025-06-05 15:29:56,446 - src.order.base - INFO - Order 8633333b-ed40-4c47-82c1-cf859a720314 status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 15:29:56,447 - src.position.position_manager - INFO - Added 1 target orders to CVNA position
+2025-06-05 15:29:56,447 - src.rule.linked_order_actions - INFO - Auto-created SELL take profit 8633333b-ed40-4c47-82c1-cf859a720314 at $341.96
+2025-06-05 15:29:56,447 - src.rule.linked_order_actions - INFO - Starting double down order creation for CVNA
+2025-06-05 15:29:56,521 - src.tws_connection - INFO - Open Order - ID: 301, Symbol: CVNA, Action: BUY, Quantity: 29.0
+2025-06-05 15:29:56,522 - src.order.base - INFO - Order 0d6dfd67-bea7-4a57-9cc1-660ab98efa35 status changed: submitted -> accepted (IB status: PreSubmitted)
+2025-06-05 15:29:56,683 - src.tws_connection - INFO - Open Order - ID: 302, Symbol: CVNA, Action: BUY, Quantity: 29.0
+2025-06-05 15:29:56,953 - src.rule.linked_order_actions - INFO - Found 1 stop orders for CVNA: ['0d6dfd67-bea7-4a57-9cc1-660ab98efa35']
+2025-06-05 15:29:56,955 - src.rule.linked_order_actions - INFO - Executing double down action for CVNA
+2025-06-05 15:29:58,135 - src.rule.linked_order_actions - INFO - Using ATR-based stop distance for CVNA: 1.4857
+2025-06-05 15:29:58,135 - src.rule.linked_order_actions - INFO - Double down calc for CVNA (SELL): current=$342.83, stop_distance=$1.49, dd_distance=$0.74, dd_price=$343.57, original_qty=29, dd_qty=-29
+2025-06-05 15:29:58,136 - src.order.base - INFO - Order fece85cf-be1c-4f5e-a08f-ea42184a0d28 status changed: created -> pending_submit (Submitting to broker)
+2025-06-05 15:29:58,136 - src.order.manager - INFO - Submitting order fece85cf-be1c-4f5e-a08f-ea42184a0d28 to TWS
+2025-06-05 15:29:58,136 - src.order.manager - INFO - Got broker order ID 303 for order fece85cf-be1c-4f5e-a08f-ea42184a0d28
+2025-06-05 15:29:58,136 - src.order.manager - INFO - Calling placeOrder with ID 303, contract 0,CVNA,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: LMT SELL 29@343.570000 DAY
+2025-06-05 15:29:58,136 - src.order.manager - INFO - placeOrder called successfully for order fece85cf-be1c-4f5e-a08f-ea42184a0d28
+2025-06-05 15:29:58,137 - src.order.base - INFO - Order fece85cf-be1c-4f5e-a08f-ea42184a0d28 status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-05 15:29:58,137 - src.position.position_manager - INFO - Added 1 doubledown orders to CVNA position
+2025-06-05 15:29:58,137 - src.rule.linked_order_actions - INFO - Created SELL double down order 'doubledown1' for CVNA: -29 shares @ $343.57
+2025-06-05 15:29:58,138 - src.rule.linked_order_actions - INFO - Auto-created double down order for CVNA
+2025-06-05 15:29:58,138 - src.rule.linked_order_actions - INFO - Created and linked SELL main order ea8dd6e7-60f7-4880-9772-3d8f74dbfd4c for CVNA
+2025-06-05 15:29:58,139 - src.api.monitor - INFO - New prediction: TQQQ NEUTRAL (0.90)
+2025-06-05 15:29:58,274 - src.tws_connection - INFO - Open Order - ID: 303, Symbol: CVNA, Action: SELL, Quantity: 29.0
+2025-06-05 15:29:59,448 - src.api.monitor - INFO - New prediction: SLV NEUTRAL (0.85)
+2025-06-05 15:30:00,156 - src.order.manager - WARNING - Cannot cancel inactive order ea8dd6e7-60f7-4880-9772-3d8f74dbfd4c with status filled
+2025-06-05 15:30:00,156 - src.order.base - INFO - Order 8633333b-ed40-4c47-82c1-cf859a720314 status changed: submitted -> pending_cancel (End of day close)
+2025-06-05 15:30:00,157 - src.order.manager - INFO - Cancelling order 8633333b-ed40-4c47-82c1-cf859a720314 with broker ID 302
+2025-06-05 15:30:00,159 - src.order.base - INFO - Order fece85cf-be1c-4f5e-a08f-ea42184a0d28 status changed: submitted -> pending_cancel (End of day close)
+2025-06-05 15:30:00,160 - src.order.manager - INFO - Cancelling order fece85cf-be1c-4f5e-a08f-ea42184a0d28 with broker ID 303
+2025-06-05 15:30:00,161 - src.order.base - INFO - Order 0d6dfd67-bea7-4a57-9cc1-660ab98efa35 status changed: accepted -> pending_cancel (End of day close)
+2025-06-05 15:30:00,161 - src.order.manager - INFO - Cancelling order 0d6dfd67-bea7-4a57-9cc1-660ab98efa35 with broker ID 301
+2025-06-05 15:30:00,162 - src.trade_tracker - INFO - Closed trade for CVNA
+2025-06-05 15:30:00,162 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:00,162 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:00,163 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:00,163 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:00,164 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:00,164 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:00,164 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:00,165 - src.order.manager - WARNING - Cannot cancel inactive order 447d82ed-cb48-4e48-9984-4c2016bc8548 with status cancelled
+2025-06-05 15:30:00,165 - src.order.manager - WARNING - Cannot cancel inactive order cba7dba0-9401-4559-94ef-0c0d3e2fb222 with status cancelled
+2025-06-05 15:30:00,165 - src.order.manager - WARNING - Cannot cancel inactive order 5e8d42b5-12b8-46bc-a7bb-f3ecb64ff0b8 with status filled
+2025-06-05 15:30:00,166 - src.order.manager - WARNING - Cannot cancel inactive order 76bbaa63-146d-438b-85d2-109126ccce70 with status filled
+2025-06-05 15:30:00,166 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:00,166 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:00,166 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:00,167 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:00,167 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:00,168 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:00,168 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:00,168 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:00,169 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:00,170 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:00,171 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:00,171 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:00,172 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:00,172 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:00,173 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:00,173 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:00,173 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:00,174 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:00,174 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:00,175 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:00,176 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:00,176 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:00,176 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:00,177 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:00,177 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:00,178 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:00,178 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:00,179 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:00,179 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:00,179 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:00,180 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:00,180 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:00,181 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:00,221 - src.order.base - INFO - Order 8633333b-ed40-4c47-82c1-cf859a720314 status changed: pending_cancel -> cancelled (IB status: Cancelled)
+2025-06-05 15:30:00,221 - src.tws_connection - WARNING - ⚠️ TWS Error 202: Order Canceled - reason: (reqId: 302)
+2025-06-05 15:30:00,328 - src.order.base - INFO - Order fece85cf-be1c-4f5e-a08f-ea42184a0d28 status changed: pending_cancel -> cancelled (IB status: Cancelled)
+2025-06-05 15:30:00,331 - src.tws_connection - WARNING - ⚠️ TWS Error 202: Order Canceled - reason: (reqId: 303)
+2025-06-05 15:30:00,395 - src.order.base - INFO - Order 0d6dfd67-bea7-4a57-9cc1-660ab98efa35 status changed: pending_cancel -> cancelled (IB status: Cancelled)
+2025-06-05 15:30:00,395 - src.tws_connection - WARNING - ⚠️ TWS Error 202: Order Canceled - reason: (reqId: 301)
+2025-06-05 15:30:00,736 - src.api.monitor - INFO - New prediction: UVXY NEUTRAL (0.82)
+2025-06-05 15:30:00,738 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:00,738 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:00,738 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:00,739 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:00,739 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:00,739 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:00,739 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:00,740 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:00,740 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:00,740 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:01,178 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:01,178 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:01,179 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:01,179 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:01,179 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:01,179 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:01,179 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:01,179 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:01,180 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:01,180 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:02,188 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:02,188 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:02,188 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:02,189 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:02,189 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:02,189 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:02,189 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:02,189 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:02,189 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:02,190 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:02,494 - src.api.monitor - INFO - New prediction: SOXS NEUTRAL (0.85)
+2025-06-05 15:30:02,495 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:02,496 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:02,496 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:02,496 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:02,496 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:02,496 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:02,496 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:02,497 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:02,497 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:02,497 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:03,193 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:03,194 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:03,194 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:03,195 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:03,195 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:03,195 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:03,195 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:03,195 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:03,195 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:03,195 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:04,209 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:04,210 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:04,210 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:04,211 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:04,211 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:04,211 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:04,212 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:04,212 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:04,212 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:04,213 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:05,216 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:05,217 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:05,218 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:05,219 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:05,219 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:05,220 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:05,220 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:05,221 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:05,221 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:05,221 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:06,232 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:06,233 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:06,234 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:06,234 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:06,234 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:06,235 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:06,235 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:06,235 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:06,236 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:06,236 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:07,238 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:07,240 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:07,240 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:07,240 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:07,241 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:07,241 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:07,246 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:07,247 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:07,247 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:07,248 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:08,265 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:08,266 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:08,267 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:08,268 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:08,269 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:08,269 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:08,270 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:08,270 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:08,271 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:08,273 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:09,301 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:09,311 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:09,321 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:09,336 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:09,340 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:09,341 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:09,347 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:09,350 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:09,350 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:09,352 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:10,363 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:10,364 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:10,364 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:10,365 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:10,365 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:10,366 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:10,366 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:10,367 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:10,367 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:10,367 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:11,383 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:11,384 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:11,385 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:11,385 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:11,386 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:11,386 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:11,387 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:11,387 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:11,387 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:11,388 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:12,397 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:12,398 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:12,399 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:12,399 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:12,400 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:12,400 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:12,401 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:12,401 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:12,402 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:12,402 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:13,416 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:13,417 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:13,417 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:13,418 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:13,418 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:13,419 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:13,419 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:13,419 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:13,420 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:13,420 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:14,432 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:14,434 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:14,436 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:14,437 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:14,438 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:14,438 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:14,440 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:14,452 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:14,483 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:14,484 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:15,499 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:15,499 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:15,500 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:15,500 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:15,501 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:15,501 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:15,502 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:15,502 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:15,502 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:15,503 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:16,504 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:16,506 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:16,507 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:16,507 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:16,508 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:16,509 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:16,510 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:16,513 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:16,513 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:16,514 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:17,523 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:17,524 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:17,525 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:17,526 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:17,532 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:17,533 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:17,535 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:17,536 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:17,536 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:17,537 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:18,545 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:18,549 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:18,551 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:18,552 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:18,553 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:18,553 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:18,554 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:18,582 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:18,584 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:18,584 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:19,598 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:19,599 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:19,600 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:19,600 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:19,600 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:19,601 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:19,601 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:19,602 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:19,602 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:19,602 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:20,614 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:20,615 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:20,615 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:20,616 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:20,616 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:20,616 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:20,617 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:20,617 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:20,617 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:20,618 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:21,632 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:21,633 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:21,634 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:21,634 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:21,635 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:21,635 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:21,635 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:21,636 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:21,636 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:21,636 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:22,641 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:22,646 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:22,647 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:22,648 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:22,649 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:22,649 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:22,650 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:22,651 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:22,651 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:22,651 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:23,658 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:23,661 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:23,661 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:23,662 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:23,662 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:23,662 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:23,663 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:23,663 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:23,663 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:23,663 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:24,666 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:24,667 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:24,668 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:24,668 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:24,669 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:24,669 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:24,670 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:24,670 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:24,670 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:24,671 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:25,685 - src.position.position_manager - INFO - Closed position for CVNA
+2025-06-05 15:30:25,686 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for CVNA
+2025-06-05 15:30:25,687 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for UVXY
+2025-06-05 15:30:25,688 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXL
+2025-06-05 15:30:25,689 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SOXS
+2025-06-05 15:30:25,689 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for TQQQ
+2025-06-05 15:30:25,690 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SQQQ
+2025-06-05 15:30:25,691 - src.position.position_manager - INFO - Closed position for GLD
+2025-06-05 15:30:25,691 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for GLD
+2025-06-05 15:30:25,692 - src.rule.linked_order_actions - INFO - Closed all linked orders and position for SLV
+2025-06-05 15:30:26,438 - __main__ - INFO - 🛑 Received shutdown signal
+2025-06-05 15:30:26,438 - __main__ - INFO - ⏹️ Stopping trading system...
+2025-06-05 15:30:26,439 - src.api.monitor - INFO - OptionsFlowMonitor stopped
+2025-06-05 15:30:26,439 - src.rule.engine - INFO - Rule engine stopped
+2025-06-05 15:30:26,439 - src.tws_connection - INFO - Disconnecting from TWS
+2025-06-05 15:30:26,440 - src.tws_connection - INFO - ⚠️ Connection to TWS closed
+2025-06-05 15:30:26,441 - src.tws_connection - INFO - ✅ Disconnect request sent
+2025-06-05 15:30:26,443 - __main__ - INFO - ✅ Trading system stopped
+2025-06-05 15:30:26,562 - src.tws_connection - WARNING - Not connected to TWS
+2025-06-05 15:30:26,563 - src.tws_connection - INFO - Connection thread: Message loop ended
+2025-06-05 15:33:04,590 - __main__ - INFO - ⏹️ Stopping trading system...
+2025-06-05 15:33:04,591 - src.api.monitor - WARNING - OptionsFlowMonitor not running
+2025-06-05 15:33:04,591 - src.rule.engine - WARNING - Rule engine is not running
+2025-06-05 15:33:04,592 - __main__ - INFO - ✅ Trading system stopped

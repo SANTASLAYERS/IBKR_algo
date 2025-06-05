@@ -906,7 +906,6 @@ The context is a dictionary (`Dict[str, Any]`) that contains:
 - **System Components**: References to managers (order_manager, position_tracker, etc.)
 - **Current State**: Active positions, orders, market data
 - **Event Data**: The current event being processed
-- **Symbol-Specific Data**: Order relationships and position details
 - **Custom Data**: Any additional data needed by rules
 
 ### Context Hierarchy
@@ -925,23 +924,25 @@ The context is a dictionary (`Dict[str, Any]`) that contains:
    - Copy of global context + rule context + event data
    - Isolated to prevent side effects between rules
 
-### Symbol-Specific Context Structure
+### Position Management via PositionTracker
 
-For order and position management, the context maintains detailed information per symbol:
+The PositionTracker is the single source of truth for all position and order information. Instead of storing position data directly in the context, the system uses PositionTracker:
 
 ```python
-context["AAPL"] = {
-    "side": "BUY",                    # Position side (BUY/SELL)
-    "main_orders": ["order_id_1"],    # Entry order IDs
-    "stop_orders": ["order_id_2"],    # Stop loss order IDs
-    "target_orders": ["order_id_3"],  # Take profit order IDs
-    "doubledown_orders": ["order_id_4"], # Double down order IDs
-    "quantity": 100,                  # Total position size
-    "entry_price": 150.50,            # Average entry price
-    "atr_stop_multiplier": 6.0,       # ATR multiplier for stops
-    "atr_target_multiplier": 3.0,     # ATR multiplier for targets
-    "status": "active"                # Position status
-}
+# Position object contains all trading state
+position = Position(
+    symbol="AAPL",
+    side="BUY",                       # Position side (BUY/SELL)
+    quantity=100,                     # Total position size
+    entry_price=150.50,               # Average entry price
+    main_order_ids=["order_id_1"],    # Entry order IDs
+    stop_order_ids=["order_id_2"],    # Stop loss order IDs
+    target_order_ids=["order_id_3"],  # Take profit order IDs
+    doubledown_order_ids=["order_id_4"], # Double down order IDs
+    atr_stop_multiplier=6.0,          # ATR multiplier for stops
+    atr_target_multiplier=3.0,        # ATR multiplier for targets
+    status=PositionStatus.OPEN        # Position status
+)
 ```
 
 ### Context Usage in Conditions
@@ -956,27 +957,34 @@ class EventCondition(Condition):
         
 class PositionCondition(Condition):
     async def evaluate(self, context: Dict[str, Any]) -> bool:
-        position = context.get("position")  # Access current position
-        market_data = context.get("market_data", {})  # Access market data
-        # ... evaluation logic
+        position_tracker = context.get("position_tracker")
+        if position_tracker:
+            positions = await position_tracker.get_positions_for_symbol(self.symbol)
+            # ... evaluation logic
 ```
 
 ### Context Usage in Actions
 
-Actions use and modify context:
+Actions use context to access system components:
 
 ```python
 class CreateOrderAction(Action):
     async def execute(self, context: Dict[str, Any]) -> bool:
         order_manager = context.get("order_manager")  # Get system component
-        symbol_context = context.get(self.symbol, {})  # Get symbol data
+        position_tracker = context.get("position_tracker")
+        
+        # Create or update position in PositionTracker
+        position = await position_tracker.create_position(
+            symbol=self.symbol,
+            side=self.side,
+            # ... other parameters
+        )
         
         # Create order...
+        order = await order_manager.create_order(...)
         
-        # Update context with new order info
-        if self.symbol not in context:
-            context[self.symbol] = {}
-        context[self.symbol]["main_orders"] = [order.id]
+        # Update position with order ID
+        position.main_order_ids.append(order.order_id)
         
         return True
 ```
@@ -992,13 +1000,15 @@ class CreateOrderAction(Action):
        return False
    ```
 
-2. **Symbol Data Management**
+2. **Position Data Management**
    ```python
-   # Use LinkedOrderManager for consistent symbol data
-   from src.rule.linked_order_actions import LinkedOrderManager
+   # Use PositionTracker for all position data
+   position_tracker = context.get("position_tracker")
+   positions = await position_tracker.get_positions_for_symbol(symbol)
    
-   order_group = LinkedOrderManager.get_order_group(context, symbol, side)
-   LinkedOrderManager.add_order(context, symbol, order_id, "stop", side)
+   # Don't store position data directly in context
+   # BAD: context[symbol] = {"side": "BUY", ...}
+   # GOOD: Use PositionTracker methods
    ```
 
 3. **Context Isolation**
@@ -1008,25 +1018,26 @@ class CreateOrderAction(Action):
    # GOOD: context["key"] = value  # Modifies execution context only
    ```
 
-4. **Context Cleanup**
+4. **Position Lifecycle**
    ```python
-   # Clean up symbol context when position closes
-   if symbol in context and context[symbol]["status"] == "closed":
-       del context[symbol]  # Remove to prevent stale data
+   # Position cleanup is handled by PositionTracker
+   await position_tracker.close_position(position_id, "Stop loss hit")
+   # Position status automatically updated to CLOSED
    ```
 
-### Context vs TradeTracker
+### PositionTracker as Single Source of Truth
 
-While Context provides detailed order management within rule execution scope, TradeTracker provides persistent duplicate prevention across the application:
+The PositionTracker provides complete trade management:
 
-| Feature | Context | TradeTracker |
-|---------|---------|--------------|
-| **Scope** | Rule execution | Application-wide |
-| **Persistence** | Transient (copied) | Singleton (persistent) |
-| **Purpose** | Order relationships | Duplicate prevention |
-| **Data** | Detailed order/position info | Simple active/closed state |
+| Feature | PositionTracker |
+|---------|-----------------|
+| **Scope** | Application-wide |
+| **Persistence** | Maintains state across rule executions |
+| **Purpose** | Complete position and order management |
+| **Data** | All position details, order IDs, risk parameters |
+| **Lifecycle** | Clear status tracking (OPEN → CLOSED) |
 
-Both work together to provide complete trade management.
+The PositionTracker eliminates the need for separate context-based position tracking, providing a cleaner and more maintainable system.
 
 ## Use Cases and Examples
 

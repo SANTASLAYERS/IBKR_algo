@@ -1,426 +1,291 @@
-# TWS Trading Framework
+# Multi-Ticker IB Trading Framework
 
-A Python framework for automated trading with Interactive Brokers Trader Workstation (TWS), featuring async connectivity, event-driven architecture, rule-based trading, and comprehensive testing.
+A sophisticated automated trading system for Interactive Brokers (IB) that integrates with external prediction APIs to execute trades based on market signals. The framework supports multiple tickers, complex order management, and real-time position tracking.
 
-## Features
+## 🚀 Key Features
 
-- **Direct TWS Integration**: Native connection to Trader Workstation (no IB Gateway required)
-- **Async Architecture**: Modern async/await patterns for non-blocking operations
-- **Event-Driven System**: Robust event bus for order management and position tracking
-- **Automated Trading Rules**: Sophisticated rule engine for strategy execution based on API signals
-- **Real-Time Market Data**: Live price feeds and market data processing
-- **Order Management**: Complete order lifecycle with fills, cancellations, and status tracking
-- **Position Tracking**: Real-time position monitoring with P&L calculations
-- **Risk Management**: Built-in controls for position limits, stop losses, and take profits
-- **API Integration**: Live connection to external prediction APIs with signal processing
-- **Technical Indicators**: ATR calculation and integration for position sizing
-- **Duplicate Prevention**: TradeTracker system prevents multiple positions on same symbol
-- **Context Management**: Detailed order relationship tracking for complex strategies
-- **Comprehensive Testing**: Integration tests with real TWS connections (29 tests passing)
+- **Multi-Ticker Support**: Trade multiple symbols simultaneously with isolated position management
+- **API Integration**: Seamless integration with prediction signal APIs (BUY/SELL/SHORT signals)
+- **Advanced Order Management**: 
+  - Automatic stop-loss and take-profit orders
+  - Scale-in capabilities with profit triggers
+  - ATR-based dynamic stop placement
+  - Double-down order support
+- **Position Management**: Real-time tracking with P&L monitoring
+- **Event-Driven Architecture**: Responsive, decoupled system design
+- **Rule Engine**: Flexible condition-action framework for trading strategies
+- **Risk Management**: Built-in position sizing and exposure controls
 
-## Requirements
+## 📋 Prerequisites
 
-- Python 3.8+
-- Interactive Brokers Trader Workstation (TWS)
-- Windows 10/11 (native Windows support)
-- Paper trading account (recommended for testing)
+- Python 3.8 or higher
+- Interactive Brokers TWS or IB Gateway
+- IB API enabled in TWS/Gateway
+- Valid IB account with appropriate permissions
 
-## Quick Start
+## 🛠️ Installation
 
-### 1. Installation
-
+1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd ibkr-tws-framework
+git clone https://github.com/yourusername/ib-trading-framework.git
+cd ib-trading-framework
+```
+
+2. Create a virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. Install dependencies:
+```bash
 pip install -r requirements.txt
 ```
 
-### 2. Setup TWS
-
-1. **Start TWS** in paper trading mode
-2. **Enable API**: Go to Global Configuration → API → Settings
-   - Check "Enable ActiveX and Socket Clients"
-   - Set Socket port to `7497` (paper trading)
-   - Check "Allow connections from localhost only"
-
-### 3. Configuration
-
-Set environment variables:
+4. Configure environment variables:
 ```bash
-export TWS_HOST=127.0.0.1
-export TWS_PORT=7497
-export TWS_CLIENT_ID=10
-export TWS_ACCOUNT=your_paper_account
-export API_BASE_URL=your_prediction_api_url
-export API_KEY=your_api_key
+cp .env.example .env
+# Edit .env with your configuration
 ```
 
-### 4. Test Connection
+## ⚙️ Configuration
+
+### Environment Variables
+
+Create a `.env` file with the following variables:
+
+```env
+# TWS Connection
+TWS_HOST=127.0.0.1
+TWS_PORT=7497  # 7496 for live trading
+TWS_CLIENT_ID=1
+
+# API Configuration
+API_KEY=your_api_key_here
+API_ENDPOINT=https://api.example.com/predictions
+
+# Trading Parameters
+DEFAULT_POSITION_SIZE=10000
+MAX_POSITION_SIZE=50000
+STOP_LOSS_PCT=0.03
+TAKE_PROFIT_PCT=0.08
+
+# Risk Management
+MAX_DAILY_LOSS=1000
+MAX_POSITIONS=10
+```
+
+### Trading Rules Configuration
+
+Edit `config/trading_rules.yaml`:
+
+```yaml
+rules:
+  - name: "High Confidence Buy"
+    condition:
+      type: "signal"
+      signal: "BUY"
+      min_confidence: 0.80
+    action:
+      type: "create_position"
+      side: "BUY"
+      stop_loss_pct: 0.03
+      take_profit_pct: 0.08
+      
+  - name: "Scale In on Profit"
+    condition:
+      type: "position_profit"
+      min_profit_pct: 0.02
+    action:
+      type: "scale_in"
+      scale_pct: 0.50
+```
+
+## 🚀 Usage
+
+### Starting the Trading System
 
 ```bash
-# Run basic connectivity tests
-python run_integration_tests.py basic
-
-# Test market data (safe - read only)
-python run_integration_tests.py market_data
-
-# Test API connection
-python test_api_connection.py
+python main.py
 ```
 
-## Basic Usage
+### Running in Test Mode
 
-### Simple TWS Connection
-
-```python
-import asyncio
-from src.tws_config import TWSConfig
-from src.tws_connection import TWSConnection
-
-async def main():
-    # Create configuration
-    config = TWSConfig(
-        host="127.0.0.1",
-        port=7497,  # TWS paper trading port
-        client_id=1
-    )
-    
-    # Create connection
-    connection = TWSConnection(config)
-    
-    # Connect to TWS
-    connected = await connection.connect()
-    
-    if connected:
-        print("Connected to TWS!")
-        
-        # Request current time
-        connection.request_current_time()
-        
-        # Disconnect when done
-        connection.disconnect()
-    else:
-        print("Failed to connect to TWS")
-
-if __name__ == "__main__":
-    asyncio.run(main())
+```bash
+python main.py --test-mode
 ```
 
-### Automated Trading with Rule Engine
+### Monitoring Positions
 
-```python
-import asyncio
-from src.tws_config import TWSConfig
-from src.tws_connection import TWSConnection
-from src.event.bus import EventBus
-from src.event.api import PredictionSignalEvent
-from src.rule.engine import RuleEngine
-from src.rule.condition import EventCondition
-from src.rule.action import CreateOrderAction
-from src.rule.base import Rule
-from src.order import OrderType
-from src.order.manager import OrderManager
-
-async def main():
-    # Initialize components
-    config = TWSConfig.from_env()
-    tws_connection = TWSConnection(config)
-    event_bus = EventBus()
-    order_manager = OrderManager(event_bus, tws_connection)
-    rule_engine = RuleEngine(event_bus)
-    
-    # Connect to TWS
-    await tws_connection.connect()
-    await order_manager.initialize()
-    
-    # Set up rule engine context
-    rule_engine.update_context({
-        "order_manager": order_manager,
-        "account": {"equity": 100000},
-        "prices": {}
-    })
-    
-    # Create a trading rule
-    buy_condition = EventCondition(
-        event_type=PredictionSignalEvent,
-        field_conditions={
-            "signal": "BUY",
-            "symbol": "AAPL",
-            "confidence": lambda c: c > 0.75
-        }
-    )
-    
-    buy_action = CreateOrderAction(
-        symbol="AAPL",
-        quantity=10,
-        order_type=OrderType.MARKET
-    )
-    
-    rule = Rule(
-        rule_id="aapl_buy_rule",
-        name="AAPL Buy on High Confidence",
-        condition=buy_condition,
-        action=buy_action
-    )
-    
-    # Register and start rule engine
-    rule_engine.register_rule(rule)
-    await rule_engine.start()
-    
-    print("🚀 Automated trading system started!")
-    print("   - Connected to TWS")
-    print("   - Rule engine active")
-    print("   - Waiting for prediction signals...")
-    
-    # Keep running
-    try:
-        while True:
-            await asyncio.sleep(1)
-    except KeyboardInterrupt:
-        print("Shutting down...")
-        await rule_engine.stop()
-        tws_connection.disconnect()
-
-if __name__ == "__main__":
-    asyncio.run(main())
+```bash
+python scripts/monitor_positions.py
 ```
 
-### 🆕 Reusable Rule Templates (Simplified)
+## 📊 Architecture Overview
 
-```python
-import asyncio
-from src.rule.templates import create_buy_rule, create_scale_in_rule, StrategyBuilder
-from src.rule.engine import RuleEngine
-
-async def main():
-    # ... initialize components ...
-    
-    # Method 1: Individual rule templates
-    aapl_buy = create_buy_rule(
-        symbol="AAPL", 
-        quantity=100, 
-        confidence_threshold=0.85,
-        stop_loss_pct=0.03,
-        take_profit_pct=0.08
-    )
-    aapl_scale = create_scale_in_rule("AAPL", scale_quantity=50)
-    
-    # Register individual rules
-    rule_engine.register_rule(aapl_buy)
-    rule_engine.register_rule(aapl_scale)
-    
-    # Method 2: Complete strategy builder
-    tsla_strategy = StrategyBuilder.create_basic_strategy(
-        symbol="TSLA",
-        quantity=25,
-        confidence_threshold=0.90,
-        stop_loss_pct=0.04,
-        take_profit_pct=0.12,
-        enable_scale_in=True
-    )
-    
-    # Register entire strategy (multiple rules)
-    for rule in tsla_strategy:
-        rule_engine.register_rule(rule)
-    
-    # Method 3: Multiple stocks with same pattern
-    for symbol in ["AAPL", "MSFT", "NVDA"]:
-        strategy_rules = StrategyBuilder.create_basic_strategy(
-            symbol=symbol,
-            quantity=50,
-            confidence_threshold=0.80
-        )
-        for rule in strategy_rules:
-            rule_engine.register_rule(rule)
-    
-    await rule_engine.start()
-    print("🚀 Multi-stock trading system with automatic order linking!")
-
-if __name__ == "__main__":
-    asyncio.run(main())
+```
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│  API Monitor    │────▶│  Rule Engine     │────▶│ Order Manager   │
+└─────────────────┘     └──────────────────┘     └─────────────────┘
+         │                       │                         │
+         ▼                       ▼                         ▼
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│   Event Bus     │     │ Position Tracker │     │ TWS Connection  │
+└─────────────────┘     └──────────────────┘     └─────────────────┘
 ```
 
-### 🆕 Automatic Order Linking with BUY/SELL Support
+### Core Components
 
-The system now automatically links related orders (stop loss, take profit, scale-ins) by symbol with explicit BUY/SELL side tracking:
+1. **API Monitor**: Polls external API for trading signals
+2. **Event Bus**: Central communication hub using publish-subscribe pattern
+3. **Rule Engine**: Evaluates conditions and executes trading actions
+4. **Position Tracker**: Maintains real-time position state and P&L
+5. **Order Manager**: Handles order creation, submission, and lifecycle
+6. **TWS Connection**: Manages connection to Interactive Brokers
+
+## 📝 Trading Workflow
+
+1. **Signal Reception**: API monitor receives prediction signals (BUY/SELL/SHORT)
+2. **Event Emission**: Signals converted to events and published on event bus
+3. **Rule Evaluation**: Rule engine evaluates conditions against current state
+4. **Action Execution**: Matching rules trigger trading actions
+5. **Order Creation**: Orders created with automatic stop/target placement
+6. **Position Tracking**: Positions monitored and updated in real-time
+7. **Risk Management**: Automatic position closure on stop/target hits
+
+## 🔧 Advanced Features
+
+### Linked Order Management
+
+The system automatically manages related orders:
 
 ```python
-from src.rule.linked_order_actions import LinkedCreateOrderAction, LinkedScaleInAction, LinkedCloseAllAction
-
-# BUY (Long) Position Entry
-buy_action = LinkedCreateOrderAction(
+# Entry order with automatic protective orders
+action = LinkedCreateOrderAction(
     symbol="AAPL",
     quantity=100,
-    side="BUY",                  # NEW: Explicit side for long positions
-    auto_create_stops=True,      # Automatic stop & target creation
+    side="BUY",
+    auto_create_stops=True,
     stop_loss_pct=0.03,
     take_profit_pct=0.08
 )
-
-# Closing automatically cancels ALL related orders for the symbol
-close_action = LinkedCloseAllAction(symbol="AAPL", reason="Sell signal")
 ```
 
-**Key Features:**
-- **Side Tracking**: Explicit BUY/SELL side storage in context prevents mixing long/short orders
-- **Smart Stop/Target Placement**: Correctly positions protective orders based on position side  
-- **Dynamic Scale-In**: Detects existing position side and validates consistency
-- **Automatic Context Reset**: Cleans up context when positions conclude via stops/targets
+### ATR-Based Stops
 
-### Event-Driven Trading System
+Dynamic stop placement using Average True Range:
 
 ```python
-import asyncio
-from src.tws_config import TWSConfig
-from src.tws_connection import TWSConnection
-from src.event.bus import EventBus
-from src.event.market import PriceEvent
-from src.position.tracker import PositionTracker
-from src.order.manager import OrderManager
-
-async def main():
-    # Initialize components
-    config = TWSConfig.from_env()
-    tws_connection = TWSConnection(config)
-    event_bus = EventBus()
-    position_tracker = PositionTracker(event_bus)
-    order_manager = OrderManager(event_bus, tws_connection)
-    
-    # Connect to TWS
-    await tws_connection.connect()
-    
-    # Initialize trading components
-    await position_tracker.initialize()
-    await order_manager.initialize()
-    
-    # Your trading logic here...
-    
-    # Cleanup
-    tws_connection.disconnect()
-
-if __name__ == "__main__":
-    asyncio.run(main())
+action = LinkedCreateOrderAction(
+    symbol="AAPL",
+    quantity=100,
+    side="BUY",
+    auto_create_stops=True,
+    atr_stop_multiplier=2.0,    # 2x ATR for stop
+    atr_target_multiplier=4.0   # 4x ATR for target
+)
 ```
 
-## Testing
+### Position Reversal
 
-The framework includes comprehensive testing at multiple levels:
+Automatic handling of opposing signals:
 
-### Integration Tests (Real TWS)
+- **Same Side Signal**: Ignored (prevents duplicate positions)
+- **Opposite Side Signal**: Closes current position, opens new opposite position
+- **Automatic Position Cleanup**: Clean state management for new trades
+
+## 📊 Monitoring and Logging
+
+### Log Files
+
+- `logs/trading.log`: Main trading activity log
+- `logs/orders.log`: Detailed order execution log
+- `logs/positions.log`: Position tracking and P&L log
+- `logs/errors.log`: Error and exception log
+
+### Real-time Monitoring
 
 ```bash
-# Show available test levels
-python run_integration_tests.py --list
+# Watch trading activity
+tail -f logs/trading.log
 
-# Safe connectivity tests
-python run_integration_tests.py basic
+# Monitor positions
+python scripts/position_dashboard.py
 
-# Market data tests (read-only)
-python run_integration_tests.py market_data
-
-# Order placement tests (CAUTION - places real orders!)
-export TWS_ENABLE_ORDER_TESTS=true
-python run_integration_tests.py orders
-
-# Complete system tests
-python run_integration_tests.py e2e
+# Check system health
+python scripts/health_check.py
 ```
 
-### Unit Tests
+## 🧪 Testing
+
+### Running Tests
 
 ```bash
-# Run all unit tests
-pytest tests/
+# Run all tests
+pytest
 
-# Run specific test categories
-pytest tests/event_system/
-pytest tests/position/
-pytest tests/order/
+# Run specific test module
+pytest tests/test_order_management.py
+
+# Run with coverage
+pytest --cov=src tests/
 ```
 
-## Project Structure
+### Integration Tests
 
-```
-├── src/
-│   ├── tws_config.py        # TWS configuration management
-│   ├── tws_connection.py    # Direct TWS connection
-│   ├── event/               # Event-driven architecture
-│   ├── order/               # Order management system
-│   ├── position/            # Position tracking
-│   └── ...
-├── tests/
-│   ├── integration/         # Real TWS integration tests
-│   ├── event_system/        # Event system unit tests
-│   ├── position/            # Position management tests
-│   └── order/               # Order management tests
-├── docs/                    # Documentation
-└── run_integration_tests.py # Safe test runner
+```bash
+# Test TWS connection
+python tests/integration/test_tws_connection.py
+
+# Test order execution (paper trading)
+python tests/integration/test_order_execution.py
 ```
 
-## Safety Guidelines
+## 🚨 Risk Management
 
-### For Development:
-- **Always use paper trading accounts**
-- **Never run against live money during development**
-- **Test incrementally** (basic → market_data → orders)
-- **Monitor order placement tests manually**
+### Built-in Safeguards
 
-### For Production:
-- **Implement comprehensive risk controls**
-- **Use position limits and stop losses**
-- **Monitor system health continuously**
-- **Have emergency stop procedures**
+- **Position Limits**: Maximum positions per symbol and total
+- **Daily Loss Limits**: Automatic trading halt on max daily loss
+- **Order Validation**: Pre-submission validation of all orders
+- **Duplicate Prevention**: Prevents multiple positions on same symbol/side
+- **Error Recovery**: Automatic reconnection and state recovery
 
-## Documentation
+### Best Practices
 
-| Document | Description |
-|----------|-------------|
-| [TWS Setup Guide](docs/TWS_SETUP_GUIDE.md) | Complete TWS configuration and setup guide |
-| [Architecture](docs/TWS_ARCHITECTURE.md) | System architecture and component design |
-| [Testing Strategy](tests/COMPREHENSIVE_TESTING_STRATEGY.md) | Complete testing approach and roadmap |
-| [Integration Tests](tests/integration/README.md) | How to run integration tests safely |
-| [Order System](docs/ORDER_POSITION_SYSTEM.md) | Order and position management details |
-| [Event System](docs/EVENT_POSITION_SYSTEM_DOCUMENTATION.md) | Event-driven architecture guide |
+1. **Always test in paper trading** before live deployment
+2. **Set conservative position sizes** initially
+3. **Monitor logs actively** during initial deployment
+4. **Use stop losses** on all positions
+5. **Implement daily loss limits**
+6. **Regular backup** of configuration and logs
 
-## Key Components
+## 🤝 Contributing
 
-### TWS Connection (`src/tws_connection.py`)
-- Direct connection to Trader Workstation
-- Async connection management with timeouts
-- Automatic reconnection handling
-- Basic API operations (time, accounts, order IDs)
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-### Event System (`src/event/`)
-- Event bus for component communication
-- Market data events, order events, position events
-- Async event processing with subscriptions
+## 📄 License
 
-### Order Management (`src/order/`)
-- Complete order lifecycle management
-- Order groups and bracket orders
-- Fill processing and execution tracking
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-### Position Tracking (`src/position/`)
-- Real-time position monitoring
-- P&L calculations (realized and unrealized)
-- Risk management integration
+## ⚠️ Disclaimer
 
-### Trade Tracker (`src/trade_tracker.py`)
-- Singleton pattern for persistent trade tracking
-- Prevents duplicate positions on same symbol
-- Tracks active trades across rule executions
-- Works with Context system for complete trade management
+This software is for educational purposes only. Trading involves substantial risk of loss and is not suitable for all investors. Past performance is not indicative of future results. Always test thoroughly in a paper trading environment before using real money.
 
-### Context System (Rule Engine)
-- Detailed order relationship management
-- Tracks all order IDs (main, stop, target, double down)
-- Enables bulk order operations
-- Transient storage within rule execution scope
+## 🆘 Support
 
-## Contributing
+- **Documentation**: See the `docs/` directory for detailed documentation
+- **Issues**: Report bugs via GitHub Issues
+- **Discussions**: Join our Discord server for community support
 
-1. **Setup development environment**:
-   ```bash
-   pip install -r requirements.txt
-   pip install -r requirements-dev.txt
-   ```
+## 🔄 Recent Updates
+
+- **v2.0.0**: Complete position management overhaul - PositionTracker as single source of truth
+- **v1.9.0**: Added ATR-based dynamic stop placement
+- **v1.8.0**: Implemented position reversal logic
+- **v1.7.0**: Enhanced order linking system
+- **v1.6.0**: Added double-down order support

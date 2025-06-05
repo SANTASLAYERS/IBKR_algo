@@ -62,6 +62,10 @@ logging.getLogger('ibapi.reader').setLevel(logging.WARNING)
 logging.getLogger('ibapi.connection').setLevel(logging.WARNING)
 logging.getLogger('ibapi.utils').setLevel(logging.WARNING)
 
+# Reduce noise from httpx logging
+logging.getLogger('httpx').setLevel(logging.WARNING)
+logging.getLogger('httpcore').setLevel(logging.WARNING)
+
 
 class TradingApplication:
     """Main trading application that manages multiple strategies."""
@@ -179,14 +183,14 @@ class TradingApplication:
         
         # Strategy configurations for different tickers
         self.strategies = {
-            "CVNA": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 1.0, "cooldown_minutes": 3},
-            "UVXY": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 1.0, "cooldown_minutes": 3},
-            "SOXL": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 1.0, "cooldown_minutes": 3},
-            "SOXS": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 1.0, "cooldown_minutes": 3},
-            "TQQQ": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 1.0, "cooldown_minutes": 3},
-            "SQQQ": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 1.0, "cooldown_minutes": 3},
-            "GLD": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 1.0, "cooldown_minutes": 3},
-            "SLV": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 1.0, "cooldown_minutes": 3}
+            "CVNA": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.5, "atr_target_multiplier": 3.0, "cooldown_minutes": 3},
+            "UVXY": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.5, "atr_target_multiplier": 3.0, "cooldown_minutes": 3},
+            "SOXL": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.5, "atr_target_multiplier": 3.0, "cooldown_minutes": 3},
+            "SOXS": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.5, "atr_target_multiplier": 3.0, "cooldown_minutes": 3},
+            "TQQQ": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.5, "atr_target_multiplier": 3.0, "cooldown_minutes": 3},
+            "SQQQ": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.5, "atr_target_multiplier": 3.0, "cooldown_minutes": 3},
+            "GLD": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.5, "atr_target_multiplier": 3.0, "cooldown_minutes": 3},
+            "SLV": {"confidence_threshold": 0.50, "allocation": 10000, "atr_stop_multiplier": 6.5, "atr_target_multiplier": 3.0, "cooldown_minutes": 3}
         }
         
         # Create rules for each strategy
@@ -274,7 +278,8 @@ class TradingApplication:
         
         for ticker in tickers:
             eod_condition = TimeCondition(
-                start_time=time(15, 30)  # 3:30 PM ET
+                start_time=time(15, 59),  # 3:59 PM ET - Changed from 3:30 PM
+                end_time=time(16, 0)      # 4:00 PM ET - Only run between 3:59 and 4:00
             )
             
             # Use LinkedCloseAllAction to close position AND cancel all linked orders
@@ -289,12 +294,13 @@ class TradingApplication:
                 description=f"Close all {ticker} positions and orders before market close",
                 condition=eod_condition,
                 action=eod_action,
-                priority=200  # High priority
+                priority=200,  # High priority
+                max_executions_per_day=1  # Only run once per day
             )
             
             self.rule_engine.register_rule(eod_rule)
         
-        logger.info("📅 Created end-of-day closure rule")
+        logger.info("📅 Created end-of-day closure rule (3:59 PM)")
     
     async def start_trading(self):
         """Start the trading system."""

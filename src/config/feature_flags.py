@@ -9,13 +9,14 @@ from typing import Dict, Any
 class FeatureFlags:
     """Central location for all feature flags."""
     
-    # Add new feature flags here as needed
+    # Feature flags
+    RECONCILIATION_ENABLED = False  # Enable position reconciliation checks
     
     @classmethod
     def get_flags(cls) -> Dict[str, Any]:
         """Get all feature flags as a dictionary."""
         return {
-            # Add flags here as they're added
+            "RECONCILIATION_ENABLED": cls.RECONCILIATION_ENABLED
         }
     
     @classmethod

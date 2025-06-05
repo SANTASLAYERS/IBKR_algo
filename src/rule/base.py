@@ -76,6 +76,7 @@ class Rule:
     last_execution_time: Optional[datetime] = None
     execution_count: int = 0
     total_execution_count: int = 0
+    last_execution_date: Optional[datetime] = None  # Track the date for daily reset
     
     # Lifecycle hooks
     pre_execution_hook: Optional[Callable] = None
@@ -84,11 +85,21 @@ class Rule:
     # Optional context data
     context: Dict[str, Any] = field(default_factory=dict)
     
+    def _check_and_reset_daily_count(self):
+        """Check if we need to reset the daily execution count."""
+        today = datetime.now().date()
+        if self.last_execution_date is None or self.last_execution_date.date() != today:
+            self.execution_count = 0
+            self.last_execution_date = datetime.now()
+    
     async def evaluate_and_execute(self, context: Dict[str, Any]) -> bool:
         """Evaluate the rule condition and execute the action if the condition is met."""
         # Check if rule is enabled
         if not self.enabled:
             return False
+            
+        # Check and reset daily count if needed
+        self._check_and_reset_daily_count()
             
         # Check if rule is on cooldown
         if self.cooldown_seconds and self.last_execution_time:

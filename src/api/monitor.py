@@ -38,7 +38,7 @@ class OptionsFlowMonitor:
         
         # Configuration
         self.thresholds = {
-            'prediction_confidence_min': 0.75
+            'prediction_confidence_min': 0.50
         }
         
         # State
@@ -160,7 +160,7 @@ class OptionsFlowMonitor:
         
         # Check confidence threshold
         if confidence >= self.thresholds['prediction_confidence_min']:
-            logger.info(f"High confidence prediction for {ticker}: {signal} ({confidence:.2f})")
+            logger.info(f"New prediction: {ticker} {signal} ({confidence:.2f})")
             
             # Create prediction signal event
             event = PredictionSignalEvent(
