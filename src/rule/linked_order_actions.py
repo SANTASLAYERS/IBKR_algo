@@ -899,6 +899,9 @@ class LinkedDoubleDownAction(Action):
             double_down_quantity = int(original_quantity * self.quantity_multiplier)
             
             # Adjust quantity sign based on side
+            # For BOTH long and short positions, we want to ADD to the position
+            # Long position: Buy more (positive quantity)
+            # Short position: Sell more (negative quantity)
             if side == "BUY":
                 double_down_quantity = abs(double_down_quantity)  # Positive for buy
             else:  # SELL
@@ -1011,9 +1014,17 @@ class LinkedDoubleDownFillManager:
                 pm_position = position_manager.get_position(symbol)
                 if pm_position:
                     is_long = pm_position.side == "BUY"
-                    # For long positions, the original quantity should be positive
-                    # For short positions, the original quantity should be negative
-                    original_quantity = abs(event.fill_quantity) if is_long else -abs(event.fill_quantity)
+                    # Get the original position quantity from PositionManager
+                    # This should be the quantity BEFORE the double down
+                    original_quantity = pm_position.current_quantity
+                    
+                    # If current_quantity is 0, try to get from main orders
+                    if original_quantity == 0:
+                        main_orders = pm_position.main_orders
+                        if main_orders:
+                            # Use the fill quantity from the event as approximation
+                            # For short positions, this should be negative
+                            original_quantity = -abs(event.fill_quantity) if not is_long else abs(event.fill_quantity)
                 else:
                     # Fallback based on event quantity
                     is_long = event.fill_quantity > 0
@@ -1034,6 +1045,31 @@ class LinkedDoubleDownFillManager:
             new_quantity = old_quantity + dd_quantity
             
             self.logger.info(f"[DD FILL DEBUG] old_quantity={old_quantity}, dd_quantity={dd_quantity}, new_quantity={new_quantity}")
+            
+            # Check if position is flat after double down
+            if abs(new_quantity) < 0.0001:  # Essentially zero
+                self.logger.warning(f"Position for {symbol} is flat after double down - closing position")
+                # Close the position since it's flat
+                position_tracker = self.context.get("position_tracker")
+                if position_tracker:
+                    positions = await position_tracker.get_positions_for_symbol(symbol)
+                    for pos in positions:
+                        await position_tracker.close_position(pos.position_id, "Position flat after double down")
+                
+                # Close in PositionManager
+                position_manager = PositionManager()
+                position_manager.close_position(symbol)
+                
+                # Cancel any remaining orders
+                order_manager = self.context.get("order_manager")
+                if order_manager:
+                    all_orders = position_manager.get_linked_orders(symbol)
+                    for order_id in all_orders:
+                        try:
+                            await order_manager.cancel_order(order_id, "Position flat - cancelling all orders")
+                        except Exception as e:
+                            self.logger.warning(f"Failed to cancel order {order_id}: {e}")
+                return
             
             # Calculate new average price
             old_value = abs(old_quantity) * position.entry_price
