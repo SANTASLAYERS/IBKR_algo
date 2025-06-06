@@ -46,7 +46,7 @@ action = LinkedCreateOrderAction(
     auto_create_stops=True,        # Auto-create protective orders
     stop_loss_pct=0.03,           # 3% stop loss
     take_profit_pct=0.08,         # 8% take profit
-    atr_stop_multiplier=6.0,      # Alternative: ATR-based stops
+    atr_stop_multiplier=6.5,       # Alternative: ATR-based stops
     atr_target_multiplier=12.0    # Alternative: ATR-based targets
 )
 ```
@@ -73,8 +73,8 @@ position = Position(
     target_order_ids=["TARGET_789"],
     scale_order_ids=[],
     doubledown_order_ids=[],
-    atr_stop_multiplier=6.0,      # Stored for position management
-    atr_target_multiplier=12.0,
+    atr_stop_multiplier=6.5,       # Stored for position management
+    atr_target_multiplier=3.0,     # Stored for position management
     status=PositionStatus.OPEN
 )
 ```

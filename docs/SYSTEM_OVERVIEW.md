@@ -58,7 +58,7 @@ Predictions → Events → Rule Processing → Side-Aware → Real Trading → E
                             ↓         Orders (BUY/SELL)      ↓           ↓
                     Position Tracker → Risk Mgmt → Market Data → Fill Events
                             ↓                                         ↓
-                    Context Manager ← Position Conclusion ←──────────┘
+                    Position Manager ← Position Updates ←─────────────┘
 ```
 
 ## 📊 Implementation Status

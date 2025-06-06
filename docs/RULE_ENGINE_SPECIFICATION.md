@@ -939,7 +939,7 @@ position = Position(
     stop_order_ids=["order_id_2"],    # Stop loss order IDs
     target_order_ids=["order_id_3"],  # Take profit order IDs
     doubledown_order_ids=["order_id_4"], # Double down order IDs
-    atr_stop_multiplier=6.0,          # ATR multiplier for stops
+    atr_stop_multiplier=6.5,          # ATR multiplier for stops
     atr_target_multiplier=3.0,        # ATR multiplier for targets
     status=PositionStatus.OPEN        # Position status
 )
