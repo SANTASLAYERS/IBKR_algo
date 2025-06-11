@@ -344,10 +344,10 @@ if not positions or all(p.status == PositionStatus.CLOSED for p in positions):
     position.target_order_ids.append("125")
 
 # 2. Stop loss fills
-# LinkedOrderConclusionManager uses position to:
-# - Find all related orders
-# - Cancel remaining orders
-# - Update position status
+# UnifiedFillManager uses position to:
+# - Track all order fills (main, double down, protective)
+# - Update protective orders on any fill to match position size
+# - Close position only when protective orders FULLY fill
 await position_tracker.close_position(position.position_id, "Stop loss hit")
 ```
 
@@ -399,18 +399,18 @@ Key event types include:
 
 ### 🆕 Automatic Position Updates
 
-The `LinkedOrderConclusionManager` monitors fill events to automatically update positions:
+The `UnifiedFillManager` monitors ALL fill events to automatically update positions:
 
 ```python
-class LinkedOrderConclusionManager:
-    """Manages automatic position updates when orders fill."""
+class UnifiedFillManager:
+    """Centralized manager for all order fills and protective order updates."""
     
     async def on_order_fill(self, event):
-        """Handle order fill events to detect position conclusions."""
-        # Detects when stop/target orders fill
-        # Automatically updates position status to CLOSED
-        # Cancels remaining orders
-        # Enables fresh position on next trade
+        """Handle order fill events and update protective orders."""
+        # Handles ALL fill types (main, double down, protective)
+        # Updates protective orders on ANY fill to match position size
+        # Handles partial fills correctly
+        # Only closes position on FULL protective fills
 ```
 
 ## Position Management

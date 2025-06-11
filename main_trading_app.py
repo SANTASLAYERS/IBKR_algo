@@ -30,6 +30,7 @@ from src.rule.engine import RuleEngine
 from src.rule.condition import EventCondition, TimeCondition
 from src.rule.action import CreateOrderAction, ClosePositionAction
 from src.rule.linked_order_actions import LinkedCreateOrderAction, LinkedScaleInAction, LinkedCloseAllAction, LinkedOrderConclusionManager, CooldownResetManager, LinkedDoubleDownAction, LinkedDoubleDownFillManager
+from src.rule.unified_fill_manager import UnifiedFillManager
 from src.rule.base import Rule
 from src.order import OrderType
 from src.order.manager import OrderManager
@@ -81,6 +82,7 @@ class TradingApplication:
         self.conclusion_manager = None
         self.cooldown_reset_manager = None
         self.doubledown_fill_manager = None
+        self.unified_fill_manager = None
         self.indicator_manager = None
         self.price_service = None
         self.position_sizer = None
@@ -142,12 +144,13 @@ class TradingApplication:
             "prices": {}
         })
         
-        # 🎯 NEW: Setup automatic position conclusion management
-        self.conclusion_manager = LinkedOrderConclusionManager(
+        # 🎯 NEW: Setup unified fill manager for all fill events
+        self.unified_fill_manager = UnifiedFillManager(
             context=self.rule_engine.context,
             event_bus=self.event_bus
         )
-        await self.conclusion_manager.initialize()
+        await self.unified_fill_manager.initialize()
+        logger.info("✅ UnifiedFillManager initialized - handles all fill events and protective order updates")
         
         # Initialize cooldown reset manager for stop loss handling
         self.cooldown_reset_manager = CooldownResetManager(
@@ -156,12 +159,21 @@ class TradingApplication:
         )
         await self.cooldown_reset_manager.initialize()
         
-        # Initialize double down fill manager for updating stop/target orders
-        self.doubledown_fill_manager = LinkedDoubleDownFillManager(
-            context=self.rule_engine.context,
-            event_bus=self.event_bus
-        )
-        await self.doubledown_fill_manager.initialize()
+        # DEPRECATED: These managers are kept for backward compatibility but functionality
+        # is now handled by UnifiedFillManager
+        if FeatureFlags.get("ENABLE_LEGACY_FILL_MANAGERS", False):
+            # Only initialize if explicitly enabled
+            self.conclusion_manager = LinkedOrderConclusionManager(
+                context=self.rule_engine.context,
+                event_bus=self.event_bus
+            )
+            await self.conclusion_manager.initialize()
+            
+            self.doubledown_fill_manager = LinkedDoubleDownFillManager(
+                context=self.rule_engine.context,
+                event_bus=self.event_bus
+            )
+            await self.doubledown_fill_manager.initialize()
         
         # Setup API monitoring
         try:
@@ -335,6 +347,10 @@ class TradingApplication:
         
         if self.rule_engine:
             await self.rule_engine.stop()
+        
+        # Clean up UnifiedFillManager
+        if self.unified_fill_manager:
+            await self.unified_fill_manager.cleanup()
         
         # Disconnect TWS
         if self.tws_connection and self.tws_connection.is_connected():

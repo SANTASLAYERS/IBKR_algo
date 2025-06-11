@@ -24,12 +24,19 @@ logger = logging.getLogger(__name__)
 
 
 class LinkedOrderConclusionManager:
-    """Manages automatic context reset when positions are concluded via stops/targets."""
+    """
+    Simplified manager that only handles position cleanup on FULL fills.
+    Partial fill handling is delegated to UnifiedFillManager.
+    
+    DEPRECATED: This manager is being phased out in favor of UnifiedFillManager.
+    It remains for backward compatibility but should not be used for new features.
+    """
     
     def __init__(self, context: Dict[str, Any], event_bus):
         self.context = context
         self.event_bus = event_bus
         self._initialized = False
+        self.logger = logging.getLogger(self.__class__.__name__)
     
     async def initialize(self):
         """Subscribe to fill events to detect position conclusions."""
@@ -37,54 +44,44 @@ class LinkedOrderConclusionManager:
             # Import here to avoid circular imports
             await self.event_bus.subscribe(FillEvent, self.on_order_fill)
             self._initialized = True
-            logger.info("LinkedOrderConclusionManager initialized - monitoring for position conclusions")
+            self.logger.info("LinkedOrderConclusionManager initialized - monitoring for FULL protective order fills only")
     
     async def on_order_fill(self, event):
-        """Handle order fill events to detect position conclusions."""
+        """Only handle full fills of protective orders for position cleanup."""
         try:
-            # Check if this was a stop or target order that concluded the position
             symbol = event.symbol
             order_id = event.order_id
+            
+            # Get order details
+            order_manager = self.context.get("order_manager")
+            order = await order_manager.get_order(order_id)
+            
+            if not order:
+                return
+            
+            # Only proceed if order is FULLY filled
+            if order.status.value != "filled":
+                self.logger.debug(f"Order {order_id} is not fully filled, skipping cleanup")
+                return
             
             # Use PositionManager to find position and check if it's a protective order
             position_manager = PositionManager()
             position = position_manager.find_position_by_order(order_id)
             
             if not position:
-                logger.debug(f"No position found for order {order_id}")
+                self.logger.debug(f"No position found for order {order_id}")
                 return
             
             is_protective, order_type = position.is_protective_order(order_id)
             if not is_protective:
-                logger.debug(f"Order {order_id} is not a protective order")
+                self.logger.debug(f"Order {order_id} is not a protective order")
                 return
             
-            # Position concluded via stop/target fill
-            logger.info(f"🎯 {position.side} position concluded for {symbol} - {order_type} order {order_id} filled at ${event.fill_price}")
-            
-            # Get all orders to cancel
-            all_orders = position.get_all_orders()
-            
-            # Remove the filled order from the list
-            all_orders.discard(order_id)
-            
-            # Cancel all remaining orders
-            order_manager = self.context.get("order_manager")
-            if order_manager:
-                for remaining_order_id in all_orders:
-                    try:
-                        await order_manager.cancel_order(remaining_order_id, f"Position concluded via {order_type} fill")
-                        logger.info(f"Cancelled remaining order {remaining_order_id} for {symbol}")
-                    except Exception as e:
-                        logger.warning(f"Failed to cancel order {remaining_order_id}: {e}")
-            
-            # Update both TradeTracker and PositionManager
-            trade_tracker = TradeTracker()
-            trade_tracker.close_trade(symbol)
-            position_manager.close_position(symbol)
+            # Protective order fully filled - position cleanup handled by UnifiedFillManager
+            self.logger.info(f"Protective order {order_id} fully filled for {symbol} - cleanup will be handled by UnifiedFillManager")
             
         except Exception as e:
-            logger.error(f"Error handling fill event for position conclusion: {e}")
+            self.logger.error(f"Error in order conclusion manager: {e}")
 
 
 class CooldownResetManager:
@@ -954,7 +951,13 @@ class LinkedDoubleDownAction(Action):
 
 
 class LinkedDoubleDownFillManager:
-    """Manager that monitors double down order fills and updates stop/target orders accordingly."""
+    """
+    DEPRECATED: This manager is being phased out in favor of UnifiedFillManager.
+    It remains for backward compatibility but should not be used for new features.
+    
+    The UnifiedFillManager now handles all fill events including double downs
+    and automatically updates protective orders based on current position size.
+    """
     
     def __init__(self, context: Dict[str, Any], event_bus):
         self.context = context
@@ -964,7 +967,7 @@ class LinkedDoubleDownFillManager:
     async def initialize(self):
         """Subscribe to order fill events."""
         await self.event_bus.subscribe(FillEvent, self.on_order_fill)
-        self.logger.info("LinkedDoubleDownFillManager initialized")
+        self.logger.warning("LinkedDoubleDownFillManager initialized - DEPRECATED: Use UnifiedFillManager instead")
     
     async def on_order_fill(self, event: FillEvent):
         """Handle order fill events to detect double down fills."""

@@ -284,6 +284,7 @@ This software is for educational purposes only. Trading involves substantial ris
 
 ## 🔄 Recent Updates
 
+- **v2.1.0**: Unified Fill Manager - Centralized handling of all fills with automatic protective order updates
 - **v2.0.0**: Complete position management overhaul - PositionTracker as single source of truth
 - **v1.9.0**: Added ATR-based dynamic stop placement
 - **v1.8.0**: Implemented position reversal logic

@@ -1,0 +1,23 @@
+2025-06-11 15:17:25,733 - src.trade_tracker - INFO - TradeTracker initialized
+2025-06-11 15:17:25,733 - src.trade_tracker - INFO - Cleared all trades from tracker
+2025-06-11 15:17:25,735 - __main__ - INFO - Connecting to TWS...
+2025-06-11 15:17:25,735 - src.tws_connection - INFO - Connecting to TWS at 127.0.0.1:7497
+2025-06-11 15:17:25,737 - src.tws_connection - INFO - Connection thread: Connecting to 127.0.0.1:7497 (client ID: 1)
+2025-06-11 15:17:27,308 - ibapi.client - INFO - sent startApi
+2025-06-11 15:17:27,308 - ibapi.client - INFO - REQUEST startApi {}
+2025-06-11 15:17:27,310 - ibapi.client - INFO - SENDING startApi b'\x00\x00\x00\x0871\x002\x001\x00\x00'
+2025-06-11 15:17:27,318 - ibapi.client - INFO - REQUEST startApi {}
+2025-06-11 15:17:27,318 - ibapi.client - INFO - SENDING startApi b'\x00\x00\x00\x0871\x002\x001\x00\x00'
+2025-06-11 15:17:27,319 - src.tws_connection - INFO - Connection thread: Socket connected, starting message loop
+2025-06-11 15:17:27,505 - src.tws_connection - INFO - Requesting additional order IDs from TWS
+2025-06-11 15:17:27,506 - ibapi.client - INFO - REQUEST reqIds {'numIds': 50}
+2025-06-11 15:17:27,506 - ibapi.client - INFO - SENDING reqIds b'\x00\x00\x00\x078\x001\x0050\x00'
+2025-06-11 15:17:27,517 - src.position.position_manager - INFO - PositionManager initialized
+2025-06-11 15:17:27,517 - __main__ - ERROR - Test error: 'PositionManager' object has no attribute 'reset'
+Traceback (most recent call last):
+  File "C:\Users\panga\Documents\IBKR\tests\tws_order_management\test_unified_fill_manager_integration.py", line 400, in run_tests
+    await test.setup()
+  File "C:\Users\panga\Documents\IBKR\tests\tws_order_management\test_unified_fill_manager_integration.py", line 91, in setup
+    self.position_manager.reset()  # Clear any existing data
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'PositionManager' object has no attribute 'reset'

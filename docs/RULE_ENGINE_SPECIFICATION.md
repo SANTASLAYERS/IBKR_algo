@@ -960,7 +960,7 @@ class PositionCondition(Condition):
         position_tracker = context.get("position_tracker")
         if position_tracker:
             positions = await position_tracker.get_positions_for_symbol(self.symbol)
-            # ... evaluation logic
+        # ... evaluation logic
 ```
 
 ### Context Usage in Actions
