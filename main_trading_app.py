@@ -180,14 +180,14 @@ class TradingApplication:
         
         # Strategy configurations for different tickers
         self.strategies = {
-            "CVNA": {"confidence_threshold": 0.50, "allocation": 30000, "atr_stop_multiplier": 6.5, "atr_target_multiplier": 3.0, "cooldown_minutes": 3},
-            "UVXY": {"confidence_threshold": 0.50, "allocation": 30000, "atr_stop_multiplier": 6.5, "atr_target_multiplier": 3.0, "cooldown_minutes": 3},
-            "SOXL": {"confidence_threshold": 0.50, "allocation": 30000, "atr_stop_multiplier": 6.5, "atr_target_multiplier": 3.0, "cooldown_minutes": 3},
-            "SOXS": {"confidence_threshold": 0.50, "allocation": 30000, "atr_stop_multiplier": 6.5, "atr_target_multiplier": 3.0, "cooldown_minutes": 3},
-            "TQQQ": {"confidence_threshold": 0.50, "allocation": 30000, "atr_stop_multiplier": 6.5, "atr_target_multiplier": 3.0, "cooldown_minutes": 3},
-            "SQQQ": {"confidence_threshold": 0.50, "allocation": 30000, "atr_stop_multiplier": 6.5, "atr_target_multiplier": 3.0, "cooldown_minutes": 3},
-            "GLD": {"confidence_threshold": 0.50, "allocation": 30000, "atr_stop_multiplier": 6.5, "atr_target_multiplier": 3.0, "cooldown_minutes": 3},
-            "SLV": {"confidence_threshold": 0.50, "allocation": 30000, "atr_stop_multiplier": 6.5, "atr_target_multiplier": 3.0, "cooldown_minutes": 3}
+            "CVNA": {"confidence_threshold": 0.50, "allocation": 30000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 4.0, "cooldown_minutes": 3},
+            "UVXY": {"confidence_threshold": 0.50, "allocation": 30000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 4.0, "cooldown_minutes": 3},
+            "SOXL": {"confidence_threshold": 0.50, "allocation": 30000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 4.0, "cooldown_minutes": 3},
+            "SOXS": {"confidence_threshold": 0.50, "allocation": 30000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 4.0, "cooldown_minutes": 3},
+            "TQQQ": {"confidence_threshold": 0.50, "allocation": 30000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 4.0, "cooldown_minutes": 3},
+            "SQQQ": {"confidence_threshold": 0.50, "allocation": 30000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 4.0, "cooldown_minutes": 3},
+            "GLD": {"confidence_threshold": 0.50, "allocation": 30000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 4.0, "cooldown_minutes": 3},
+            "SLV": {"confidence_threshold": 0.50, "allocation": 30000, "atr_stop_multiplier": 6.0, "atr_target_multiplier": 4.0, "cooldown_minutes": 3}
         }
         
         # Create rules for each strategy

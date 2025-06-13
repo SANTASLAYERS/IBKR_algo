@@ -271,12 +271,30 @@ class LinkedCreateOrderAction(Action):
     async def _exit_current_position(self, context: Dict[str, Any]) -> bool:
         """Exit current position by canceling all orders and closing position."""
         try:
-            # Use LinkedCloseAllAction to cleanly exit current position
+            order_manager = context.get("order_manager")
+            position_manager = PositionManager()
+
+            # 1️⃣ Flatten live position at market if any quantity remains
+            pm_position = position_manager.get_position(self.symbol)
+            qty = pm_position.current_quantity if pm_position else 0
+            if qty != 0 and order_manager:
+                try:
+                    flatten_order = await order_manager.create_order(
+                        symbol=self.symbol,
+                        quantity=-qty,  # opposite side quantity to flatten
+                        order_type=OrderType.MARKET,
+                        auto_submit=True,
+                    )
+                    logger.info(f"Submitted market flatten order {flatten_order.order_id} for {self.symbol} qty {-qty}")
+                except Exception as e:
+                    logger.error(f"Failed to submit flatten order for {self.symbol}: {e}")
+
+            # 2️⃣ Cancel linked orders and close trackers
             close_action = LinkedCloseAllAction(
                 symbol=self.symbol,
                 reason="Position reversal - exiting current position"
             )
-            
+
             result = await close_action.execute(context)
             if result:
                 logger.info(f"Successfully exited current position for {self.symbol}")
