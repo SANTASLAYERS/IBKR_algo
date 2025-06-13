@@ -99,10 +99,14 @@ class UnifiedFillManager:
         """Process order operations for a symbol sequentially."""
         queue = self._order_queues[symbol]
         
+        self.logger.info(f"Started order queue processor for {symbol}")
+        
         while True:
             try:
                 # Wait for an operation
                 operation = await queue.get()
+                
+                self.logger.info(f"Processing operation for {symbol}: {operation.operation_type.value}")
                 
                 # Process the operation
                 if operation.operation_type == OrderOperationType.REPLACE_STOP:
@@ -120,8 +124,10 @@ class UnifiedFillManager:
                 
                 # Mark the operation as done
                 queue.task_done()
+                self.logger.info(f"Completed operation for {symbol}: {operation.operation_type.value}")
                 
             except asyncio.CancelledError:
+                self.logger.info(f"Order queue processor for {symbol} cancelled")
                 break
             except Exception as e:
                 self.logger.error(f"Error processing order queue for {symbol}: {e}", exc_info=True)
@@ -175,7 +181,11 @@ class UnifiedFillManager:
                 self.logger.error(f"Could not find order {order_id}")
                 return
             
-            is_fully_filled = (order.status.value == "filled")
+            # Use the fill event status to determine if fully filled
+            # The event status is more accurate than the order status in OrderManager
+            # which may not be updated yet
+            is_fully_filled = (event.status.value == "filled")
+            self.logger.info(f"Order {order_id} fill status: {event.status.value}, is_fully_filled: {is_fully_filled}")
             
             # Handle based on order type
             if order_type == "main":
@@ -242,20 +252,23 @@ class UnifiedFillManager:
         for order_id in pm_position.doubledown_orders:
             order = await order_manager.get_order(order_id)
             if order:
-                total_position += order.filled_quantity  # Use actual filled amount
+                signed_fill = order.filled_quantity * (1 if order.quantity > 0 else -1)
+                total_position += signed_fill  # Preserve trade direction
         
         # Scale-in orders (may be partially filled) - if they exist
         if hasattr(pm_position, 'scale_orders'):
             for order_id in pm_position.scale_orders:
                 order = await order_manager.get_order(order_id)
                 if order:
-                    total_position += order.filled_quantity
+                    signed_fill = order.filled_quantity * (1 if order.quantity > 0 else -1)
+                    total_position += signed_fill
         
         # Subtract protective order fills (these reduce position)
         for order_id in pm_position.stop_orders | pm_position.target_orders:
             order = await order_manager.get_order(order_id)
             if order:
-                total_position += order.filled_quantity  # These are negative for closing
+                signed_fill = order.filled_quantity * (1 if order.quantity > 0 else -1)
+                total_position += signed_fill  # Apply correct sign
         
         return total_position
     
@@ -267,6 +280,22 @@ class UnifiedFillManager:
         self.logger.info(f"Main order filled for {symbol}")
         # Protective orders should already exist from LinkedCreateOrderAction
         # No action needed here
+        
+        # Log current position state
+        self.logger.info(f"Position state after main fill:")
+        self.logger.info(f"  Main orders: {pm_position.main_orders}")
+        self.logger.info(f"  Stop orders: {pm_position.stop_orders}")
+        self.logger.info(f"  Target orders: {pm_position.target_orders}")
+        self.logger.info(f"  Double down orders: {pm_position.doubledown_orders}")
+        
+        # Check if we should update protective orders
+        current_position = await self._calculate_current_position_size(symbol)
+        self.logger.info(f"  Current position size: {current_position}")
+        
+        # If we have a position, ensure protective orders match
+        if abs(current_position) > 0.0001:
+            self.logger.info(f"Updating protective orders after main fill to match position size: {current_position}")
+            await self._update_protective_orders(symbol, current_position, pm_position)
     
     async def _handle_doubledown_fill(self, symbol: str, pm_position):
         """
@@ -330,35 +359,53 @@ class UnifiedFillManager:
         # Get the order queue for this symbol
         queue = await self._get_order_queue(symbol)
         
+        self.logger.info(f"Checking protective orders to update for {symbol}")
+        
         # Queue stop order updates (unless excluded)
         if exclude_type != "stop":
+            self.logger.info(f"Checking {len(pm_position.stop_orders)} stop orders")
             for stop_id in pm_position.stop_orders:
                 stop_order = await order_manager.get_order(stop_id)
                 if stop_order and stop_order.status.value in ["submitted", "accepted", "working"]:
-                    # Queue the replacement operation
-                    operation = OrderOperation(
-                        operation_type=OrderOperationType.REPLACE_STOP,
-                        symbol=symbol,
-                        old_order_id=stop_id,
-                        new_quantity=protective_quantity,
-                        price=stop_order.stop_price
-                    )
-                    await queue.put(operation)
+                    # Only update if quantity is different
+                    if abs(stop_order.quantity - protective_quantity) > 0.0001:
+                        self.logger.info(f"Queueing update for stop order {stop_id}: current qty={stop_order.quantity}, new qty={protective_quantity}")
+                        # Queue the replacement operation
+                        operation = OrderOperation(
+                            operation_type=OrderOperationType.REPLACE_STOP,
+                            symbol=symbol,
+                            old_order_id=stop_id,
+                            new_quantity=protective_quantity,
+                            price=stop_order.stop_price
+                        )
+                        await queue.put(operation)
+                    else:
+                        self.logger.info(f"Stop order {stop_id} already has correct quantity {stop_order.quantity}, no update needed")
+                else:
+                    self.logger.info(f"Stop order {stop_id} not active, skipping update")
         
         # Queue target order updates (unless excluded)
         if exclude_type != "target":
+            self.logger.info(f"Checking {len(pm_position.target_orders)} target orders")
             for target_id in pm_position.target_orders:
                 target_order = await order_manager.get_order(target_id)
                 if target_order and target_order.status.value in ["submitted", "accepted", "working"]:
-                    # Queue the replacement operation
-                    operation = OrderOperation(
-                        operation_type=OrderOperationType.REPLACE_TARGET,
-                        symbol=symbol,
-                        old_order_id=target_id,
-                        new_quantity=protective_quantity,
-                        price=target_order.limit_price
-                    )
-                    await queue.put(operation)
+                    # Only update if quantity is different
+                    if abs(target_order.quantity - protective_quantity) > 0.0001:
+                        self.logger.info(f"Queueing update for target order {target_id}: current qty={target_order.quantity}, new qty={protective_quantity}")
+                        # Queue the replacement operation
+                        operation = OrderOperation(
+                            operation_type=OrderOperationType.REPLACE_TARGET,
+                            symbol=symbol,
+                            old_order_id=target_id,
+                            new_quantity=protective_quantity,
+                            price=target_order.limit_price
+                        )
+                        await queue.put(operation)
+                    else:
+                        self.logger.info(f"Target order {target_id} already has correct quantity {target_order.quantity}, no update needed")
+                else:
+                    self.logger.info(f"Target order {target_id} not active, skipping update")
     
     async def _execute_replace_order(self, symbol: str, old_order_id: str, 
                                     new_quantity: float, order_type: str,

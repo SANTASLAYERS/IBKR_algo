@@ -13,6 +13,11 @@ class FeatureFlags:
     RECONCILIATION_ENABLED = False  # Enable position reconciliation checks
     
     @classmethod
+    def get(cls, flag_name: str, default: Any = None) -> Any:
+        """Get a feature flag value with a default."""
+        return getattr(cls, flag_name, default)
+    
+    @classmethod
     def get_flags(cls) -> Dict[str, Any]:
         """Get all feature flags as a dictionary."""
         return {

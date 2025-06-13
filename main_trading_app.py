@@ -29,7 +29,7 @@ from src.event.api import PredictionSignalEvent
 from src.rule.engine import RuleEngine
 from src.rule.condition import EventCondition, TimeCondition
 from src.rule.action import CreateOrderAction, ClosePositionAction
-from src.rule.linked_order_actions import LinkedCreateOrderAction, LinkedScaleInAction, LinkedCloseAllAction, LinkedOrderConclusionManager, CooldownResetManager, LinkedDoubleDownAction, LinkedDoubleDownFillManager
+from src.rule.linked_order_actions import LinkedCreateOrderAction, LinkedScaleInAction, LinkedCloseAllAction, CooldownResetManager, LinkedDoubleDownAction, LinkedFlattenCloseAction
 from src.rule.unified_fill_manager import UnifiedFillManager
 from src.rule.base import Rule
 from src.order import OrderType
@@ -79,9 +79,7 @@ class TradingApplication:
         self.order_manager = None
         self.position_tracker = None
         self.api_monitor = None
-        self.conclusion_manager = None
         self.cooldown_reset_manager = None
-        self.doubledown_fill_manager = None
         self.unified_fill_manager = None
         self.indicator_manager = None
         self.price_service = None
@@ -141,7 +139,8 @@ class TradingApplication:
             "price_service": self.price_service,          # Add price service to context
             "position_sizer": self.position_sizer,        # Add position sizer to context
             "account": {"equity": 1000000},  # Update with real account value
-            "prices": {}
+            "prices": {},
+            "application": self
         })
         
         # 🎯 NEW: Setup unified fill manager for all fill events
@@ -159,21 +158,7 @@ class TradingApplication:
         )
         await self.cooldown_reset_manager.initialize()
         
-        # DEPRECATED: These managers are kept for backward compatibility but functionality
-        # is now handled by UnifiedFillManager
-        if FeatureFlags.get("ENABLE_LEGACY_FILL_MANAGERS", False):
-            # Only initialize if explicitly enabled
-            self.conclusion_manager = LinkedOrderConclusionManager(
-                context=self.rule_engine.context,
-                event_bus=self.event_bus
-            )
-            await self.conclusion_manager.initialize()
-            
-            self.doubledown_fill_manager = LinkedDoubleDownFillManager(
-                context=self.rule_engine.context,
-                event_bus=self.event_bus
-            )
-            await self.doubledown_fill_manager.initialize()
+
         
         # Setup API monitoring
         try:
@@ -294,11 +279,8 @@ class TradingApplication:
                 end_time=time(16, 0)      # 4:00 PM ET - Only run between 3:59 and 4:00
             )
             
-            # Use LinkedCloseAllAction to close position AND cancel all linked orders
-            eod_action = LinkedCloseAllAction(
-                symbol=ticker,
-                reason="End of day close"
-            )
+            # Use LinkedFlattenCloseAction to close position AND cancel all linked orders
+            eod_action = LinkedFlattenCloseAction(symbol=ticker)
             
             eod_rule = Rule(
                 rule_id=f"end_of_day_closure_{ticker}",

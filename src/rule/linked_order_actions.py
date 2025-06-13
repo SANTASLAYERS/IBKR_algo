@@ -453,7 +453,7 @@ class LinkedCreateOrderAction(Action):
             
             position_manager.add_orders_to_position(self.symbol, "target", [target_order.order_id])
             logger.info(f"Auto-created {self.side} take profit {target_order.order_id} at ${target_price:.2f}")
-
+    
     async def _create_double_down_orders(self, context: Dict[str, Any], actual_shares):
         """Create double down limit orders automatically after entry."""
         try:
@@ -1219,3 +1219,51 @@ class LinkedDoubleDownFillManager:
         
         self.logger.info(f"Updated protective orders for {symbol}: "
                         f"New quantity={new_quantity}, New avg=${new_avg_price:.2f}") 
+
+
+class LinkedFlattenCloseAction(Action):
+    """Flatten position at market, cancel all remaining orders, and stop application."""
+    def __init__(self, symbol: str):
+        self.symbol = symbol
+
+    async def execute(self, context: Dict[str, Any]) -> bool:
+        order_manager = context.get("order_manager")
+        position_manager = PositionManager()
+        position_tracker = context.get("position_tracker")
+        app = context.get("application")
+        if not order_manager or not position_manager or not app:
+            logger.error("Missing managers in context for LinkedFlattenCloseAction")
+            return False
+        try:
+            pm_position = position_manager.get_position(self.symbol)
+            qty = pm_position.current_quantity if pm_position else 0
+            if qty != 0:
+                mkt_order = await order_manager.create_order(
+                    symbol=self.symbol,
+                    quantity=-qty,  # opposite side to flatten
+                    order_type=OrderType.MARKET,
+                    auto_submit=True
+                )
+                logger.info(f"Submitted market flatten order {mkt_order.order_id} for {self.symbol} qty {-qty}")
+            # cancel leftover orders
+            linked = position_manager.get_linked_orders(self.symbol)
+            for oid in linked:
+                try:
+                    await order_manager.cancel_order(oid, "EOD flatten")
+                except Exception as e:
+                    logger.warning(f"Cancel {oid} failed: {e}")
+            # close trackers
+            position_manager.close_position(self.symbol)
+            if position_tracker:
+                positions = await position_tracker.get_positions_for_symbol(self.symbol)
+                for p in positions:
+                    await position_tracker.close_position(p.position_id, "EOD flatten")
+            trade_tracker = TradeTracker()
+            trade_tracker.close_trade(self.symbol)
+            logger.info(f"Flattened and closed {self.symbol} position and orders; stopping trading app")
+            # stop app
+            await app.stop_trading()
+            return True
+        except Exception as e:
+            logger.error(f"LinkedFlattenCloseAction error for {self.symbol}: {e}")
+            return False 

@@ -1,0 +1,307 @@
+2025-06-12 12:26:05,172 - __main__ - INFO - ================================================================================
+2025-06-12 12:26:05,172 - __main__ - INFO - INITIALIZING SLV BUY FLOW TEST WITH UNIFIED FILL MANAGER
+2025-06-12 12:26:05,172 - __main__ - INFO - ================================================================================
+2025-06-12 12:26:05,172 - __main__ - INFO - Event bus created with concurrent processing support
+2025-06-12 12:26:05,172 - __main__ - INFO - Subscribed to order and fill events
+2025-06-12 12:26:05,172 - __main__ - INFO - TWS Config: host=127.0.0.1, port=7497, client_id=1
+2025-06-12 12:26:05,175 - __main__ - INFO - Connecting to TWS...
+2025-06-12 12:26:05,175 - src.tws_connection - INFO - Connecting to TWS at 127.0.0.1:7497
+2025-06-12 12:26:05,177 - src.tws_connection - INFO - Connection thread: Connecting to 127.0.0.1:7497 (client ID: 1)
+2025-06-12 12:26:06,998 - src.tws_connection - INFO - ✅ Connection acknowledged by TWS
+2025-06-12 12:26:06,999 - src.tws_connection - INFO - Connection thread: Socket connected, starting message loop
+2025-06-12 12:26:07,068 - src.tws_connection - INFO - ✅ Next valid order ID received: 2080
+2025-06-12 12:26:07,068 - src.tws_connection - INFO - ✅ TWS connection fully established
+2025-06-12 12:26:07,069 - src.tws_connection - INFO - Requesting additional order IDs from TWS
+2025-06-12 12:26:07,070 - src.tws_connection - INFO - ✅ Successfully connected to TWS
+2025-06-12 12:26:07,070 - __main__ - INFO - Connected to TWS successfully
+2025-06-12 12:26:07,070 - src.order.manager - INFO - OrderManager callbacks set up with TWSConnection
+2025-06-12 12:26:07,071 - src.position.tracker - INFO - PositionTracker async initialization completed
+2025-06-12 12:26:07,071 - __main__ - INFO - Order manager and position tracker initialized
+2025-06-12 12:26:07,071 - __main__ - INFO - Rule engine context configured
+2025-06-12 12:26:07,071 - UnifiedFillManager - INFO - UnifiedFillManager initialized with concurrency control
+2025-06-12 12:26:07,071 - __main__ - INFO - UnifiedFillManager initialized - handles all fill events and protective order updates
+2025-06-12 12:26:07,072 - __main__ - INFO - 
+================================================================================
+2025-06-12 12:26:07,072 - __main__ - INFO - SETTING UP SLV BUY RULE
+2025-06-12 12:26:07,072 - __main__ - INFO - ================================================================================
+2025-06-12 12:26:07,072 - __main__ - INFO - Created BUY condition (threshold: 50%)
+2025-06-12 12:26:07,072 - __main__ - INFO - Created BUY action ($10K allocation, 3% stop, 6% target)
+2025-06-12 12:26:07,073 - __main__ - INFO - Registered rule: slv_buy_test_rule
+2025-06-12 12:26:07,073 - __main__ - INFO - 
+================================================================================
+2025-06-12 12:26:07,073 - __main__ - INFO - SIMULATING SLV BUY SIGNAL
+2025-06-12 12:26:07,073 - __main__ - INFO - ================================================================================
+2025-06-12 12:26:07,103 - src.tws_connection - INFO - ✅ Next valid order ID received: 2080
+2025-06-12 12:26:07,203 - src.tws_connection - INFO - ✅ Next valid order ID received: 2080
+2025-06-12 12:26:12,076 - __main__ - INFO - Current SLV price: $32.98
+2025-06-12 12:26:12,077 - __main__ - INFO - Created prediction event:
+2025-06-12 12:26:12,078 - __main__ - INFO -    Symbol: SLV
+2025-06-12 12:26:12,078 - __main__ - INFO -    Signal: BUY
+2025-06-12 12:26:12,078 - __main__ - INFO -    Confidence: 77.0%
+2025-06-12 12:26:12,079 - __main__ - INFO -    Price: $32.98
+2025-06-12 12:26:12,079 - src.rule.engine - INFO - Rule engine started
+2025-06-12 12:26:12,079 - __main__ - INFO - Rule engine started
+2025-06-12 12:26:12,080 - __main__ - INFO - 
+EMITTING PREDICTION EVENT...
+2025-06-12 12:26:12,080 - __main__ - INFO - Prediction event emitted
+2025-06-12 12:26:12,080 - __main__ - INFO - Waiting for initial order creation...
+2025-06-12 12:26:12,081 - src.trade_tracker - INFO - TradeTracker initialized
+2025-06-12 12:26:12,081 - src.position.position_manager - INFO - PositionManager initialized
+2025-06-12 12:26:12,081 - src.trade_tracker - INFO - Started tracking BUY trade for SLV
+2025-06-12 12:26:12,081 - src.position.position_manager - INFO - Opened BUY position for SLV
+2025-06-12 12:26:13,086 - src.position.sizer - INFO - BUY position size: 303 shares @ $32.97 = $9989.91 (99.9% of $10000.00 allocation)
+2025-06-12 12:26:13,087 - src.order.base - INFO - Order 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f status changed: created -> pending_submit (Submitting to broker)
+2025-06-12 12:26:13,087 - src.order.manager - INFO - Submitting order 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f to TWS
+2025-06-12 12:26:13,088 - src.order.manager - INFO - Got broker order ID 2080 for order 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f
+2025-06-12 12:26:13,088 - src.order.manager - INFO - Calling placeOrder with ID 2080, contract 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: MKT BUY 303@0.000000 DAY
+2025-06-12 12:26:13,089 - src.order.manager - INFO - placeOrder called successfully for order 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f
+2025-06-12 12:26:13,090 - src.order.base - INFO - Order 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-12 12:26:13,090 - src.position.position_manager - INFO - Added 1 main orders to SLV position
+2025-06-12 12:26:13,092 - src.rule.linked_order_actions - INFO - Percentage-based stop: SLV stop at $31.99 (3.0%)
+2025-06-12 12:26:13,094 - src.order.base - INFO - Order 4c29cc7f-1751-4e27-b290-b4fcf4c776c6 status changed: created -> pending_submit (Submitting to broker)
+2025-06-12 12:26:13,095 - src.order.manager - INFO - Submitting order 4c29cc7f-1751-4e27-b290-b4fcf4c776c6 to TWS
+2025-06-12 12:26:13,096 - src.order.manager - INFO - Got broker order ID 2081 for order 4c29cc7f-1751-4e27-b290-b4fcf4c776c6
+2025-06-12 12:26:13,097 - src.order.manager - INFO - Calling placeOrder with ID 2081, contract 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: STP SELL 303@0.000000 DAY
+2025-06-12 12:26:13,098 - src.order.manager - INFO - placeOrder called successfully for order 4c29cc7f-1751-4e27-b290-b4fcf4c776c6
+2025-06-12 12:26:13,099 - src.order.base - INFO - Order 4c29cc7f-1751-4e27-b290-b4fcf4c776c6 status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-12 12:26:13,100 - src.position.position_manager - INFO - Added 1 stop orders to SLV position
+2025-06-12 12:26:13,101 - src.rule.linked_order_actions - INFO - Auto-created BUY stop loss 4c29cc7f-1751-4e27-b290-b4fcf4c776c6 at $31.99
+2025-06-12 12:26:13,101 - src.rule.linked_order_actions - INFO - Percentage-based target: SLV target at $34.96 (6.0%)
+2025-06-12 12:26:13,102 - src.order.base - INFO - Order 20f0170c-839c-49ee-863a-e8544e2cf4f2 status changed: created -> pending_submit (Submitting to broker)
+2025-06-12 12:26:13,103 - src.order.manager - INFO - Submitting order 20f0170c-839c-49ee-863a-e8544e2cf4f2 to TWS
+2025-06-12 12:26:13,103 - src.order.manager - INFO - Got broker order ID 2082 for order 20f0170c-839c-49ee-863a-e8544e2cf4f2
+2025-06-12 12:26:13,104 - src.order.manager - INFO - Calling placeOrder with ID 2082, contract 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: LMT SELL 303@34.960000 DAY
+2025-06-12 12:26:13,104 - src.order.manager - INFO - placeOrder called successfully for order 20f0170c-839c-49ee-863a-e8544e2cf4f2
+2025-06-12 12:26:13,104 - src.order.base - INFO - Order 20f0170c-839c-49ee-863a-e8544e2cf4f2 status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-12 12:26:13,105 - src.position.position_manager - INFO - Added 1 target orders to SLV position
+2025-06-12 12:26:13,105 - src.rule.linked_order_actions - INFO - Auto-created BUY take profit 20f0170c-839c-49ee-863a-e8544e2cf4f2 at $34.96
+2025-06-12 12:26:13,105 - src.rule.linked_order_actions - INFO - Starting double down order creation for SLV
+2025-06-12 12:26:13,106 - __main__ - INFO - 
+NEW ORDER CREATED:
+2025-06-12 12:26:13,107 - __main__ - INFO -    Order ID: 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f
+2025-06-12 12:26:13,108 - __main__ - INFO -    Symbol: SLV
+2025-06-12 12:26:13,108 - __main__ - INFO -    Type: OrderType.MARKET
+2025-06-12 12:26:13,109 - __main__ - INFO -    Quantity: 303
+2025-06-12 12:26:13,109 - __main__ - INFO - 
+ORDER STATUS UPDATE:
+2025-06-12 12:26:13,109 - __main__ - INFO -    Order ID: 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f
+2025-06-12 12:26:13,110 - __main__ - INFO -    Status: pending_submit
+2025-06-12 12:26:13,110 - __main__ - INFO -    Previous: created
+2025-06-12 12:26:13,110 - __main__ - INFO - 
+ORDER STATUS UPDATE:
+2025-06-12 12:26:13,110 - __main__ - INFO -    Order ID: 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f
+2025-06-12 12:26:13,111 - __main__ - INFO -    Status: submitted
+2025-06-12 12:26:13,111 - __main__ - INFO -    Previous: pending_submit
+2025-06-12 12:26:13,112 - __main__ - INFO - 
+NEW ORDER CREATED:
+2025-06-12 12:26:13,112 - __main__ - INFO -    Order ID: 4c29cc7f-1751-4e27-b290-b4fcf4c776c6
+2025-06-12 12:26:13,112 - __main__ - INFO -    Symbol: SLV
+2025-06-12 12:26:13,112 - __main__ - INFO -    Type: OrderType.STOP
+2025-06-12 12:26:13,113 - __main__ - INFO -    Quantity: -303
+2025-06-12 12:26:13,113 - __main__ - INFO -    Stop Price: $31.99
+2025-06-12 12:26:13,114 - __main__ - INFO - 
+ORDER STATUS UPDATE:
+2025-06-12 12:26:13,114 - __main__ - INFO -    Order ID: 4c29cc7f-1751-4e27-b290-b4fcf4c776c6
+2025-06-12 12:26:13,115 - __main__ - INFO -    Status: pending_submit
+2025-06-12 12:26:13,116 - __main__ - INFO -    Previous: created
+2025-06-12 12:26:13,116 - __main__ - INFO - 
+ORDER STATUS UPDATE:
+2025-06-12 12:26:13,117 - __main__ - INFO -    Order ID: 4c29cc7f-1751-4e27-b290-b4fcf4c776c6
+2025-06-12 12:26:13,117 - __main__ - INFO -    Status: submitted
+2025-06-12 12:26:13,118 - __main__ - INFO -    Previous: pending_submit
+2025-06-12 12:26:13,118 - __main__ - INFO - 
+NEW ORDER CREATED:
+2025-06-12 12:26:13,119 - __main__ - INFO -    Order ID: 20f0170c-839c-49ee-863a-e8544e2cf4f2
+2025-06-12 12:26:13,119 - __main__ - INFO -    Symbol: SLV
+2025-06-12 12:26:13,119 - __main__ - INFO -    Type: OrderType.LIMIT
+2025-06-12 12:26:13,119 - __main__ - INFO -    Quantity: -303
+2025-06-12 12:26:13,120 - __main__ - INFO -    Limit Price: $34.96
+2025-06-12 12:26:13,121 - __main__ - INFO - 
+ORDER STATUS UPDATE:
+2025-06-12 12:26:13,123 - __main__ - INFO -    Order ID: 20f0170c-839c-49ee-863a-e8544e2cf4f2
+2025-06-12 12:26:13,123 - __main__ - INFO -    Status: pending_submit
+2025-06-12 12:26:13,124 - __main__ - INFO -    Previous: created
+2025-06-12 12:26:13,125 - __main__ - INFO - 
+ORDER STATUS UPDATE:
+2025-06-12 12:26:13,125 - __main__ - INFO -    Order ID: 20f0170c-839c-49ee-863a-e8544e2cf4f2
+2025-06-12 12:26:13,126 - __main__ - INFO -    Status: submitted
+2025-06-12 12:26:13,127 - __main__ - INFO -    Previous: pending_submit
+2025-06-12 12:26:13,470 - src.tws_connection - INFO - Open Order - ID: 2080, Symbol: SLV, Action: BUY, Quantity: 303.0
+2025-06-12 12:26:13,473 - src.tws_connection - INFO - Open Order - ID: 2081, Symbol: SLV, Action: SELL, Quantity: 303.0
+2025-06-12 12:26:13,474 - src.order.base - INFO - Order 4c29cc7f-1751-4e27-b290-b4fcf4c776c6 status changed: submitted -> accepted (IB status: PreSubmitted)
+2025-06-12 12:26:13,532 - src.tws_connection - INFO - Open Order - ID: 2082, Symbol: SLV, Action: SELL, Quantity: 303.0
+2025-06-12 12:26:13,611 - src.rule.linked_order_actions - INFO - Found 1 stop orders for SLV: ['4c29cc7f-1751-4e27-b290-b4fcf4c776c6']
+2025-06-12 12:26:13,612 - src.rule.linked_order_actions - INFO - Executing double down action for SLV
+2025-06-12 12:26:13,612 - src.rule.linked_order_actions - INFO - Using context price for SLV: $32.98
+2025-06-12 12:26:13,613 - src.rule.linked_order_actions - INFO - Using percentage-based stop distance for SLV: 0.9894
+2025-06-12 12:26:13,613 - src.rule.linked_order_actions - INFO - Double down calc for SLV (BUY): current=$32.98, stop_distance=$0.99, dd_distance=$0.49, dd_price=$32.49, original_qty=303, dd_qty=303
+2025-06-12 12:26:13,613 - src.order.base - INFO - Order 87d6603f-ed0d-4886-95ff-1ba46fd9e96b status changed: created -> pending_submit (Submitting to broker)
+2025-06-12 12:26:13,614 - src.order.manager - INFO - Submitting order 87d6603f-ed0d-4886-95ff-1ba46fd9e96b to TWS
+2025-06-12 12:26:13,614 - src.order.manager - INFO - Got broker order ID 2083 for order 87d6603f-ed0d-4886-95ff-1ba46fd9e96b
+2025-06-12 12:26:13,614 - src.order.manager - INFO - Calling placeOrder with ID 2083, contract 0,SLV,STK,,0.0,,,SMART,,USD,,,False,,combo:, order 0,0,0: LMT BUY 303@32.490000 DAY
+2025-06-12 12:26:13,615 - src.order.manager - INFO - placeOrder called successfully for order 87d6603f-ed0d-4886-95ff-1ba46fd9e96b
+2025-06-12 12:26:13,615 - src.order.base - INFO - Order 87d6603f-ed0d-4886-95ff-1ba46fd9e96b status changed: pending_submit -> submitted (Submitted to broker)
+2025-06-12 12:26:13,615 - src.position.position_manager - INFO - Added 1 doubledown orders to SLV position
+2025-06-12 12:26:13,616 - src.rule.linked_order_actions - INFO - Created BUY double down order 'doubledown1' for SLV: 303 shares @ $32.49
+2025-06-12 12:26:13,616 - src.rule.linked_order_actions - INFO - Auto-created double down order for SLV
+2025-06-12 12:26:13,616 - src.rule.linked_order_actions - INFO - Created and linked BUY main order 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f for SLV
+2025-06-12 12:26:13,616 - __main__ - INFO - 
+NEW ORDER CREATED:
+2025-06-12 12:26:13,617 - __main__ - INFO -    Order ID: 87d6603f-ed0d-4886-95ff-1ba46fd9e96b
+2025-06-12 12:26:13,617 - __main__ - INFO -    Symbol: SLV
+2025-06-12 12:26:13,617 - __main__ - INFO -    Type: OrderType.LIMIT
+2025-06-12 12:26:13,617 - __main__ - INFO -    Quantity: 303
+2025-06-12 12:26:13,618 - __main__ - INFO -    Limit Price: $32.49
+2025-06-12 12:26:13,618 - __main__ - INFO - 
+ORDER STATUS UPDATE:
+2025-06-12 12:26:13,618 - __main__ - INFO -    Order ID: 87d6603f-ed0d-4886-95ff-1ba46fd9e96b
+2025-06-12 12:26:13,618 - __main__ - INFO -    Status: pending_submit
+2025-06-12 12:26:13,619 - __main__ - INFO -    Previous: created
+2025-06-12 12:26:13,619 - __main__ - INFO - 
+ORDER STATUS UPDATE:
+2025-06-12 12:26:13,619 - __main__ - INFO -    Order ID: 87d6603f-ed0d-4886-95ff-1ba46fd9e96b
+2025-06-12 12:26:13,619 - __main__ - INFO -    Status: submitted
+2025-06-12 12:26:13,619 - __main__ - INFO -    Previous: pending_submit
+2025-06-12 12:26:13,721 - src.tws_connection - INFO - Open Order - ID: 2083, Symbol: SLV, Action: BUY, Quantity: 303.0
+2025-06-12 12:26:13,953 - src.order.base - INFO - Order 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f status changed: submitted -> partially_filled (Order partially filled)
+2025-06-12 12:26:13,954 - src.tws_connection - INFO - Open Order - ID: 2080, Symbol: SLV, Action: BUY, Quantity: 303.0
+2025-06-12 12:26:13,955 - src.order.base - INFO - Order 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f filled: 300.0 @ 32.98 (300.0/303)
+2025-06-12 12:26:13,956 - __main__ - INFO - 
+🎯 FILL EVENT RECEIVED:
+2025-06-12 12:26:13,956 - __main__ - INFO -    Order ID: 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f
+2025-06-12 12:26:13,956 - __main__ - INFO -    Symbol: SLV
+2025-06-12 12:26:13,957 - __main__ - INFO -    Fill Price: $32.98
+2025-06-12 12:26:13,957 - __main__ - INFO -    Fill Quantity: 300.0
+2025-06-12 12:26:13,957 - __main__ - INFO -    Status: partially_filled
+2025-06-12 12:26:13,957 - __main__ - INFO -    ⚡ UnifiedFillManager will handle protective order updates
+2025-06-12 12:26:13,958 - UnifiedFillManager - INFO - Processing fill for SLV: 300.0 shares on order 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f
+2025-06-12 12:26:13,958 - UnifiedFillManager - INFO - Fill is for main order
+2025-06-12 12:26:13,958 - UnifiedFillManager - INFO - Main order filled for SLV
+2025-06-12 12:26:13,959 - src.order.base - INFO - Order 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f status changed: partially_filled -> submitted (IB status: Submitted)
+2025-06-12 12:26:13,967 - src.order.base - INFO - Order 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f status changed: submitted -> filled (Order fully filled)
+2025-06-12 12:26:13,968 - src.order.base - INFO - Order 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f filled: 3.0 @ 32.98 (303.0/303)
+2025-06-12 12:26:13,968 - src.tws_connection - INFO - Open Order - ID: 2080, Symbol: SLV, Action: BUY, Quantity: 303.0
+2025-06-12 12:26:13,969 - __main__ - INFO - 
+🎯 FILL EVENT RECEIVED:
+2025-06-12 12:26:13,969 - __main__ - INFO -    Order ID: 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f
+2025-06-12 12:26:13,970 - __main__ - INFO -    Symbol: SLV
+2025-06-12 12:26:13,970 - __main__ - INFO -    Fill Price: $32.98
+2025-06-12 12:26:13,970 - __main__ - INFO -    Fill Quantity: 3.0
+2025-06-12 12:26:13,970 - __main__ - INFO -    Status: filled
+2025-06-12 12:26:13,971 - __main__ - INFO -    ⚡ UnifiedFillManager will handle protective order updates
+2025-06-12 12:26:13,971 - UnifiedFillManager - INFO - Processing fill for SLV: 3.0 shares on order 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f
+2025-06-12 12:26:13,971 - UnifiedFillManager - INFO - Fill is for main order
+2025-06-12 12:26:13,971 - UnifiedFillManager - INFO - Main order filled for SLV
+2025-06-12 12:26:13,972 - src.tws_connection - INFO - Open Order - ID: 2080, Symbol: SLV, Action: BUY, Quantity: 303.0
+2025-06-12 12:26:13,975 - src.tws_connection - INFO - Open Order - ID: 2080, Symbol: SLV, Action: BUY, Quantity: 303.0
+2025-06-12 12:26:15,086 - __main__ - INFO - 
+Waiting for order processing...
+2025-06-12 12:26:26,617 - __main__ - INFO - 
+================================================================================
+2025-06-12 12:26:26,617 - __main__ - INFO - SIMULATING PARTIAL FILL TO TEST UNIFIED FILL MANAGER
+2025-06-12 12:26:26,617 - __main__ - INFO - ================================================================================
+2025-06-12 12:26:26,618 - __main__ - INFO - Simulating partial fill on main order: 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f
+2025-06-12 12:26:26,618 - __main__ - INFO - Emitting partial fill event: 200 shares at $22.55
+2025-06-12 12:26:26,618 - __main__ - INFO - 
+🎯 FILL EVENT RECEIVED:
+2025-06-12 12:26:26,618 - __main__ - INFO -    Order ID: 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f
+2025-06-12 12:26:26,618 - __main__ - INFO -    Symbol: SLV
+2025-06-12 12:26:26,618 - __main__ - INFO -    Fill Price: $22.55
+2025-06-12 12:26:26,618 - __main__ - INFO -    Fill Quantity: 200
+2025-06-12 12:26:26,618 - __main__ - INFO -    Status: partially_filled
+2025-06-12 12:26:26,619 - __main__ - INFO -    ⚡ UnifiedFillManager will handle protective order updates
+2025-06-12 12:26:26,619 - UnifiedFillManager - INFO - Processing fill for SLV: 200 shares on order 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f
+2025-06-12 12:26:26,619 - UnifiedFillManager - INFO - Fill is for main order
+2025-06-12 12:26:26,619 - UnifiedFillManager - INFO - Main order filled for SLV
+2025-06-12 12:26:28,621 - __main__ - INFO - UnifiedFillManager should have updated protective orders to match position size
+2025-06-12 12:26:31,636 - __main__ - INFO - 
+================================================================================
+2025-06-12 12:26:31,636 - __main__ - INFO - VERIFYING ORDERS CREATED
+2025-06-12 12:26:31,637 - __main__ - INFO - ================================================================================
+2025-06-12 12:26:31,637 - __main__ - WARNING - No SLV context found!
+2025-06-12 12:26:31,637 - __main__ - INFO - 
+ORDERS SUMMARY:
+2025-06-12 12:26:31,637 - __main__ - INFO -    Total orders created: 4
+2025-06-12 12:26:31,638 - __main__ - INFO -    Market orders: 1
+2025-06-12 12:26:31,638 - __main__ - INFO -    Stop orders: 1
+2025-06-12 12:26:31,638 - __main__ - INFO -    Limit orders: 2
+2025-06-12 12:26:31,638 - __main__ - INFO - 
+✅ SUCCESS: All 4 expected orders were created!
+2025-06-12 12:26:31,638 - __main__ - INFO - 
+DETAILED ORDER LIST:
+2025-06-12 12:26:31,638 - __main__ - INFO - 
+   Order #1:
+2025-06-12 12:26:31,638 - __main__ - INFO -      ID: 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f
+2025-06-12 12:26:31,638 - __main__ - INFO -      Type: market
+2025-06-12 12:26:31,639 - __main__ - INFO -      Quantity: 303
+2025-06-12 12:26:31,639 - __main__ - INFO - 
+   Order #2:
+2025-06-12 12:26:31,639 - __main__ - INFO -      ID: 4c29cc7f-1751-4e27-b290-b4fcf4c776c6
+2025-06-12 12:26:31,639 - __main__ - INFO -      Type: stop
+2025-06-12 12:26:31,639 - __main__ - INFO -      Quantity: -303
+2025-06-12 12:26:31,640 - __main__ - INFO -      Stop: $31.99
+2025-06-12 12:26:31,640 - __main__ - INFO - 
+   Order #3:
+2025-06-12 12:26:31,640 - __main__ - INFO -      ID: 20f0170c-839c-49ee-863a-e8544e2cf4f2
+2025-06-12 12:26:31,640 - __main__ - INFO -      Type: limit
+2025-06-12 12:26:31,640 - __main__ - INFO -      Quantity: -303
+2025-06-12 12:26:31,640 - __main__ - INFO -      Limit: $34.96
+2025-06-12 12:26:31,640 - __main__ - INFO - 
+   Order #4:
+2025-06-12 12:26:31,641 - __main__ - INFO -      ID: 87d6603f-ed0d-4886-95ff-1ba46fd9e96b
+2025-06-12 12:26:31,641 - __main__ - INFO -      Type: limit
+2025-06-12 12:26:31,642 - __main__ - INFO -      Quantity: 303
+2025-06-12 12:26:31,642 - __main__ - INFO -      Limit: $32.49
+2025-06-12 12:26:31,642 - __main__ - INFO - 
+🎯 FILLS SUMMARY:
+2025-06-12 12:26:31,642 - __main__ - INFO -    Total fills received: 3
+2025-06-12 12:26:31,642 - __main__ - INFO - 
+   Fill #1:
+2025-06-12 12:26:31,644 - __main__ - INFO -      Order ID: 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f
+2025-06-12 12:26:31,644 - __main__ - INFO -      Quantity: 300.0
+2025-06-12 12:26:31,645 - __main__ - INFO -      Price: $32.98
+2025-06-12 12:26:31,645 - __main__ - INFO -      Status: partially_filled
+2025-06-12 12:26:31,646 - __main__ - INFO - 
+   Fill #2:
+2025-06-12 12:26:31,646 - __main__ - INFO -      Order ID: 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f
+2025-06-12 12:26:31,646 - __main__ - INFO -      Quantity: 3.0
+2025-06-12 12:26:31,646 - __main__ - INFO -      Price: $32.98
+2025-06-12 12:26:31,646 - __main__ - INFO -      Status: filled
+2025-06-12 12:26:31,646 - __main__ - INFO - 
+   Fill #3:
+2025-06-12 12:26:31,647 - __main__ - INFO -      Order ID: 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f
+2025-06-12 12:26:31,647 - __main__ - INFO -      Quantity: 200
+2025-06-12 12:26:31,647 - __main__ - INFO -      Price: $22.55
+2025-06-12 12:26:31,647 - __main__ - INFO -      Status: partially_filled
+2025-06-12 12:26:31,647 - __main__ - INFO - 
+Monitoring for 10 seconds...
+2025-06-12 12:26:41,661 - __main__ - INFO - 
+================================================================================
+2025-06-12 12:26:41,662 - __main__ - INFO - CLEANING UP TEST
+2025-06-12 12:26:41,663 - __main__ - INFO - ================================================================================
+2025-06-12 12:26:41,663 - __main__ - INFO - Cancelling 4 test orders...
+2025-06-12 12:26:41,663 - src.order.manager - WARNING - Cannot cancel inactive order 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f with status filled
+2025-06-12 12:26:41,664 - __main__ - INFO -    Cancelled order 72bdaaa1-5c4c-43d7-86f7-74f2b61b8f2f
+2025-06-12 12:26:41,664 - src.order.base - INFO - Order 4c29cc7f-1751-4e27-b290-b4fcf4c776c6 status changed: accepted -> pending_cancel (Test cleanup)
+2025-06-12 12:26:41,665 - src.order.manager - INFO - Cancelling order 4c29cc7f-1751-4e27-b290-b4fcf4c776c6 with broker ID 2081
+2025-06-12 12:26:41,665 - __main__ - INFO -    Cancelled order 4c29cc7f-1751-4e27-b290-b4fcf4c776c6
+2025-06-12 12:26:41,666 - src.order.base - INFO - Order 20f0170c-839c-49ee-863a-e8544e2cf4f2 status changed: submitted -> pending_cancel (Test cleanup)
+2025-06-12 12:26:41,666 - src.order.manager - INFO - Cancelling order 20f0170c-839c-49ee-863a-e8544e2cf4f2 with broker ID 2082
+2025-06-12 12:26:41,666 - __main__ - INFO -    Cancelled order 20f0170c-839c-49ee-863a-e8544e2cf4f2
+2025-06-12 12:26:41,666 - src.order.base - INFO - Order 87d6603f-ed0d-4886-95ff-1ba46fd9e96b status changed: submitted -> pending_cancel (Test cleanup)
+2025-06-12 12:26:41,666 - src.order.manager - INFO - Cancelling order 87d6603f-ed0d-4886-95ff-1ba46fd9e96b with broker ID 2083
+2025-06-12 12:26:41,667 - __main__ - INFO -    Cancelled order 87d6603f-ed0d-4886-95ff-1ba46fd9e96b
+2025-06-12 12:26:41,667 - UnifiedFillManager - INFO - UnifiedFillManager cleanup completed
+2025-06-12 12:26:41,667 - __main__ - INFO - UnifiedFillManager cleaned up
+2025-06-12 12:26:41,667 - src.rule.engine - INFO - Rule engine stopped
+2025-06-12 12:26:41,667 - __main__ - INFO - Rule engine stopped
+2025-06-12 12:26:41,668 - __main__ - INFO - 
+Test cleanup complete
+2025-06-12 12:26:41,668 - src.tws_connection - INFO - Disconnecting from TWS
+2025-06-12 12:26:41,669 - src.tws_connection - INFO - ⚠️ Connection to TWS closed
+2025-06-12 12:26:41,671 - src.tws_connection - INFO - ✅ Disconnect request sent
+2025-06-12 12:26:41,671 - __main__ - INFO - Disconnected from TWS
+2025-06-12 12:26:41,671 - __main__ - INFO - 
+================================================================================
+2025-06-12 12:26:41,672 - __main__ - INFO - TEST COMPLETE
+2025-06-12 12:26:41,672 - __main__ - INFO - ================================================================================
