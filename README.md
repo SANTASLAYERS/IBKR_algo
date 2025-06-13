@@ -290,3 +290,10 @@ This software is for educational purposes only. Trading involves substantial ris
 - **v1.8.0**: Implemented position reversal logic
 - **v1.7.0**: Enhanced order linking system
 - **v1.6.0**: Added double-down order support
+
+**Order-Fill subsystem (current)**  
+UnifiedFillManager is the single authority for all fills. It:
+• updates stop / target quantities when a double-down order partially or fully fills.
+• queues replacements through a per-symbol async order-queue.
+• triggers a full cancel-all when a protective order fully closes the position.
+Legacy *LinkedOrderConclusionManager* and *LinkedDoubleDownFillManager* were removed.

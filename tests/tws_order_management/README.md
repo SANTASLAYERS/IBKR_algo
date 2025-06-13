@@ -201,4 +201,6 @@ These tests revealed the complementary nature of two key components:
    - Enables bulk operations
    - Handles complex order lifecycle
 
-Together, they provide a robust order management system that prevents duplicates while maintaining sophisticated order relationships and enabling complex operations like automatic stop/target updates after scale-ins. 
+Together, they provide a robust order management system that prevents duplicates while maintaining sophisticated order relationships and enabling complex operations like automatic stop/target updates after scale-ins.
+
+## Legacy flow (DEPRECATED) 

@@ -45,13 +45,12 @@ This led to:
    - Updates protective orders dynamically
 
 2. **Modified: `src/rule/linked_order_actions.py`**
-   - Deprecated LinkedOrderConclusionManager
-   - Deprecated LinkedDoubleDownFillManager
-   - Added deprecation warnings
+   - Removed legacy managers (LinkedOrderConclusionManager, LinkedDoubleDownFillManager)
+   - Added import stubs that raise RuntimeError if referenced
 
 3. **Modified: `main_trading_app.py`**
-   - Replaced legacy managers with UnifiedFillManager
-   - Added feature flag for legacy manager compatibility
+   - Replaced legacy managers with UnifiedFillManager exclusively
+   - Removed obsolete feature flag `ENABLE_LEGACY_FILL_MANAGERS`
    - Updated initialization sequence
 
 4. **New Documentation: `docs/UNIFIED_FILL_MANAGER.md`**
@@ -135,21 +134,10 @@ async def _calculate_current_position_size(self, symbol: str) -> float:
    from src.rule.unified_fill_manager import UnifiedFillManager
    ```
 
-2. **Replace manager initialization:**
+2. **Instantiate UnifiedFillManager:**
    ```python
-   # Old
-   self.conclusion_manager = LinkedOrderConclusionManager(...)
-   self.doubledown_fill_manager = LinkedDoubleDownFillManager(...)
-   
-   # New
    self.unified_fill_manager = UnifiedFillManager(...)
    await self.unified_fill_manager.initialize()
-   ```
-
-3. **Optional: Keep legacy managers with feature flag:**
-   ```python
-   if FeatureFlags.get("ENABLE_LEGACY_FILL_MANAGERS", False):
-       # Initialize deprecated managers
    ```
 
 ## Testing Results

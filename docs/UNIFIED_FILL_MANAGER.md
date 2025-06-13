@@ -120,38 +120,28 @@ async def _update_protective_orders(self, symbol: str, position_size: float,
 
 ## Migration from Legacy Managers
 
-### Deprecated Components
+### Components Removed
 
-1. **LinkedOrderConclusionManager**: Previously handled position closure on protective fills
-2. **LinkedDoubleDownFillManager**: Previously handled protective order updates after double down fills
+1. **LinkedOrderConclusionManager** – superseded by UnifiedFillManager and now completely removed from the code-base.
+2. **LinkedDoubleDownFillManager** – responsibility fully absorbed by UnifiedFillManager.
 
-### Migration Steps
+The `ENABLE_LEGACY_FILL_MANAGERS` feature flag has also been eliminated; the unified path is the only supported flow.
 
-1. **Update Imports**:
+### Migration Notes
+
+If your fork still references the legacy managers, simply delete those imports and instantiate `UnifiedFillManager` as shown below:
+
 ```python
-# Old
-from src.rule.linked_order_actions import LinkedOrderConclusionManager, LinkedDoubleDownFillManager
-
-# New
 from src.rule.unified_fill_manager import UnifiedFillManager
-```
 
-2. **Initialize UnifiedFillManager**:
-```python
-# Replace both managers with single unified manager
 self.unified_fill_manager = UnifiedFillManager(
     context=self.rule_engine.context,
-    event_bus=self.event_bus
+    event_bus=self.event_bus,
 )
 await self.unified_fill_manager.initialize()
 ```
 
-3. **Feature Flag for Legacy Managers**:
-```python
-# Only initialize legacy managers if explicitly enabled
-if FeatureFlags.get("ENABLE_LEGACY_FILL_MANAGERS", False):
-    # Initialize deprecated managers
-```
+No additional configuration or flags are required.
 
 ## Benefits
 

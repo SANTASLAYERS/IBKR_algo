@@ -16,7 +16,7 @@ The TWS Trading Framework is a **complete automated trading system** that connec
 - **27 comprehensive tests passing**
 
 ### 2. **Enhanced Order Management**
-- **🆕 LinkedOrderActions** for automatic order relationship management
+- **🆕 UnifiedFillManager** for centralized fill and protective order management
 - **🆕 Context-based side tracking** prevents mixing long/short orders
 - **🆕 Automatic context reset** when positions conclude via stops/targets
 - **🆕 Scale-in functionality** with automatic stop/target adjustment
@@ -52,7 +52,7 @@ The TWS Trading Framework is a **complete automated trading system** that connec
 ## 🏗️ Enhanced System Architecture
 
 ```
-External API → API Client → Event Bus → Rule Engine → Linked Order Manager → TWS → Market
+External API → API Client → Event Bus (concurrent) → Rule Engine → Unified Fill Manager → TWS → Market
      ↓             ↓           ↓           ↓              ↓                   ↓
 Predictions → Events → Rule Processing → Side-Aware → Real Trading → Execution
                             ↓         Orders (BUY/SELL)      ↓           ↓
@@ -89,7 +89,7 @@ API Signal: SHORT AAPL (confidence: 0.85)
     ↓
 Rule Engine: Evaluates confidence > 0.75
     ↓
-LinkedCreateOrderAction: Creates short position with side="SELL"
+UnifiedFillManager: Creates short position with side="SELL"
     ↓
 Auto-Create Stops: Stop ABOVE entry, target BELOW entry
     ↓
