@@ -59,7 +59,7 @@ class CooldownResetManager:
             if position and order_id in position.stop_orders:
                 # Stop loss was hit - reset cooldowns for this symbol's rules
                 side = position.side
-                logger.info(f"🔄 Stop loss hit for {symbol} {side} position - resetting rule cooldowns")
+                logger.info(f"Stop loss hit for {symbol} {side} position - resetting rule cooldowns")
                 
                 # Find and reset cooldowns for rules related to this symbol
                 await self._reset_symbol_cooldowns(symbol)
@@ -83,10 +83,10 @@ class CooldownResetManager:
             # Reset cooldowns for these rules
             for rule in symbol_rules:
                 rule.reset_cooldown()
-                logger.info(f"🔄 Reset cooldown for rule: {rule.rule_id}")
+                logger.info(f"Reset cooldown for rule: {rule.rule_id}")
                 
             if symbol_rules:
-                logger.info(f"✅ Reset cooldowns for {len(symbol_rules)} rules related to {symbol}")
+                logger.info(f"Reset cooldowns for {len(symbol_rules)} rules related to {symbol}")
             
         except Exception as e:
             logger.error(f"Error resetting cooldowns for {symbol}: {e}")

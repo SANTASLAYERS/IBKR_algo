@@ -34,7 +34,7 @@ class EventMonitor:
     async def on_order_status(self, event: OrderStatusEvent):
         """Handle order status events."""
         self.events_received.append(event)
-        print(f"\n📊 Order Status Event:")
+        print(f"\nOrder Status Event:")
         print(f"  Order ID: {event.order_id}")
         print(f"  Symbol: {event.symbol}")
         print(f"  Status: {event.previous_status.value if event.previous_status else 'None'} -> {event.status.value}")
@@ -56,7 +56,7 @@ class EventMonitor:
     async def on_cancel(self, event: CancelEvent):
         """Handle cancel events."""
         self.events_received.append(event)
-        print(f"\n❌ Cancel Event:")
+        print(f"\nCancel Event:")
         print(f"  Order ID: {event.order_id}")
         print(f"  Symbol: {event.symbol}")
         print(f"  Time: {event.cancel_time}")
@@ -90,7 +90,7 @@ async def test_event_system():
     await event_bus.subscribe(FillEvent, monitor.on_fill)
     await event_bus.subscribe(CancelEvent, monitor.on_cancel)
     await event_bus.subscribe(RejectEvent, monitor.on_reject)
-    print("✅ Event subscriptions configured")
+    print("Event subscriptions configured")
     
     # Create connection with event bus
     print("\n2. Creating Alpaca connection with event bus...")
@@ -100,10 +100,10 @@ async def test_event_system():
     print("\n3. Connecting to Alpaca...")
     connected = await connection.connect()
     if not connected:
-        print("❌ Failed to connect to Alpaca")
+        print("Failed to connect to Alpaca")
         return
     
-    print("✅ Connected to Alpaca with event adapter\n")
+    print("Connected to Alpaca with event adapter\n")
     
     # Test order placement to generate events
     print("4. Testing order placement and event generation...")
@@ -192,13 +192,13 @@ async def test_event_system():
     
     await asyncio.sleep(1)
     
-    print(f"\n✅ Event adapter test completed")
+    print(f"\nEvent adapter test completed")
     print(f"Total events (including mocks): {len(monitor.events_received)}")
     
     # Disconnect
     print("\n11. Disconnecting...")
     connection.disconnect()
-    print("✅ Test completed")
+    print("Test completed")
 
 
 if __name__ == "__main__":

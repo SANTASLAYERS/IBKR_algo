@@ -27,7 +27,7 @@ def check_environment():
             missing.append(var)
     
     if missing:
-        print("❌ Missing required environment variables:")
+        print("Missing required environment variables:")
         for var in missing:
             print(f"   - {var}")
         print("\n💡 Please set these in your .env file or environment")
@@ -50,37 +50,37 @@ def check_alpaca_connection():
         )
         
         if result.returncode == 0:
-            print("✅ Alpaca connection test passed")
+            print("Alpaca connection test passed")
             return True
         else:
-            print("❌ Alpaca connection test failed")
+            print("Alpaca connection test failed")
             print("Make sure your API credentials are correct")
             return False
             
     except Exception as e:
-        print(f"❌ Error testing Alpaca connection: {e}")
+        print(f"Error testing Alpaca connection: {e}")
         return False
 
 
 def main():
     """Main entry point."""
-    print("🚀 Alpaca Trading System - Quick Start")
+    print("Alpaca Trading System - Quick Start")
     print("=" * 50)
     
     # Check environment
     if not check_environment():
-        print("\n⚠️  Please configure your environment first!")
+        print("\nWARNING: Please configure your environment first!")
         return 1
     
     # Check Alpaca connection
     if not check_alpaca_connection():
-        print("\n⚠️  Please check:")
+        print("\nWARNING: Please check:")
         print("   1. Your Alpaca API credentials are correct")
         print("   2. You have internet connectivity")
         print("   3. Alpaca services are operational")
         return 1
     
-    print("\n✅ All checks passed! Starting trading system...")
+    print("\nAll checks passed! Starting trading system...")
     print("-" * 50)
     
     # Start the main trading app

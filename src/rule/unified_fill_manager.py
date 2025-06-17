@@ -377,7 +377,7 @@ class UnifiedFillManager:
                     if abs(stop_order.quantity - protective_quantity) > 0.0001:
                         if not stop_order.stop_price or stop_order.stop_price <= 0:
                             self.logger.error(
-                                f"⚠️  Skip replacing stop {stop_id} for {symbol}: existing stopPrice is 0 or missing – prevents infinite loop"
+                                f"WARNING: Skip replacing stop {stop_id} for {symbol}: existing stopPrice is 0 or missing – prevents infinite loop"
                             )
                         else:
                             self.logger.info(
@@ -461,7 +461,7 @@ class UnifiedFillManager:
                     if active_id_candidates:
                         target_order_id = active_id_candidates[0]
                         self.logger.info(
-                            f"⚠️  Old protective order {old_order_id} no longer active; "
+                            f"WARNING: Old protective order {old_order_id} no longer active; "
                             f"will replace current active order {target_order_id} for {symbol}."
                         )
                     else:
@@ -497,7 +497,7 @@ class UnifiedFillManager:
                     # Guard: never send a stop replacement without a valid stop price
                     if price is None or price <= 0:
                         self.logger.error(
-                            f"❌  Aborting stop replacement for {symbol} – invalid stop_price={price} (old order {old_order_id})."
+                            f" Aborting stop replacement for {symbol} – invalid stop_price={price} (old order {old_order_id})."
                         )
                         return
 
@@ -519,7 +519,7 @@ class UnifiedFillManager:
                 elif order_type == "target":
                     if price is None or price <= 0:
                         self.logger.error(
-                            f"❌  Aborting target replacement for {symbol} – invalid limit_price={price} (old order {old_order_id})."
+                            f" Aborting target replacement for {symbol} – invalid limit_price={price} (old order {old_order_id})."
                         )
                         return
 

@@ -57,10 +57,10 @@ async def test_position_sync():
     print("1. Connecting to Alpaca...")
     connected = await connection.connect()
     if not connected:
-        print("❌ Failed to connect to Alpaca")
+        print("Failed to connect to Alpaca")
         return
     
-    print("✅ Connected to Alpaca\n")
+    print("Connected to Alpaca\n")
     
     # Get current positions from Alpaca
     print("2. Fetching positions from Alpaca...")
@@ -87,7 +87,7 @@ async def test_position_sync():
         print(f"Internal Positions: {sync_result['internal_positions']}")
         
         if sync_result['discrepancies']:
-            print(f"\n⚠️  Found {len(sync_result['discrepancies'])} discrepancies:")
+            print(f"\nWARNING: Found {len(sync_result['discrepancies'])} discrepancies:")
             for disc in sync_result['discrepancies']:
                 print(f"  - Type: {disc['type']}")
                 print(f"    Symbol: {disc['symbol']}")
@@ -97,7 +97,7 @@ async def test_position_sync():
                 else:
                     print(f"    Internal Qty: {disc.get('internal_qty', 'N/A')}")
         else:
-            print("\n✅ All positions are synchronized")
+            print("\nAll positions are synchronized")
         
         if sync_result['updates']:
             print(f"\nUpdates performed:")
@@ -111,7 +111,7 @@ async def test_position_sync():
         
         single_pos = await position_sync.sync_single_position(test_symbol)
         if single_pos:
-            print(f"✅ Successfully synced {test_symbol}:")
+            print(f"Successfully synced {test_symbol}:")
             print(f"  Qty: {single_pos['qty']}")
             print(f"  Side: {single_pos['side']}")
             print(f"  Avg Entry: ${single_pos['avg_entry_price']}")
@@ -125,7 +125,7 @@ async def test_position_sync():
     await asyncio.sleep(10)
     
     await position_sync.stop_periodic_sync()
-    print("✅ Periodic sync stopped")
+    print("Periodic sync stopped")
     
     # Check internal positions after sync
     print("\n6. Checking internal position state...")
@@ -164,7 +164,7 @@ async def test_position_sync():
     # Disconnect
     print("\n8. Disconnecting...")
     connection.disconnect()
-    print("✅ Test completed")
+    print("Test completed")
 
 
 if __name__ == "__main__":

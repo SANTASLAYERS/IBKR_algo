@@ -19,7 +19,7 @@ async def test_atr_configuration():
     print("=" * 50)
     
     # Default configuration from IndicatorManager
-    print("📊 Default ATR Settings:")
+    print("Default ATR Settings:")
     print(f"   • Timeframe: 10 seconds (10 secs)")
     print(f"   • Period: 14 periods")
     print(f"   • Data lookback: 5 days")
@@ -27,7 +27,7 @@ async def test_atr_configuration():
     print()
     
     # Create sample 10-second bars
-    print("📈 Creating sample 10-second price data...")
+    print("Creating sample 10-second price data...")
     
     base_time = datetime(2024, 1, 1, 10, 0, 0)
     bars = []
@@ -111,12 +111,12 @@ async def test_atr_configuration():
     
     print("⚙️  System Configuration Summary:")
     print("-" * 35)
-    print("✅ Timeframe: 10-second bars")
-    print("✅ ATR Period: 14 periods")
-    print("✅ Stop Loss: 6x ATR distance")
-    print("✅ Profit Target: 3x ATR distance")
-    print("✅ Risk/Reward: 2:1 ratio")
-    print("✅ Data Source: Real-time TWS market data")
+    print("Timeframe: 10-second bars")
+    print("ATR Period: 14 periods")
+    print("Stop Loss: 6x ATR distance")
+    print("Profit Target: 3x ATR distance")
+    print("Risk/Reward: 2:1 ratio")
+    print("Data Source: Real-time TWS market data")
     print()
     print("This gives you volatility-adaptive stops that:")
     print("• Tighten during low volatility periods")

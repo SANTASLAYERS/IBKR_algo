@@ -1,5 +1,5 @@
 """
-API integration components for the IBKR Trading Framework.
+API integration components for the Alpaca Trading Framework.
 
 This package provides functionality for integrating with the options flow monitor API,
 including prediction signal monitoring and event generation.

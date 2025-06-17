@@ -59,6 +59,6 @@ def test_api_connection():
 if __name__ == "__main__":
     success = test_api_connection()
     if success:
-        print("\n✅ API connection test PASSED")
+        print("\nAPI connection test PASSED")
     else:
-        print("\n❌ API connection test FAILED") 
+        print("\nAPI connection test FAILED") 

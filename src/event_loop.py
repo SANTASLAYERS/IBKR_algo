@@ -12,15 +12,15 @@ from .logger import get_logger
 
 logger = get_logger(__name__)
 
-class IBKREventLoop:
+class TradingEventLoop:
     """
-    Manages the event loop for processing IBKR API messages.
+    Manages the event loop for processing trading system messages.
     Handles both synchronous message processing with EClient and asynchronous tasks.
     """
     
     def __init__(self, max_workers: int = 10):
         """
-        Initialize the IBKR event loop.
+        Initialize the trading event loop.
         
         Args:
             max_workers: Maximum number of workers for thread pool executor
@@ -56,7 +56,7 @@ class IBKREventLoop:
         self._thread = threading.Thread(
             target=self._run_event_loop,
             daemon=True,
-            name="IBKREventLoop"
+                            name="TradingEventLoop"
         )
         self._thread.start()
         
@@ -64,7 +64,7 @@ class IBKREventLoop:
         while self._loop is None and self._running:
             time.sleep(0.01)
             
-        logger.info("IBKR event loop started")
+        logger.info("Trading event loop started")
         
         # Set up signal handlers
         self._setup_signal_handlers()
@@ -134,7 +134,7 @@ class IBKREventLoop:
         if not self._running:
             return
             
-        logger.info("Stopping IBKR event loop")
+        logger.info("Stopping trading event loop")
         self._running = False
         self._stop_event.set()
         
@@ -149,11 +149,11 @@ class IBKREventLoop:
             except Exception as e:
                 logger.error(f"Error stopping event loop: {str(e)}")
         
-        # Don't join the thread - use safe pattern like TWSConnection
+                    # Don't join the thread - use safe pattern
         # DON'T JOIN THE THREAD - let daemon thread clean up naturally
         # This prevents potential blocking and timing issues
         self._thread = None
-        logger.info("IBKR event loop stopped")
+        logger.info("Trading event loop stopped")
         
         # Shutdown thread pool
         self._thread_pool.shutdown()

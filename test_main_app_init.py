@@ -55,7 +55,7 @@ async def test_app_initialization():
             success = await app.initialize()
             
             if success:
-                logger.info("✅ App initialized successfully")
+                logger.info("App initialized successfully")
                 
                 # Verify components were created
                 assert app.config is not None, "Config not initialized"
@@ -65,21 +65,21 @@ async def test_app_initialization():
                 assert app.rule_engine is not None, "RuleEngine not initialized"
                 assert app.api_client is not None, "APIClient not initialized"
                 
-                logger.info("✅ All components initialized")
+                logger.info("All components initialized")
                 
                 # Verify configuration
-                logger.info(f"✅ Trading mode: {app.config.alpaca.trading_mode}")
-                logger.info(f"✅ Max position size: {app.config.trading.max_position_size}")
-                logger.info(f"✅ Risk per trade: {app.config.trading.risk_per_trade}")
+                logger.info(f"Trading mode: {app.config.alpaca.trading_mode}")
+                logger.info(f"Max position size: {app.config.trading.max_position_size}")
+                logger.info(f"Risk per trade: {app.config.trading.risk_per_trade}")
                 
                 # Test shutdown
                 logger.info("Testing shutdown...")
                 await app.shutdown()
-                logger.info("✅ App shutdown successfully")
+                logger.info("App shutdown successfully")
                 
                 return True
             else:
-                logger.error("❌ App initialization failed")
+                logger.error("App initialization failed")
                 return False
 
 
@@ -94,16 +94,16 @@ async def test_missing_credentials():
         try:
             success = await app.initialize()
             if not success:
-                logger.info("✅ App correctly failed to initialize with missing credentials")
+                logger.info("App correctly failed to initialize with missing credentials")
                 return True
             else:
-                logger.error("❌ App should have failed with missing credentials")
+                logger.error("App should have failed with missing credentials")
                 return False
         except ValueError as e:
-            logger.info(f"✅ Got expected error: {e}")
+            logger.info(f"Got expected error: {e}")
             return True
         except Exception as e:
-            logger.error(f"❌ Unexpected error: {e}")
+            logger.error(f"Unexpected error: {e}")
             return False
 
 
@@ -121,9 +121,9 @@ async def main():
     
     logger.info("\n" + "=" * 50)
     if all_passed:
-        logger.info("✅ All tests passed!")
+        logger.info("All tests passed!")
     else:
-        logger.info("❌ Some tests failed")
+        logger.info("Some tests failed")
     logger.info("=" * 50)
     
     return all_passed

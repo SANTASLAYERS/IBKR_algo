@@ -128,7 +128,7 @@ class PositionReconciler:
         ]
         
         if summary['discrepancies']['count'] > 0:
-            lines.append(f"⚠️  Found {summary['discrepancies']['count']} discrepancies:")
+            lines.append(f"WARNING: Found {summary['discrepancies']['count']} discrepancies:")
             lines.append("")
             
             for disc in summary['discrepancies']['details']:
@@ -139,7 +139,7 @@ class PositionReconciler:
                     lines.append(f"    PositionManager data: {disc['pm_data']}")
                 lines.append("")
         else:
-            lines.append("✅ All systems in sync!")
+            lines.append("All systems in sync!")
         
         lines.append("=" * 60)
         return "\n".join(lines)

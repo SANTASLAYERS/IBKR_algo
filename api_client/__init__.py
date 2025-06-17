@@ -7,6 +7,7 @@ ML-based trading signal predictions.
 """
 
 from .client import ApiClient, ApiException
+from .full_client import FullApiClient
 from .endpoints import (
     StatusEndpoint,
     TickersEndpoint,
@@ -20,6 +21,7 @@ from .utils import load_env, safe_get_env
 
 __all__ = [
     'ApiClient',
+    'FullApiClient',
     'ApiException',
     'StatusEndpoint',
     'TickersEndpoint',

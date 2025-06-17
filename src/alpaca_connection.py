@@ -132,9 +132,9 @@ class AlpacaConnection:
             
             # Test connection by getting account info
             account = self._trading_client.get_account()
-            logger.info(f"✅ Connected to Alpaca - Account: {account.account_number}")
-            logger.info(f"✅ Buying Power: ${account.buying_power}")
-            logger.info(f"✅ Portfolio Value: ${account.portfolio_value}")
+            logger.info(f"Connected to Alpaca - Account: {account.account_number}")
+            logger.info(f"Buying Power: ${account.buying_power}")
+            logger.info(f"Portfolio Value: ${account.portfolio_value}")
             
             # Initialize WebSocket streams
             await self._initialize_streams()
@@ -151,7 +151,7 @@ class AlpacaConnection:
             return True
                 
         except Exception as e:
-            logger.error(f"❌ Connection error: {e}")
+            logger.error(f"Connection error: {e}")
             self._connected = False
             return False
     
@@ -224,7 +224,7 @@ class AlpacaConnection:
                 secret_key=self.config.secret_key
             )
             
-            logger.info("✅ WebSocket streams initialized")
+            logger.info("WebSocket streams initialized")
             
         except Exception as e:
             logger.error(f"Error initializing streams: {e}")
@@ -259,7 +259,7 @@ class AlpacaConnection:
             self._trading_client = None
             self._data_client = None
             
-            logger.info("✅ Disconnected from Alpaca")
+            logger.info("Disconnected from Alpaca")
             
             # Call user callback if set
             if self._on_disconnected:
@@ -382,7 +382,7 @@ class AlpacaConnection:
             # Submit order
             logger.info(f"Submitting order to Alpaca: {order_request}")
             alpaca_order = self._trading_client.submit_order(order_request)
-            logger.info(f"✅ Order submitted successfully: {alpaca_order.id}")
+            logger.info(f"Order submitted successfully: {alpaca_order.id}")
             
             # Store order for tracking
             self._pending_orders[str(orderId)] = alpaca_order
@@ -411,14 +411,14 @@ class AlpacaConnection:
             if alpaca_order_id:
                 # Cancel by Alpaca order ID
                 self._trading_client.cancel_order_by_id(alpaca_order_id)
-                logger.info(f"✅ Cancel request sent for order {orderId} (Alpaca ID: {alpaca_order_id})")
+                logger.info(f"Cancel request sent for order {orderId} (Alpaca ID: {alpaca_order_id})")
             else:
                 # Try to get all open orders and find by client order ID
                 open_orders = self._trading_client.get_orders()
                 for order in open_orders:
                     if order.client_order_id == str(orderId):
                         self._trading_client.cancel_order_by_id(order.id)
-                        logger.info(f"✅ Cancel request sent for order {orderId}")
+                        logger.info(f"Cancel request sent for order {orderId}")
                         return
                 
                 logger.warning(f"Order {orderId} not found in open orders")

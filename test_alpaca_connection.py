@@ -40,7 +40,7 @@ async def test_connection():
             logger.error("Configuration validation failed")
             return False
         
-        logger.info(f"✅ Configuration loaded - Mode: {config.alpaca.trading_mode}")
+        logger.info(f"Configuration loaded - Mode: {config.alpaca.trading_mode}")
         
         # Create connection
         logger.info("Creating Alpaca connection...")
@@ -54,21 +54,21 @@ async def test_connection():
             logger.error("Failed to connect to Alpaca")
             return False
         
-        logger.info("✅ Connected successfully!")
+        logger.info("Connected successfully!")
         
         # Get account info
         logger.info("\nGetting account information...")
         account = connection.get_account()
         if account:
-            logger.info(f"✅ Account: {account.account_number}")
-            logger.info(f"✅ Buying Power: ${account.buying_power}")
-            logger.info(f"✅ Portfolio Value: ${account.portfolio_value}")
-            logger.info(f"✅ Cash: ${account.cash}")
+            logger.info(f"Account: {account.account_number}")
+            logger.info(f"Buying Power: ${account.buying_power}")
+            logger.info(f"Portfolio Value: ${account.portfolio_value}")
+            logger.info(f"Cash: ${account.cash}")
         
         # Get positions
         logger.info("\nGetting positions...")
         positions = connection.get_positions()
-        logger.info(f"✅ Found {len(positions)} positions")
+        logger.info(f"Found {len(positions)} positions")
         for position in positions:
             logger.info(f"  - {position.symbol}: {position.qty} shares @ ${position.avg_entry_price}")
         
@@ -97,15 +97,15 @@ async def test_connection():
             logger.info(f"Cancelling order {order_id}...")
             connection.cancelOrder(order_id)
             
-            logger.info("✅ Order test completed")
+            logger.info("Order test completed")
         
         # Disconnect
         logger.info("\nDisconnecting...")
         connection.disconnect()
-        logger.info("✅ Disconnected successfully")
+        logger.info("Disconnected successfully")
         
         logger.info("\n" + "=" * 50)
-        logger.info("✅ All tests passed!")
+        logger.info("All tests passed!")
         logger.info("=" * 50)
         
         return True

@@ -18,7 +18,7 @@ Usage:
 import logging
 from src.rule.base import Rule, Action
 from src.rule.condition import EventCondition
-from src.rule.linked_order_actions import LinkedCreateOrderAction, LinkedOrderManager
+from src.rule.linked_order_actions import LinkedCreateOrderAction
 from src.event.api import PredictionSignalEvent
 from src.order import OrderType
 from typing import Dict, Any
@@ -71,8 +71,10 @@ class SimpleScaleInAction(Action):
                 limit_price=limit_price
             )
             
-            # Link the scale order
-            LinkedOrderManager.add_order(context, self.symbol, scale_order.order_id, "scale", side)
+            # Link the scale order using PositionManager
+            from src.position.position_manager import PositionManager
+            position_manager = PositionManager()
+            position_manager.add_orders_to_position(self.symbol, "scale", [scale_order.order_id])
             
             logger.info(f"Placed {side} scale-in limit at ${limit_price:.2f} for {self.symbol}")
             return True

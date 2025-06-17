@@ -86,7 +86,7 @@ class E2ETestFlow:
         
         # Perform initial sync
         sync_result = await self.position_sync.sync_positions()
-        print(f"✓ Position sync: {sync_result['status']}")
+        print(f"Position sync: {sync_result['status']}")
         
         # Initialize order manager
         self.order_manager = OrderManager(self.event_bus, self.connection)
@@ -103,11 +103,11 @@ class E2ETestFlow:
             api_client=self.api_client
         )
         
-        print("✅ E2E test environment ready")
+        print("E2E test environment ready")
     
     async def teardown(self):
         """Clean up the test environment."""
-        print("\n🧹 Cleaning up E2E test...")
+        print("\nCleaning up E2E test...")
         
         # Stop rule engine
         if self.rule_engine:
@@ -121,11 +121,11 @@ class E2ETestFlow:
         if self.connection:
             self.connection.disconnect()
         
-        print("✅ E2E cleanup complete")
+        print("E2E cleanup complete")
     
     async def create_test_rules(self):
         """Create test trading rules."""
-        print("\n📋 Creating test trading rules...")
+        print("\nCreating test trading rules...")
         
         # Rule 1: Buy on bullish prediction
         buy_rule = Rule(
@@ -174,15 +174,15 @@ class E2ETestFlow:
         await self.rule_engine.add_rule(buy_rule)
         await self.rule_engine.add_rule(sell_rule)
         
-        print(f"✓ Added {len(self.rule_engine.rules)} trading rules")
+        print(f"Added {len(self.rule_engine.rules)} trading rules")
     
     async def simulate_trading_flow(self):
         """Simulate a complete trading flow."""
-        print("\n🎯 Simulating trading flow...")
+        print("\nSimulating trading flow...")
         
         # Start rule engine
         await self.rule_engine.start()
-        print("✓ Rule engine started")
+        print("Rule engine started")
         
         # Step 1: Simulate bullish prediction
         print("\n1️⃣ Simulating bullish prediction...")
@@ -198,7 +198,7 @@ class E2ETestFlow:
         )
         
         await self.event_bus.emit(bullish_event)
-        print(f"✓ Emitted bullish prediction for {self.test_symbol}")
+        print(f"Emitted bullish prediction for {self.test_symbol}")
         
         # Wait for order processing
         await asyncio.sleep(5)
@@ -206,18 +206,18 @@ class E2ETestFlow:
         # Check if order was created
         active_orders = await self.order_manager.get_active_orders(self.test_symbol)
         if active_orders:
-            print(f"✓ Order created: {active_orders[0].order_id}")
+            print(f"Order created: {active_orders[0].order_id}")
         else:
-            print("⚠️  No order created (may need position or market closed)")
+            print("WARNING: No order created (may need position or market closed)")
         
         # Step 2: Check position status
         print("\n2️⃣ Checking position status...")
         positions = await self.position_tracker.get_positions_for_symbol(self.test_symbol)
         if positions:
             pos = positions[0]
-            print(f"✓ Position found: {pos.quantity} shares @ ${pos.entry_price}")
+            print(f"Position found: {pos.quantity} shares @ ${pos.entry_price}")
         else:
-            print("⚠️  No position found")
+            print("WARNING: No position found")
         
         # Step 3: Simulate bearish prediction
         print("\n3️⃣ Simulating bearish prediction...")
@@ -233,7 +233,7 @@ class E2ETestFlow:
         )
         
         await self.event_bus.emit(bearish_event)
-        print(f"✓ Emitted bearish prediction for {self.test_symbol}")
+        print(f"Emitted bearish prediction for {self.test_symbol}")
         
         # Wait for position closure
         await asyncio.sleep(5)
@@ -243,24 +243,24 @@ class E2ETestFlow:
         positions = await self.position_tracker.get_positions_for_symbol(self.test_symbol)
         open_positions = [p for p in positions if p.status.value == 'open']
         if not open_positions:
-            print("✓ Position closed successfully")
+            print("Position closed successfully")
         else:
-            print("⚠️  Position still open")
+            print("WARNING: Position still open")
         
         # Step 5: Check final state
         print("\n5️⃣ Final state check...")
         
         # Get position summary
         summary = await self.position_tracker.get_position_summary()
-        print(f"✓ Total positions: {summary['total_positions']}")
-        print(f"✓ Total P/L: ${summary['total_realized_pnl']:.2f}")
+        print(f"Total positions: {summary['total_positions']}")
+        print(f"Total P/L: ${summary['total_realized_pnl']:.2f}")
         
         # Get order history
         completed_orders = await self.order_manager.get_completed_orders(
             self.test_symbol,
             limit=10
         )
-        print(f"✓ Completed orders: {len(completed_orders)}")
+        print(f"Completed orders: {len(completed_orders)}")
     
     async def test_error_handling(self):
         """Test error handling and recovery."""
@@ -275,17 +275,17 @@ class E2ETestFlow:
             )
             await self.order_manager.submit_order(order.order_id)
         except Exception as e:
-            print(f"  ✓ Error handled correctly: {type(e).__name__}")
+            print(f"  Error handled correctly: {type(e).__name__}")
         
         # Test position sync with no positions
         print("  - Testing position sync...")
         sync_result = await self.position_sync.sync_positions()
-        print(f"  ✓ Sync handled empty positions: {sync_result['status']}")
+        print(f"  Sync handled empty positions: {sync_result['status']}")
     
     async def run_e2e_test(self):
         """Run the complete end-to-end test."""
         print("\n" + "="*60)
-        print("🚀 ALPACA END-TO-END TEST")
+        print("ALPACA END-TO-END TEST")
         print("="*60)
         
         try:
@@ -302,13 +302,13 @@ class E2ETestFlow:
             await self.test_error_handling()
             
             print("\n" + "="*60)
-            print("✅ E2E TEST COMPLETED SUCCESSFULLY")
+            print("E2E TEST COMPLETED SUCCESSFULLY")
             print("="*60)
             
             return True
             
         except Exception as e:
-            print(f"\n❌ E2E test failed: {e}")
+            print(f"\nE2E test failed: {e}")
             logger.error(f"E2E test error: {e}", exc_info=True)
             return False
             
@@ -322,10 +322,10 @@ async def main():
     success = await test.run_e2e_test()
     
     if success:
-        print("\n✅ End-to-end test passed!")
+        print("\nEnd-to-end test passed!")
         return 0
     else:
-        print("\n❌ End-to-end test failed!")
+        print("\nEnd-to-end test failed!")
         return 1
 
 

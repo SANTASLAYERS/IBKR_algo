@@ -57,7 +57,7 @@ async def test_historical_data():
             logger.error("Failed to connect to Alpaca")
             return False
         
-        logger.info("✅ Connected successfully!")
+        logger.info("Connected successfully!")
         
         # Test 1: Get historical data using convenience method
         logger.info("\n" + "-" * 40)
@@ -76,7 +76,7 @@ async def test_historical_data():
             use_cache=False  # Don't use cache for testing
         )
         
-        logger.info(f"✅ Retrieved {len(collection)} minute bars")
+        logger.info(f"Retrieved {len(collection)} minute bars")
         if len(collection) > 0:
             first_bar = collection[0]
             last_bar = collection[-1]
@@ -100,7 +100,7 @@ async def test_historical_data():
             use_cache=False
         )
         
-        logger.info(f"✅ Retrieved {len(collection)} bars for SPY")
+        logger.info(f"Retrieved {len(collection)} bars for SPY")
         if len(collection) > 0:
             logger.info(f"Date range: {collection[0].timestamp} to {collection[-1].timestamp}")
         
@@ -138,7 +138,7 @@ async def test_historical_data():
         cache_time = time.time() - start_time
         logger.info(f"Second request took {cache_time:.2f} seconds, got {len(collection2)} bars")
         if cache_time > 0:
-            logger.info(f"✅ Cache speedup: {fetch_time/cache_time:.1f}x faster")
+            logger.info(f"Cache speedup: {fetch_time/cache_time:.1f}x faster")
         
         # Test 4: Get latest bar
         logger.info("\n" + "-" * 40)
@@ -147,7 +147,7 @@ async def test_historical_data():
         
         latest_bar = await connection.minute_bar_manager.get_latest_bar("MSFT")
         if latest_bar:
-            logger.info(f"✅ Latest bar: {latest_bar.timestamp} - O:{latest_bar.open_price} H:{latest_bar.high_price} L:{latest_bar.low_price} C:{latest_bar.close_price} V:{latest_bar.volume}")
+            logger.info(f"Latest bar: {latest_bar.timestamp} - O:{latest_bar.open_price} H:{latest_bar.high_price} L:{latest_bar.low_price} C:{latest_bar.close_price} V:{latest_bar.volume}")
         else:
             logger.warning("No latest bar available (market may be closed)")
         
@@ -170,17 +170,17 @@ async def test_historical_data():
                     bar_size=tf,
                     use_cache=False
                 )
-                logger.info(f"✅ {tf}: Retrieved {len(collection)} bars")
+                logger.info(f"{tf}: Retrieved {len(collection)} bars")
             except Exception as e:
-                logger.error(f"❌ {tf}: Failed - {e}")
+                logger.error(f"{tf}: Failed - {e}")
         
         # Disconnect
         logger.info("\nDisconnecting...")
         connection.disconnect()
-        logger.info("✅ Disconnected successfully")
+        logger.info("Disconnected successfully")
         
         logger.info("\n" + "=" * 50)
-        logger.info("✅ All minute data tests completed!")
+        logger.info("All minute data tests completed!")
         logger.info("=" * 50)
         
         return True
@@ -206,7 +206,7 @@ async def test_streaming():
             logger.error("Failed to connect")
             return False
         
-        logger.info("✅ Connected successfully!")
+        logger.info("Connected successfully!")
         
         # Check if market is open
         clock = connection._trading_client.get_clock()
@@ -238,7 +238,7 @@ async def test_streaming():
         logger.info("Unsubscribing...")
         connection.minute_bar_manager.unsubscribe_bars(symbols)
         
-        logger.info(f"✅ Received {len(bars_received)} bar updates")
+        logger.info(f"Received {len(bars_received)} bar updates")
         
         # Disconnect
         connection.disconnect()

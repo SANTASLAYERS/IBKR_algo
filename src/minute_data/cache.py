@@ -31,7 +31,7 @@ class MinuteDataCache:
         Initialize the minute data cache.
         
         Args:
-            cache_dir: Directory to store cache files (defaults to ~/.ibkr_minute_cache)
+            cache_dir: Directory to store cache files (defaults to ~/.alpaca_minute_cache)
             max_size_mb: Maximum cache size in megabytes
         """
         if cache_dir is None:
@@ -47,7 +47,7 @@ class MinuteDataCache:
     
     def generate_cache_key(
         self,
-        contract: Contract,
+        symbol: str,
         end_date: datetime,
         duration: str,
         bar_size: str
@@ -56,7 +56,7 @@ class MinuteDataCache:
         Generate a unique cache key for the given parameters.
         
         Args:
-            contract: Contract for the data
+            symbol: Stock symbol
             end_date: End date for the data
             duration: Duration string (e.g., "1 D")
             bar_size: Bar size string (e.g., "1 min")
@@ -71,9 +71,8 @@ class MinuteDataCache:
         duration_norm = duration.replace(" ", "_")
         bar_size_norm = bar_size.replace(" ", "_")
         
-        # Generate key
-        key = f"{contract.symbol}_{contract.secType}_{contract.exchange}_{contract.currency}"
-        key += f"_{duration_norm}_{bar_size_norm}_{date_str}"
+        # Generate key - for Alpaca we just use the symbol
+        key = f"{symbol}_{duration_norm}_{bar_size_norm}_{date_str}"
         
         return key
     

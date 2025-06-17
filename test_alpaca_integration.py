@@ -93,11 +93,11 @@ class IntegrationTestSuite:
         
         self.minute_bar_manager = self.connection.minute_bar_manager
         
-        print("✅ Test environment ready")
+        print("Test environment ready")
     
     async def teardown(self):
         """Clean up test environment."""
-        print("\n🧹 Cleaning up...")
+        print("\nCleaning up...")
         
         # Cancel any remaining test orders
         for order_id in self.test_orders:
@@ -114,7 +114,7 @@ class IntegrationTestSuite:
         if self.connection:
             self.connection.disconnect()
         
-        print("✅ Cleanup complete")
+        print("Cleanup complete")
     
     # Event handlers
     async def on_order_status(self, event: OrderStatusEvent):
@@ -145,7 +145,7 @@ class IntegrationTestSuite:
     # Test methods
     async def test_position_tracking(self):
         """Test position tracking and synchronization."""
-        print("\n📊 Testing Position Tracking...")
+        print("\nTesting Position Tracking...")
         
         try:
             # Perform initial sync
@@ -155,14 +155,14 @@ class IntegrationTestSuite:
             if sync_result['status'] != 'success':
                 raise Exception(f"Position sync failed: {sync_result}")
             
-            print(f"  ✓ Synced {sync_result['alpaca_positions']} positions")
+            print(f"  Synced {sync_result['alpaca_positions']} positions")
             
             # Get current positions
             alpaca_positions = self.connection.get_positions()
             tracker_positions = await self.position_tracker.get_all_positions()
             
-            print(f"  ✓ Alpaca positions: {len(alpaca_positions)}")
-            print(f"  ✓ Tracker positions: {len(tracker_positions)}")
+            print(f"  Alpaca positions: {len(alpaca_positions)}")
+            print(f"  Tracker positions: {len(tracker_positions)}")
             
             # Test single position sync
             if alpaca_positions:
@@ -170,19 +170,19 @@ class IntegrationTestSuite:
                 print(f"  - Testing single position sync for {symbol}...")
                 pos_data = await self.position_sync.sync_single_position(symbol)
                 if pos_data:
-                    print(f"  ✓ Position data retrieved: {pos_data['qty']} @ ${pos_data['avg_entry_price']}")
+                    print(f"  Position data retrieved: {pos_data['qty']} @ ${pos_data['avg_entry_price']}")
             
             self.test_results['position_tracking'] = 'PASSED'
             return True
             
         except Exception as e:
-            print(f"  ❌ Error: {e}")
+            print(f"  Error: {e}")
             self.test_results['position_tracking'] = f'FAILED: {e}'
             return False
     
     async def test_market_data_retrieval(self):
         """Test market data retrieval."""
-        print("\n📈 Testing Market Data Retrieval...")
+        print("\nTesting Market Data Retrieval...")
         
         try:
             # Test historical data
@@ -196,8 +196,8 @@ class IntegrationTestSuite:
             if not bars or not bars.bars:
                 raise Exception("No historical data received")
             
-            print(f"  ✓ Retrieved {len(bars.bars)} minute bars")
-            print(f"  ✓ Latest bar: {bars.bars[-1].time} - Close: ${bars.bars[-1].close}")
+            print(f"  Retrieved {len(bars.bars)} minute bars")
+            print(f"  Latest bar: {bars.bars[-1].time} - Close: ${bars.bars[-1].close}")
             
             # Test different timeframes
             print("  - Testing 5-minute bars...")
@@ -208,19 +208,19 @@ class IntegrationTestSuite:
             )
             
             if bars_5min and bars_5min.bars:
-                print(f"  ✓ Retrieved {len(bars_5min.bars)} 5-minute bars")
+                print(f"  Retrieved {len(bars_5min.bars)} 5-minute bars")
             
             self.test_results['market_data'] = 'PASSED'
             return True
             
         except Exception as e:
-            print(f"  ❌ Error: {e}")
+            print(f"  Error: {e}")
             self.test_results['market_data'] = f'FAILED: {e}'
             return False
     
     async def test_order_lifecycle(self):
         """Test complete order lifecycle."""
-        print("\n🔄 Testing Order Lifecycle...")
+        print("\nTesting Order Lifecycle...")
         
         try:
             # Create a limit order (less likely to fill immediately)
@@ -243,7 +243,7 @@ class IntegrationTestSuite:
             )
             
             self.test_orders.append(order.order_id)
-            print(f"  ✓ Order created: {order.order_id}")
+            print(f"  Order created: {order.order_id}")
             
             # Submit order
             print("  - Submitting order...")
@@ -251,14 +251,14 @@ class IntegrationTestSuite:
             if not success:
                 raise Exception("Failed to submit order")
             
-            print("  ✓ Order submitted")
+            print("  Order submitted")
             
             # Wait for status update
             await asyncio.sleep(3)
             
             # Check order status
             order = await self.order_manager.get_order(order.order_id)
-            print(f"  ✓ Order status: {order.status.value}")
+            print(f"  Order status: {order.status.value}")
             
             # Cancel order
             print("  - Cancelling order...")
@@ -274,19 +274,19 @@ class IntegrationTestSuite:
             if order.status != OrderStatus.CANCELLED:
                 raise Exception(f"Order not cancelled, status: {order.status.value}")
             
-            print("  ✓ Order cancelled successfully")
+            print("  Order cancelled successfully")
             
             self.test_results['order_lifecycle'] = 'PASSED'
             return True
             
         except Exception as e:
-            print(f"  ❌ Error: {e}")
+            print(f"  Error: {e}")
             self.test_results['order_lifecycle'] = f'FAILED: {e}'
             return False
     
     async def test_stop_target_orders(self):
         """Test stop loss and take profit orders."""
-        print("\n🎯 Testing Stop/Target Orders...")
+        print("\nTesting Stop/Target Orders...")
         
         try:
             # Get current price
@@ -313,7 +313,7 @@ class IntegrationTestSuite:
                 bracket.target_order_id
             ])
             
-            print(f"  ✓ Bracket order created: {bracket.group_id}")
+            print(f"  Bracket order created: {bracket.group_id}")
             
             # Submit entry order
             print("  - Submitting entry order...")
@@ -331,13 +331,13 @@ class IntegrationTestSuite:
                 "Test cleanup"
             )
             
-            print(f"  ✓ Cancelled {cancelled} orders in bracket")
+            print(f"  Cancelled {cancelled} orders in bracket")
             
             self.test_results['stop_target_orders'] = 'PASSED'
             return True
             
         except Exception as e:
-            print(f"  ❌ Error: {e}")
+            print(f"  Error: {e}")
             self.test_results['stop_target_orders'] = f'FAILED: {e}'
             return False
     
@@ -372,23 +372,23 @@ class IntegrationTestSuite:
             # Check for fill events
             fill_events = [e for e in self.events_received if isinstance(e, FillEvent)]
             if not fill_events:
-                print("  ⚠️  No fill events received (market may be closed)")
+                print("  WARNING: No fill events received (market may be closed)")
                 self.test_results['fill_handling'] = 'SKIPPED - Market closed'
                 return True
             
             fill_event = fill_events[0]
-            print(f"  ✓ Fill received: {fill_event.fill_quantity} @ ${fill_event.fill_price}")
+            print(f"  Fill received: {fill_event.fill_quantity} @ ${fill_event.fill_price}")
             
             # Verify order status
             order = await self.order_manager.get_order(order.order_id)
             if order.status == OrderStatus.FILLED:
-                print("  ✓ Order status updated to FILLED")
+                print("  Order status updated to FILLED")
             
             self.test_results['fill_handling'] = 'PASSED'
             return True
             
         except Exception as e:
-            print(f"  ❌ Error: {e}")
+            print(f"  Error: {e}")
             self.test_results['fill_handling'] = f'FAILED: {e}'
             return False
     
@@ -409,13 +409,13 @@ class IntegrationTestSuite:
                     strategy="test"
                 )
                 self.test_positions.append(position)
-                print(f"  ✓ Created position for {symbol}")
+                print(f"  Created position for {symbol}")
             
             # Get all positions
             all_positions = await self.position_tracker.get_all_positions()
             active_positions = [p for p in all_positions if p.status.value == 'open']
             
-            print(f"  ✓ Total active positions: {len(active_positions)}")
+            print(f"  Total active positions: {len(active_positions)}")
             
             # Update prices
             print("  - Updating position prices...")
@@ -425,8 +425,8 @@ class IntegrationTestSuite:
             
             # Get position summary
             summary = await self.position_tracker.get_position_summary()
-            print(f"  ✓ Total position value: ${summary['total_value']:.2f}")
-            print(f"  ✓ Total unrealized P/L: ${summary['total_unrealized_pnl']:.2f}")
+            print(f"  Total position value: ${summary['total_value']:.2f}")
+            print(f"  Total unrealized P/L: ${summary['total_unrealized_pnl']:.2f}")
             
             # Close positions
             print("  - Closing test positions...")
@@ -441,7 +441,7 @@ class IntegrationTestSuite:
             return True
             
         except Exception as e:
-            print(f"  ❌ Error: {e}")
+            print(f"  Error: {e}")
             self.test_results['multiple_positions'] = f'FAILED: {e}'
             return False
     
@@ -473,20 +473,20 @@ class IntegrationTestSuite:
             
             # Verify event chain
             if len(self.events_received) > 0:
-                print("  ✓ Event flow validated")
+                print("  Event flow validated")
             
             self.test_results['event_flow'] = 'PASSED'
             return True
             
         except Exception as e:
-            print(f"  ❌ Error: {e}")
+            print(f"  Error: {e}")
             self.test_results['event_flow'] = f'FAILED: {e}'
             return False
     
     async def run_all_tests(self):
         """Run all integration tests."""
         print("\n" + "="*60)
-        print("🚀 ALPACA INTEGRATION TEST SUITE")
+        print("ALPACA INTEGRATION TEST SUITE")
         print("="*60)
         
         try:
@@ -509,7 +509,7 @@ class IntegrationTestSuite:
             
             # Print summary
             print("\n" + "="*60)
-            print("📊 TEST RESULTS SUMMARY")
+            print("TEST RESULTS SUMMARY")
             print("="*60)
             
             passed = 0
@@ -517,8 +517,8 @@ class IntegrationTestSuite:
             skipped = 0
             
             for test_name, result in self.test_results.items():
-                status = "✅ PASS" if result == "PASSED" else (
-                    "⚠️  SKIP" if "SKIPPED" in result else "❌ FAIL"
+                status = "PASS" if result == "PASSED" else (
+                    "WARNING: SKIP" if "SKIPPED" in result else "FAIL"
                 )
                 print(f"{status} - {test_name}: {result}")
                 
@@ -548,10 +548,10 @@ async def main():
     success = await suite.run_all_tests()
     
     if success:
-        print("\n✅ All tests completed successfully!")
+        print("\nAll tests completed successfully!")
         return 0
     else:
-        print("\n❌ Some tests failed!")
+        print("\nSome tests failed!")
         return 1
 
 

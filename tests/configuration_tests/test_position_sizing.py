@@ -337,6 +337,6 @@ if __name__ == "__main__":
                 print(f"{symbol:8s}: Cannot calculate shares for ${allocation:.2f} @ ${price:.2f}")
         
         print("="*60)
-        print("✅ Position sizing test completed!")
+        print("Position sizing test completed!")
     
     asyncio.run(main()) 

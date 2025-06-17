@@ -189,6 +189,6 @@ if __name__ == "__main__":
         atr = await indicator_manager.get_atr("TEST", bar_size="10 secs", period=14)
         
         print(f"ATR Result: {atr}")
-        print("✅ Test completed successfully!")
+        print("Test completed successfully!")
     
     asyncio.run(main()) 

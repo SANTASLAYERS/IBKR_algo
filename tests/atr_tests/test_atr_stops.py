@@ -345,6 +345,6 @@ if __name__ == "__main__":
         print(f"Stop distance (ATR * 6): {atr * 6:.2f}")
         print(f"Target distance (ATR * 3): {atr * 3:.2f}")
         print(f"Risk/Reward ratio: {6/3:.1f}:1")
-        print("✅ ATR calculation test completed successfully!")
+        print("ATR calculation test completed successfully!")
     
     asyncio.run(main()) 
