@@ -1,23 +1,23 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """
-Quick Start Script for Trading System
-=====================================
+Quick start script for the Alpaca Trading System.
 
-This script validates your environment and starts the trading system.
-
-Usage:
-    python start_trading.py
+This script provides a simple way to start the trading system
+with minimal configuration.
 """
 
-import os
 import sys
+import os
 import subprocess
 from pathlib import Path
 
+
 def check_environment():
-    """Check if all required environment variables are set."""
+    """Check if required environment variables are set."""
     required_vars = [
-        'TWS_HOST', 'TWS_PORT', 'TWS_CLIENT_ID', 'TWS_ACCOUNT',
+        'ALPACA_API_KEY', 'ALPACA_SECRET_KEY',
         'API_BASE_URL', 'API_KEY'
     ]
     
@@ -30,60 +30,64 @@ def check_environment():
         print("❌ Missing required environment variables:")
         for var in missing:
             print(f"   - {var}")
-        print("\nSet them in your environment or .env file")
+        print("\n💡 Please set these in your .env file or environment")
         return False
     
-    print("✅ All required environment variables are set")
     return True
 
-def check_tws_connection():
-    """Check if TWS is accessible."""
-    print("🔍 Testing TWS connection...")
+
+def check_alpaca_connection():
+    """Check if Alpaca API is accessible."""
+    print("🔍 Testing Alpaca connection...")
+    
     try:
-        result = subprocess.run([
-            sys.executable, "test_api_connection.py"
-        ], capture_output=True, text=True, timeout=10)
+        # Run the Alpaca connection test
+        result = subprocess.run(
+            [sys.executable, "test_alpaca_connection.py"],
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
         
         if result.returncode == 0:
-            print("✅ TWS connection test passed")
+            print("✅ Alpaca connection test passed")
             return True
         else:
-            print("❌ TWS connection test failed")
-            print("Make sure TWS is running with API enabled")
+            print("❌ Alpaca connection test failed")
+            print("Make sure your API credentials are correct")
             return False
+            
     except Exception as e:
-        print(f"❌ Error testing TWS connection: {e}")
+        print(f"❌ Error testing Alpaca connection: {e}")
         return False
+
 
 def main():
     """Main entry point."""
-    print("🚀 TWS Trading System - Quick Start")
-    print("=" * 40)
+    print("🚀 Alpaca Trading System - Quick Start")
+    print("=" * 50)
     
     # Check environment
     if not check_environment():
-        sys.exit(1)
+        print("\n⚠️  Please configure your environment first!")
+        return 1
     
-    # Check TWS connection  
-    if not check_tws_connection():
-        print("\n💡 Make sure:")
-        print("   1. TWS is running")
-        print("   2. API is enabled in TWS Global Configuration")
-        print("   3. Socket port is set to 7497 (paper trading)")
-        sys.exit(1)
+    # Check Alpaca connection
+    if not check_alpaca_connection():
+        print("\n⚠️  Please check:")
+        print("   1. Your Alpaca API credentials are correct")
+        print("   2. You have internet connectivity")
+        print("   3. Alpaca services are operational")
+        return 1
     
-    print("\n🎯 Environment ready!")
-    print("🔥 Starting trading system...")
-    print("=" * 40)
+    print("\n✅ All checks passed! Starting trading system...")
+    print("-" * 50)
     
-    # Start the main trading application
-    try:
-        subprocess.run([sys.executable, "main_trading_app.py"])
-    except KeyboardInterrupt:
-        print("\n🛑 Trading system stopped by user")
-    except Exception as e:
-        print(f"\n❌ Error starting trading system: {e}")
-        sys.exit(1)
+    # Start the main trading app
+    subprocess.run([sys.executable, "main_trading_app.py"])
+    
+    return 0
+
 
 if __name__ == "__main__":
-    main() 
+    sys.exit(main()) 

@@ -1,5 +1,5 @@
 """
-Position management components for the IBKR Trading Framework.
+Position management components for the Alpaca Trading Framework.
 
 This package provides functionality for tracking and managing stock positions,
 including lifecycle management and risk calculations.

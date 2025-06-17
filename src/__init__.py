@@ -2,16 +2,17 @@
 # -*- coding: utf-8 -*-
 
 """
-TWS Trading Module
+Trading System Package
 
-This module provides TWS connection handling and trading functionality.
+Main package for the automated trading system.
 """
 
-__version__ = '0.1.0'
+from .alpaca_config import AlpacaConfig
+from .alpaca_connection import AlpacaConnection
+from .logger import get_logger
 
-from .tws_config import TWSConfig
-from .tws_connection import TWSConnection
-from .heartbeat import HeartbeatMonitor
-from .event_loop import IBKREventLoop
-from .error_handler import ErrorHandler
-from .logger import get_logger, configure_logging_from_config
+__all__ = [
+    'AlpacaConfig',
+    'AlpacaConnection',
+    'get_logger'
+]

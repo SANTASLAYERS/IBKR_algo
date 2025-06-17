@@ -12,7 +12,7 @@ logger = get_logger(__name__)
 
 class HeartbeatMonitor:
     """
-    Monitors the heartbeat of the connection to IBKR's TWS or Gateway.
+    Monitors the heartbeat of the connection to Alpaca.
     Triggers a callback when the heartbeat times out, indicating a potential connection loss.
     """
     

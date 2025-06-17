@@ -208,6 +208,12 @@ class UnifiedFillManager:
                     # Partial fill of protective order - update the other protective order
                     await self._handle_protective_partial_fill(symbol, pm_position, order_type)
             
+            # Keep the broker-supplied stop or limit price ONLY if it's > 0
+            if order.order_type == OrderType.STOP and event.broker_price > 0:
+                order.stop_price = event.broker_price        # preserve real stop price
+            elif order.order_type == OrderType.LIMIT and event.broker_price > 0:
+                order.limit_price = event.broker_price       # preserve real limit price
+            
         except Exception as e:
             self.logger.error(f"Error handling fill event: {e}", exc_info=True)
     
@@ -346,6 +352,7 @@ class UnifiedFillManager:
             exclude_type: 'stop' or 'target' to exclude from updates (for partial fills)
         """
         order_manager = self.context.get("order_manager")
+        position_manager = PositionManager()
         
         # Determine position direction
         is_long = position_size > 0
@@ -367,18 +374,24 @@ class UnifiedFillManager:
             for stop_id in pm_position.stop_orders:
                 stop_order = await order_manager.get_order(stop_id)
                 if stop_order and stop_order.status.value in ["submitted", "accepted", "working"]:
-                    # Only update if quantity is different
                     if abs(stop_order.quantity - protective_quantity) > 0.0001:
-                        self.logger.info(f"Queueing update for stop order {stop_id}: current qty={stop_order.quantity}, new qty={protective_quantity}")
-                        # Queue the replacement operation
-                        operation = OrderOperation(
-                            operation_type=OrderOperationType.REPLACE_STOP,
-                            symbol=symbol,
-                            old_order_id=stop_id,
-                            new_quantity=protective_quantity,
-                            price=stop_order.stop_price
-                        )
-                        await queue.put(operation)
+                        if not stop_order.stop_price or stop_order.stop_price <= 0:
+                            self.logger.error(
+                                f"⚠️  Skip replacing stop {stop_id} for {symbol}: existing stopPrice is 0 or missing – prevents infinite loop"
+                            )
+                        else:
+                            self.logger.info(
+                                f"Queueing update for stop order {stop_id}: current qty={stop_order.quantity}, new qty={protective_quantity}"
+                            )
+                            # Queue the replacement operation
+                            operation = OrderOperation(
+                                operation_type=OrderOperationType.REPLACE_STOP,
+                                symbol=symbol,
+                                old_order_id=stop_id,
+                                new_quantity=protective_quantity,
+                                price=stop_order.stop_price
+                            )
+                            await queue.put(operation)
                     else:
                         self.logger.info(f"Stop order {stop_id} already has correct quantity {stop_order.quantity}, no update needed")
                 else:
@@ -423,28 +436,71 @@ class UnifiedFillManager:
         
         for attempt in range(max_retries):
             try:
-                # Cancel old order
+                # ---------------------------------------------
+                # 1️⃣  Identify which existing protective order to replace
+                # ---------------------------------------------
+                target_order_id = old_order_id
+
+                # Fetch the referenced order; if it is no longer active, pick the
+                # first currently-active order of the same protective type so we
+                # always modify the latest live order.
+                active_id_candidates: List[str] = []
+                pm_pos = position_manager.get_position(symbol)
+                if pm_pos:
+                    id_pool = (
+                        pm_pos.stop_orders if order_type == "stop" else pm_pos.target_orders
+                    )
+                    for oid in id_pool:
+                        order_obj = await order_manager.get_order(oid)
+                        if order_obj and order_obj.is_active:
+                            active_id_candidates.append(oid)
+
+                order_ref = await order_manager.get_order(target_order_id)
+                if not order_ref or not order_ref.is_active:
+                    # Fall back to a currently-active protective order if any
+                    if active_id_candidates:
+                        target_order_id = active_id_candidates[0]
+                        self.logger.info(
+                            f"⚠️  Old protective order {old_order_id} no longer active; "
+                            f"will replace current active order {target_order_id} for {symbol}."
+                        )
+                    else:
+                        self.logger.warning(
+                            f"No active {order_type} order found for {symbol}; "
+                            f"skipping replacement request (desired qty {new_quantity})."
+                        )
+                        return  # Nothing to update
+
+                # ---------------------------------------------
+                # 2️⃣  Cancel the chosen order so we can submit the replacement
+                # ---------------------------------------------
                 cancel_success = await order_manager.cancel_order(
-                    old_order_id, 
+                    target_order_id,
                     f"Updating quantity to {new_quantity}"
                 )
-                
                 if not cancel_success:
                     self.logger.warning(
-                        f"Failed to cancel order {old_order_id} on attempt {attempt + 1}"
+                        f"Failed to cancel order {target_order_id} on attempt {attempt + 1}"
                     )
                     if attempt < max_retries - 1:
                         await asyncio.sleep(retry_delay)
                         continue
-                
-                # Remove from position tracking
-                position_manager.remove_order(symbol, old_order_id)
+
+                # Remove the cancelled order from position tracking
+                position_manager.remove_order(symbol, target_order_id)
                 
                 # Small delay to ensure cancellation is processed
                 await asyncio.sleep(0.1)
                 
                 # Create new order with updated quantity
                 if order_type == "stop":
+                    # Guard: never send a stop replacement without a valid stop price
+                    if price is None or price <= 0:
+                        self.logger.error(
+                            f"❌  Aborting stop replacement for {symbol} – invalid stop_price={price} (old order {old_order_id})."
+                        )
+                        return
+
                     new_order = await order_manager.create_order(
                         symbol=symbol,
                         quantity=new_quantity,
@@ -454,11 +510,19 @@ class UnifiedFillManager:
                     )
                     if new_order:
                         position_manager.add_orders_to_position(symbol, "stop", [new_order.order_id])
-                        self.logger.info(f"Created updated stop order {new_order.order_id} "
-                                       f"for {symbol} at ${price:.2f} for {new_quantity} shares")
+                        self.logger.info(
+                            f"Created updated stop order {new_order.order_id} for {symbol} "
+                            f"at ${price:.2f} for {new_quantity} shares (replaced {target_order_id})"
+                        )
                         return  # Success
                 
                 elif order_type == "target":
+                    if price is None or price <= 0:
+                        self.logger.error(
+                            f"❌  Aborting target replacement for {symbol} – invalid limit_price={price} (old order {old_order_id})."
+                        )
+                        return
+
                     new_order = await order_manager.create_order(
                         symbol=symbol,
                         quantity=new_quantity,
@@ -468,8 +532,10 @@ class UnifiedFillManager:
                     )
                     if new_order:
                         position_manager.add_orders_to_position(symbol, "target", [new_order.order_id])
-                        self.logger.info(f"Created updated target order {new_order.order_id} "
-                                       f"for {symbol} at ${price:.2f} for {new_quantity} shares")
+                        self.logger.info(
+                            f"Created updated target order {new_order.order_id} for {symbol} "
+                            f"at ${price:.2f} for {new_quantity} shares (replaced {target_order_id})"
+                        )
                         return  # Success
                 
                 # If we get here, order creation failed

@@ -13,7 +13,7 @@ import logging
 from datetime import datetime, timezone
 from typing import Dict, Optional, Any, Union
 
-from ibapi.contract import Contract
+# Contract type is no longer needed for Alpaca
 
 from .models import MinuteBarCollection
 
@@ -36,7 +36,7 @@ class MinuteDataCache:
         """
         if cache_dir is None:
             home_dir = os.path.expanduser("~")
-            cache_dir = os.path.join(home_dir, ".ibkr_minute_cache")
+            cache_dir = os.path.join(home_dir, ".alpaca_minute_cache")
             
         self.cache_dir = cache_dir
         self.max_size_bytes = max_size_mb * 1024 * 1024

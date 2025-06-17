@@ -3,8 +3,8 @@
 Price Service
 =============
 
-Simple price service that gets real-time stock prices from TWS.
-No caching, no external APIs - just clean, direct TWS price requests.
+Simple price service that gets real-time stock prices from Alpaca.
+Provides clean, direct price requests using Alpaca's REST API.
 """
 
 import asyncio
@@ -16,18 +16,16 @@ logger = logging.getLogger(__name__)
 
 
 class PriceService:
-    """Service for getting real-time stock prices from TWS."""
+    """Service for getting real-time stock prices from Alpaca."""
     
-    def __init__(self, tws_connection):
+    def __init__(self, alpaca_connection):
         """
         Initialize price service.
         
         Args:
-            tws_connection: Active TWS connection instance
+            alpaca_connection: Active AlpacaConnection instance
         """
-        self.tws_connection = tws_connection
-        self._price_requests = {}  # Track pending requests
-        self._request_id_counter = 1000  # Start from 1000 to avoid conflicts
+        self.alpaca_connection = alpaca_connection
     
     async def get_price(self, symbol: str, timeout: float = 5.0) -> Optional[float]:
         """
@@ -40,96 +38,49 @@ class PriceService:
         Returns:
             Current price or None if unavailable
         """
-        if not self.tws_connection.is_connected():
-            logger.warning("TWS not connected - cannot get price")
+        if not self.alpaca_connection.is_connected():
+            logger.warning("Alpaca not connected - cannot get price")
             return None
             
         try:
-            # Create contract for the symbol
-            from ibapi.contract import Contract
-            contract = Contract()
-            contract.symbol = symbol
-            contract.secType = "STK"
-            contract.exchange = "SMART"
-            contract.currency = "USD"
+            # Use the data client to get latest quote
+            data_client = self.alpaca_connection._data_client
+            if not data_client:
+                logger.error("No data client available")
+                return None
             
-            # Get next request ID
-            req_id = self._request_id_counter
-            self._request_id_counter += 1
+            # Get latest quote for the symbol
+            from alpaca.data.requests import StockLatestQuoteRequest, StockLatestTradeRequest
+            request = StockLatestQuoteRequest(symbol_or_symbols=symbol)
             
-            # Create event to wait for price
-            price_event = asyncio.Event()
-            price_data = {"price": None, "error": None}
+            # Get the quote
+            quotes = data_client.get_stock_latest_quote(request)
             
-            # Store request info
-            self._price_requests[req_id] = {
-                "symbol": symbol,
-                "event": price_event,
-                "data": price_data
-            }
-            
-            # Set up temporary callback for market data
-            original_tickPrice = self.tws_connection.tickPrice
-            original_error = self.tws_connection.error
-            
-            def handle_tick_price(reqId: int, tickType: int, price: float, attrib):
-                """Handle incoming price tick."""
-                if reqId in self._price_requests and tickType in [1, 2, 4]:  # Bid, Ask, Last
-                    request = self._price_requests[reqId]
-                    request["data"]["price"] = price
-                    request["event"].set()
-                # Call original handler
-                original_tickPrice(reqId, tickType, price, attrib)
-            
-            def handle_error(reqId: int, errorCode: int, errorString: str, advancedOrderRejectJson: str = ""):
-                """Handle price request errors."""
-                if reqId in self._price_requests:
-                    request = self._price_requests[reqId]
-                    request["data"]["error"] = f"Error {errorCode}: {errorString}"
-                    request["event"].set()
-                # Call original handler
-                original_error(reqId, errorCode, errorString, advancedOrderRejectJson)
-            
-            # Override callbacks temporarily
-            self.tws_connection.tickPrice = handle_tick_price
-            self.tws_connection.error = handle_error
-            
-            try:
-                # Request market data
-                self.tws_connection.reqMktData(req_id, contract, "", False, False, [])
+            if symbol in quotes:
+                quote = quotes[symbol]
+                # Use midpoint of bid/ask if available, otherwise last trade price
+                if quote.bid_price and quote.ask_price:
+                    price = (quote.bid_price + quote.ask_price) / 2.0
+                else:
+                    # Try to get last trade price
+                    trades = data_client.get_stock_latest_trade(
+                        StockLatestTradeRequest(symbol_or_symbols=symbol)
+                    )
+                    if symbol in trades:
+                        price = trades[symbol].price
+                    else:
+                        logger.warning(f"No price data available for {symbol}")
+                        return None
                 
-                # Wait for price or timeout
-                await asyncio.wait_for(price_event.wait(), timeout=timeout)
-                
-                # Get the price
-                price = price_data["price"]
-                error = price_data["error"]
-                
-                if error:
-                    logger.warning(f"Error getting price for {symbol}: {error}")
-                    return None
-                    
                 if price and price > 0:
                     logger.debug(f"Got price for {symbol}: ${price:.2f}")
                     return float(price)
                 else:
                     logger.warning(f"Invalid price received for {symbol}: {price}")
                     return None
-                    
-            finally:
-                # Always cancel market data request
-                try:
-                    self.tws_connection.cancelMktData(req_id)
-                except:
-                    pass  # Ignore errors during cleanup
-                
-                # Restore original callbacks
-                self.tws_connection.tickPrice = original_tickPrice
-                self.tws_connection.error = original_error
-                
-                # Clean up request tracking
-                if req_id in self._price_requests:
-                    del self._price_requests[req_id]
+            else:
+                logger.warning(f"No quote data for {symbol}")
+                return None
                     
         except asyncio.TimeoutError:
             logger.warning(f"Timeout getting price for {symbol}")
@@ -140,7 +91,7 @@ class PriceService:
     
     async def get_multiple_prices(self, symbols: list, timeout: float = 10.0) -> Dict[str, Optional[float]]:
         """
-        Get prices for multiple symbols concurrently.
+        Get prices for multiple symbols efficiently.
         
         Args:
             symbols: List of symbols
@@ -149,15 +100,56 @@ class PriceService:
         Returns:
             Dictionary mapping symbol to price (or None)
         """
-        tasks = [self.get_price(symbol, timeout) for symbol in symbols]
-        prices = await asyncio.gather(*tasks, return_exceptions=True)
+        if not self.alpaca_connection.is_connected():
+            logger.warning("Alpaca not connected - cannot get prices")
+            return {symbol: None for symbol in symbols}
         
-        result = {}
-        for symbol, price in zip(symbols, prices):
-            if isinstance(price, Exception):
-                logger.error(f"Exception getting price for {symbol}: {price}")
-                result[symbol] = None
-            else:
-                result[symbol] = price
-                
-        return result 
+        try:
+            # Use the data client to get latest quotes for all symbols at once
+            data_client = self.alpaca_connection._data_client
+            if not data_client:
+                logger.error("No data client available")
+                return {symbol: None for symbol in symbols}
+            
+            # Get latest quotes for all symbols
+            from alpaca.data.requests import StockLatestQuoteRequest, StockLatestTradeRequest
+            quote_request = StockLatestQuoteRequest(symbol_or_symbols=symbols)
+            
+            # Get the quotes
+            quotes = data_client.get_stock_latest_quote(quote_request)
+            
+            # Also get latest trades as fallback
+            trade_request = StockLatestTradeRequest(symbol_or_symbols=symbols)
+            trades = data_client.get_stock_latest_trade(trade_request)
+            
+            result = {}
+            for symbol in symbols:
+                try:
+                    price = None
+                    
+                    # Try to get price from quote
+                    if symbol in quotes:
+                        quote = quotes[symbol]
+                        if quote.bid_price and quote.ask_price:
+                            price = (quote.bid_price + quote.ask_price) / 2.0
+                    
+                    # Fallback to last trade price
+                    if not price and symbol in trades:
+                        price = trades[symbol].price
+                    
+                    if price and price > 0:
+                        result[symbol] = float(price)
+                        logger.debug(f"Got price for {symbol}: ${price:.2f}")
+                    else:
+                        result[symbol] = None
+                        logger.warning(f"No valid price for {symbol}")
+                        
+                except Exception as e:
+                    logger.error(f"Error processing price for {symbol}: {e}")
+                    result[symbol] = None
+                    
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error getting multiple prices: {e}")
+            return {symbol: None for symbol in symbols} 

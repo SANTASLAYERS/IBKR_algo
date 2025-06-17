@@ -1,5 +1,5 @@
 """
-Order management components for the IBKR Trading Framework.
+Order management components for the Alpaca Trading Framework.
 
 This package provides functionality for creating and tracking orders,
 managing order lifecycles, and implementing order groups (brackets, OCO).
