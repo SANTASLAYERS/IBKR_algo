@@ -329,12 +329,12 @@ class LinkedCreateOrderAction(Action):
             indicator_manager = context.get("indicator_manager")
             if indicator_manager:
                 try:
-                    # Calculate 10-second ATR with 14 periods
+                    # Calculate 1-minute ATR with 14 periods
                     atr_value = await indicator_manager.get_atr(
                         symbol=self.symbol,
                         period=14,
                         days=1,
-                        bar_size="10 secs"
+                        bar_size="1 min"
                     )
                     if atr_value:
                         logger.info(f"ATR for {self.symbol}: {atr_value:.4f}")
@@ -574,7 +574,7 @@ class LinkedScaleInAction(Action):
             atr = None
             if indicator_manager:
                 try:
-                    atr = await indicator_manager.get_atr(self.symbol, period=14, days=1, bar_size="10 secs")
+                    atr = await indicator_manager.get_atr(self.symbol, period=14, days=1, bar_size="1 min")
                 except Exception as e:
                     logger.warning(f"Could not get ATR: {e}")
             
@@ -894,7 +894,7 @@ class LinkedDoubleDownAction(Action):
                             symbol=self.symbol,
                             period=14,
                             days=1,
-                            bar_size="10 secs"
+                            bar_size="1 min"
                         )
                         if atr_value:
                             stop_distance = atr_value * position.atr_stop_multiplier

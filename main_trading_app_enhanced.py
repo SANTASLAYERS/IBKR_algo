@@ -2,15 +2,15 @@
 # -*- coding: utf-8 -*-
 
 """
-Main Trading Application - Alpaca Version with Advanced Features
+Enhanced Alpaca Trading Application
 
-This is the main entry point for the automated trading system,
-now exclusively using Alpaca Markets with advanced features from TWS:
+This version includes advanced features from the TWS trading system:
 - ATR-based stop loss and take profit
 - Dynamic position sizing based on dollar allocation
 - Customized strategy parameters per ticker
 - End-of-day position closure
 - Double down order functionality
+- Enhanced monitoring and status reporting
 """
 
 import asyncio
@@ -48,11 +48,11 @@ from src.logger import get_logger
 logger = get_logger(__name__)
 
 
-class TradingApp:
-    """Main trading application class with advanced features."""
+class EnhancedTradingApp:
+    """Enhanced trading application with advanced features."""
     
     def __init__(self):
-        """Initialize the trading application."""
+        """Initialize the enhanced trading application."""
         self.config: Optional[BrokerConfig] = None
         self.connection: Optional[AlpacaConnection] = None
         self.event_bus: Optional[EventBus] = None
@@ -71,60 +71,60 @@ class TradingApp:
         self._running = False
         self._shutdown_event = asyncio.Event()
         
-        # Advanced strategy configurations per ticker (from TWS)
+        # Enhanced strategy configurations per ticker
         self.strategies = {
             "CVNA": {
                 "confidence_threshold": 0.50, 
-                "allocation": 12000, 
+                "allocation": 30000, 
                 "atr_stop_multiplier": 6.0, 
                 "atr_target_multiplier": 4.0, 
                 "cooldown_minutes": 3
             },
             "UVXY": {
                 "confidence_threshold": 0.50, 
-                "allocation": 12000, 
+                "allocation": 30000, 
                 "atr_stop_multiplier": 6.0, 
                 "atr_target_multiplier": 4.0, 
                 "cooldown_minutes": 3
             },
             "SOXL": {
                 "confidence_threshold": 0.50, 
-                "allocation": 12000, 
+                "allocation": 30000, 
                 "atr_stop_multiplier": 6.0, 
                 "atr_target_multiplier": 4.0, 
                 "cooldown_minutes": 3
             },
             "SOXS": {
                 "confidence_threshold": 0.50, 
-                "allocation": 12000, 
+                "allocation": 30000, 
                 "atr_stop_multiplier": 6.0, 
                 "atr_target_multiplier": 4.0, 
                 "cooldown_minutes": 3
             },
             "TQQQ": {
                 "confidence_threshold": 0.50, 
-                "allocation": 12000, 
+                "allocation": 30000, 
                 "atr_stop_multiplier": 6.0, 
                 "atr_target_multiplier": 4.0, 
                 "cooldown_minutes": 3
             },
             "SQQQ": {
                 "confidence_threshold": 0.50, 
-                "allocation": 12000, 
+                "allocation": 30000, 
                 "atr_stop_multiplier": 6.0, 
                 "atr_target_multiplier": 4.0, 
                 "cooldown_minutes": 3
             },
             "GLD": {
                 "confidence_threshold": 0.50, 
-                "allocation": 12000, 
+                "allocation": 30000, 
                 "atr_stop_multiplier": 10.0,  # Higher for less volatile GLD
                 "atr_target_multiplier": 5.0, 
                 "cooldown_minutes": 3
             },
             "SLV": {
                 "confidence_threshold": 0.50, 
-                "allocation": 12000, 
+                "allocation": 30000, 
                 "atr_stop_multiplier": 6.0, 
                 "atr_target_multiplier": 4.0, 
                 "cooldown_minutes": 3
@@ -132,22 +132,16 @@ class TradingApp:
         }
     
     async def initialize(self) -> bool:
-        """
-        Initialize all components of the trading system.
-        
-        Returns:
-            bool: True if initialization was successful
-        """
+        """Initialize all components of the enhanced trading system."""
         try:
             logger.info("=" * 50)
-            logger.info("Initializing Alpaca Trading System")
+            logger.info("Initializing Enhanced Alpaca Trading System")
             logger.info("=" * 50)
             
             # Load configuration
             logger.info("Loading configuration...")
             self.config = BrokerConfig.from_env()
             
-            # Validate configuration
             if not self.config.validate():
                 logger.error("Configuration validation failed")
                 return False
@@ -157,9 +151,8 @@ class TradingApp:
             # Initialize event bus
             logger.info("Initializing event bus...")
             self.event_bus = EventBus()
-            logger.info("Event bus initialized")
             
-            # Create Alpaca connection with event bus
+            # Create Alpaca connection
             logger.info("Creating Alpaca connection...")
             self.connection = AlpacaConnection(self.config.alpaca, self.event_bus)
             
@@ -180,15 +173,12 @@ class TradingApp:
             
             logger.info("Connected to Alpaca")
             
-            # Initialize position tracking
-            logger.info("Initializing position tracking...")
+            # Initialize core components
             self.position_tracker = PositionTracker(self.event_bus)
             await self.position_tracker.initialize()
             self.position_manager = PositionManager()
-            logger.info("Position tracking initialized")
             
             # Initialize position synchronization
-            logger.info("Initializing position synchronization...")
             self.position_sync = AlpacaPositionSync(
                 connection=self.connection,
                 position_tracker=self.position_tracker,
@@ -201,31 +191,23 @@ class TradingApp:
             sync_result = await self.position_sync.sync_positions()
             if sync_result['status'] == 'success':
                 logger.info(f"Position sync completed - {sync_result['alpaca_positions']} positions synced")
-            else:
-                logger.warning(f"Position sync failed: {sync_result.get('message', 'Unknown error')}")
             
             # Start periodic position sync
             await self.position_sync.start_periodic_sync(interval=30)
-            logger.info("Started periodic position sync (30s interval)")
             
             # Initialize order manager
-            logger.info("Initializing order manager...")
             self.order_manager = OrderManager(
                 event_bus=self.event_bus,
                 broker_connection=self.connection
             )
-            logger.info("Order manager initialized")
             
             # Initialize price service for real-time prices
-            logger.info("Initializing price service...")
             self.price_service = PriceService(self.connection)
             
             # Initialize position sizer for dynamic position sizing
-            logger.info("Initializing position sizer...")
             self.position_sizer = PositionSizer(min_shares=1, max_shares=10000)
             
             # Initialize indicator manager for ATR calculations
-            logger.info("Initializing indicator manager for ATR...")
             self.indicator_manager = IndicatorManager(
                 minute_data_manager=self.connection.minute_bar_manager
             )
@@ -235,7 +217,7 @@ class TradingApp:
             self.api_client = APIClient()
             logger.info("API client initialized")
             
-            # Initialize rule engine
+            # Initialize rule engine with enhanced context
             logger.info("Initializing rule engine...")
             self.rule_engine = RuleEngine(event_bus=self.event_bus)
             
@@ -249,13 +231,11 @@ class TradingApp:
                 'price_service': self.price_service,
                 'position_sizer': self.position_sizer,
                 'indicator_manager': self.indicator_manager,
-                'account': {'equity': 1000000},  # Will be updated with real value
+                'account': {'equity': 1000000},  # Update with real account value
                 'prices': {}
             })
             
-            logger.info("Rule engine initialized")
-            
-            # Initialize UnifiedFillManager with context containing order_manager
+            # Initialize UnifiedFillManager
             logger.info("Initializing UnifiedFillManager...")
             context = {
                 'order_manager': self.order_manager,
@@ -268,30 +248,25 @@ class TradingApp:
                 event_bus=self.event_bus
             )
             await self.unified_fill_manager.initialize()
-            logger.info("UnifiedFillManager initialized")
             
             # Initialize cooldown reset manager for stop loss handling
-            logger.info("Initializing cooldown reset manager...")
             self.cooldown_reset_manager = CooldownResetManager(
                 rule_engine=self.rule_engine,
                 event_bus=self.event_bus
             )
             await self.cooldown_reset_manager.initialize()
-            logger.info("CooldownResetManager initialized - will reset cooldowns on stop loss hits")
             
             # Start the rule engine
-            logger.info("Starting rule engine...")
             await self.rule_engine.start()
-            logger.info("Rule engine started")
             
-            # Initialize OptionsFlowMonitor for prediction API integration
+            # Initialize OptionsFlowMonitor
             logger.info("Initializing OptionsFlowMonitor...")
             self.options_flow_monitor = OptionsFlowMonitor(
                 event_bus=self.event_bus,
                 api_client=self.api_client
             )
             
-            # Configure tickers to monitor with lower confidence threshold
+            # Configure with custom thresholds
             tickers_to_monitor = list(self.strategies.keys())
             self.options_flow_monitor.configure(
                 tickers=tickers_to_monitor,
@@ -302,20 +277,14 @@ class TradingApp:
             await self.options_flow_monitor.start_monitoring()
             logger.info(f"OptionsFlowMonitor started for {len(tickers_to_monitor)} tickers")
             
-            # Register advanced trading rules
+            # Register enhanced trading rules
             self._setup_trading_rules()
             
             # Add end-of-day closure rules
             self._setup_eod_rules()
             
             logger.info("=" * 50)
-            logger.info("Trading system initialized successfully")
-            logger.info("Advanced features enabled:")
-            logger.info("  - ATR-based stop loss and take profit")
-            logger.info("  - Dynamic position sizing ($12k allocation)")
-            logger.info("  - Customized parameters per ticker")
-            logger.info("  - End-of-day position closure (3:59 PM)")
-            logger.info("  - Automatic double-down orders")
+            logger.info("Enhanced trading system initialized successfully")
             logger.info("=" * 50)
             
             return True
@@ -325,8 +294,8 @@ class TradingApp:
             return False
     
     def _setup_trading_rules(self):
-        """Setup advanced trading rules with ATR-based stops and dynamic sizing."""
-        logger.info("Setting up advanced trading strategies...")
+        """Setup enhanced trading rules with ATR-based stops."""
+        logger.info("Setting up enhanced trading strategies...")
         rules_registered = 0
         
         for ticker, strategy in self.strategies.items():
@@ -342,10 +311,10 @@ class TradingApp:
             
             buy_action = LinkedCreateOrderAction(
                 symbol=ticker,
-                quantity=strategy["allocation"],  # Dollar allocation for dynamic sizing
+                quantity=strategy["allocation"],  # Dollar allocation
                 side="BUY",
                 order_type=OrderType.MARKET,
-                auto_create_stops=True,  # Automatically create stop & target orders
+                auto_create_stops=True,
                 atr_stop_multiplier=strategy["atr_stop_multiplier"],
                 atr_target_multiplier=strategy["atr_target_multiplier"]
             )
@@ -368,17 +337,17 @@ class TradingApp:
                 event_type=PredictionSignalEvent,
                 field_conditions={
                     "symbol": ticker,
-                    "signal": "SELL",
+                    "signal": "SHORT",
                     "confidence": lambda c: c >= strategy["confidence_threshold"]
                 }
             )
             
             sell_action = LinkedCreateOrderAction(
                 symbol=ticker,
-                quantity=strategy["allocation"],  # Dollar allocation for dynamic sizing
+                quantity=strategy["allocation"],  # Dollar allocation
                 side="SELL",
                 order_type=OrderType.MARKET,
-                auto_create_stops=True,  # Automatically create stop & target orders
+                auto_create_stops=True,
                 atr_stop_multiplier=strategy["atr_stop_multiplier"],
                 atr_target_multiplier=strategy["atr_target_multiplier"]
             )
@@ -401,11 +370,10 @@ class TradingApp:
                 f"(confidence >= {strategy['confidence_threshold']}, "
                 f"allocation: ${strategy['allocation']:,}, "
                 f"ATR stop: {strategy['atr_stop_multiplier']}x, "
-                f"ATR target: {strategy['atr_target_multiplier']}x, "
-                f"cooldown: {strategy['cooldown_minutes']} min)"
+                f"ATR target: {strategy['atr_target_multiplier']}x)"
             )
         
-        logger.info(f"Registered {rules_registered} advanced trading rules")
+        logger.info(f"Registered {rules_registered} enhanced trading rules")
     
     def _setup_eod_rules(self):
         """Setup end-of-day position closure rules."""
@@ -417,7 +385,6 @@ class TradingApp:
                 end_time=dt_time(16, 0)      # 4:00 PM ET
             )
             
-            # Use LinkedFlattenCloseAction to close position AND cancel all linked orders
             eod_action = LinkedFlattenCloseAction(symbol=ticker)
             
             eod_rule = Rule(
@@ -427,30 +394,41 @@ class TradingApp:
                 condition=eod_condition,
                 action=eod_action,
                 priority=200,  # High priority
-                max_executions_per_day=1  # Only run once per day
+                max_executions_per_day=1
             )
             
             self.rule_engine.register_rule(eod_rule)
         
-        logger.info("Created end-of-day closure rules (3:59 PM ET)")
+        logger.info("Created end-of-day closure rules (3:59 PM)")
     
     def _on_connected(self):
         """Handle connection established event."""
         logger.info("Connection established callback triggered")
-        # Note: EventBus expects Event objects, not strings
-        # These connection events are not currently used by the system
+        if self.event_bus:
+            self.event_bus.emit('connection.established', {
+                'broker': 'alpaca',
+                'timestamp': time.time()
+            })
     
     def _on_disconnected(self):
         """Handle connection lost event."""
         logger.warning("Connection lost callback triggered")
-        # Note: EventBus expects Event objects, not strings
-        # These connection events are not currently used by the system
+        if self.event_bus:
+            self.event_bus.emit('connection.lost', {
+                'broker': 'alpaca',
+                'timestamp': time.time()
+            })
     
     def _on_error(self, req_id: int, error_code: int, error_string: str):
         """Handle connection error event."""
         logger.error(f"Connection error: {error_code} - {error_string}")
-        # Note: EventBus expects Event objects, not strings
-        # These connection events are not currently used by the system
+        if self.event_bus:
+            self.event_bus.emit('connection.error', {
+                'broker': 'alpaca',
+                'error_code': error_code,
+                'error_string': error_string,
+                'timestamp': time.time()
+            })
     
     async def _log_system_status(self):
         """Log current system status with position summary."""
@@ -474,19 +452,12 @@ class TradingApp:
                                 f"${pos.entry_price:.2f} (P&L: ${pos.unrealized_pnl:.2f})"
                             )
                 
-                # Check account status
-                if self.connection and self.connection.is_connected():
-                    account = self.connection.get_account()
-                    if account:
-                        logger.info(f"Account buying power: ${float(account.buying_power):,.2f}")
-                        logger.info(f"Account equity: ${float(account.equity):,.2f}")
-                
                 logger.info("=" * 50)
         except Exception as e:
             logger.error(f"Error logging system status: {e}")
     
     async def run_monitoring_loop(self):
-        """Run the monitoring loop with periodic status updates."""
+        """Run the enhanced monitoring loop with status updates."""
         try:
             while self._running:
                 # Log status every 10 minutes
@@ -494,6 +465,13 @@ class TradingApp:
                 
                 if self._running:
                     await self._log_system_status()
+                    
+                    # Check account status
+                    if self.connection and self.connection.is_connected():
+                        account = self.connection.get_account()
+                        if account:
+                            logger.info(f"Account buying power: ${float(account.buying_power):,.2f}")
+                            logger.info(f"Account equity: ${float(account.equity):,.2f}")
                     
         except asyncio.CancelledError:
             logger.info("Monitoring loop cancelled")
@@ -507,7 +485,13 @@ class TradingApp:
             return
         
         self._running = True
-        logger.info("Trading system is running...")
+        logger.info("Enhanced trading system is running...")
+        logger.info("Features enabled:")
+        logger.info("  - ATR-based stop loss and take profit")
+        logger.info("  - Dynamic position sizing ($30k allocation per trade)")
+        logger.info("  - Customized parameters per ticker")
+        logger.info("  - End-of-day automatic position closure")
+        logger.info("  - 10-minute status monitoring")
         logger.info("Press Ctrl+C to stop")
         
         # Start monitoring loop
@@ -539,7 +523,7 @@ class TradingApp:
         if not self._running:
             return
         
-        logger.info("Shutting down trading system...")
+        logger.info("Shutting down enhanced trading system...")
         self._running = False
         
         try:
@@ -568,12 +552,7 @@ class TradingApp:
                 logger.info("Disconnecting from Alpaca...")
                 self.connection.disconnect()
             
-            # Stop event bus
-            if self.event_bus:
-                logger.info("Stopping event bus...")
-                # Add any event bus cleanup if needed
-            
-            logger.info("Trading system shutdown complete")
+            logger.info("Enhanced trading system shutdown complete")
             
         except Exception as e:
             logger.error(f"Error during shutdown: {e}", exc_info=True)
@@ -589,7 +568,7 @@ class TradingApp:
 
 async def main():
     """Main entry point."""
-    app = TradingApp()
+    app = EnhancedTradingApp()
     
     # Set up signal handlers
     signal.signal(signal.SIGINT, app.handle_signal)
@@ -600,5 +579,16 @@ async def main():
 
 
 if __name__ == "__main__":
+    print("Enhanced Alpaca Trading System")
+    print("=" * 40)
+    print("Features:")
+    print("- ATR-based stop loss and take profit")
+    print("- Dynamic position sizing")
+    print("- Customized parameters per ticker")
+    print("- End-of-day position closure")
+    print("- Enhanced monitoring")
+    print("=" * 40)
+    print("Starting application...")
+    
     # Run the async main function
     asyncio.run(main()) 

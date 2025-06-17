@@ -158,6 +158,9 @@ class OptionsFlowMonitor:
         probabilities = prediction_data.get('probabilities')
         feature_values = prediction_data.get('feature_values', {})
         
+        # Log every prediction received (single line for easy monitoring)
+        logger.info(f"PREDICTION: {ticker} - {signal} @ ${stock_price:.2f} (confidence: {confidence:.1%})")
+        
         # Check confidence threshold
         if confidence >= self.thresholds['prediction_confidence_min']:
             logger.info(f"New prediction: {ticker} {signal} ({confidence:.2f})")
@@ -178,7 +181,7 @@ class OptionsFlowMonitor:
             # Emit the event
             await self.event_bus.emit(event)
             
-            logger.debug(f"Emitted PredictionSignalEvent for {ticker}")
+            logger.info(f"Emitted PredictionSignalEvent for {ticker}")
     
     async def _poll_trades(self) -> None:
         """

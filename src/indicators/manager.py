@@ -34,18 +34,18 @@ class IndicatorManager:
         self.atr_calculator = ATRCalculator()
         self.indicator_values = {}  # Simple cache for indicator values
         
-    async def get_atr(self, symbol: str, period: int = 14, days: int = 5, bar_size: str = "10 secs") -> Optional[float]:
+    async def get_atr(self, symbol: str, period: int = 14, days: int = 5, bar_size: str = "1 min") -> Optional[float]:
         """
-        Get the ATR value for a symbol.
+        Get the ATR (Average True Range) for a symbol.
         
         Args:
             symbol: The ticker symbol
             period: The ATR period (default: 14)
-            days: Number of days of data to fetch (default: 5)
-            bar_size: The timeframe for bars (default: "10 secs")
+            days: Number of days of data to use (default: 5)
+            bar_size: The timeframe for bars (default: "1 min")
             
         Returns:
-            float: The calculated ATR value, or None if calculation fails
+            The calculated ATR value or None if calculation fails
         """
         # Create a calculator with the specified period
         calculator = ATRCalculator(period=period)

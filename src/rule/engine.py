@@ -28,6 +28,7 @@ class RuleEngine:
         self.evaluation_interval = 1.0  # seconds
         self._evaluation_task = None
         self._locks: Dict[str, asyncio.Lock] = {}
+        self._lock_creation_lock = None  # Lock for creating locks
     
     def register_rule(self, rule: Rule) -> bool:
         """Register a rule with the engine."""
@@ -35,7 +36,7 @@ class RuleEngine:
             logger.warning(f"Rule with ID {rule.rule_id} already exists and will be replaced")
             
         self.rules[rule.rule_id] = rule
-        self._locks[rule.rule_id] = asyncio.Lock()
+        # Don't create locks here - create them lazily in the correct event loop
         return True
     
     def unregister_rule(self, rule_id: str) -> bool:
@@ -83,6 +84,18 @@ class RuleEngine:
         """Update multiple values in the shared context."""
         self.context.update(updates)
     
+    async def _get_or_create_lock(self, rule_id: str) -> asyncio.Lock:
+        """Get or create a lock for a rule in the current event loop."""
+        # Initialize lock creation lock if needed
+        if self._lock_creation_lock is None:
+            self._lock_creation_lock = asyncio.Lock()
+        
+        async with self._lock_creation_lock:
+            if rule_id not in self._locks:
+                # Create lock in the current event loop
+                self._locks[rule_id] = asyncio.Lock()
+            return self._locks[rule_id]
+    
     async def start(self) -> None:
         """Start the rule engine."""
         if self.running:
@@ -90,6 +103,10 @@ class RuleEngine:
             return
 
         self.running = True
+        
+        # Clear any existing locks to ensure they're created in the current event loop
+        self._locks.clear()
+        self._lock_creation_lock = None
 
         # In tests, we might want to skip the evaluation loop
         if not self.context.get("_skip_evaluation_loop_for_testing", False):
@@ -145,12 +162,8 @@ class RuleEngine:
             rule_context = self.context.copy()
             rule_context.update(rule.context)
             
-            # Acquire lock for this rule
-            lock = self._locks.get(rule.rule_id)
-            if not lock:
-                # Create lock if it doesn't exist
-                lock = asyncio.Lock()
-                self._locks[rule.rule_id] = lock
+            # Get or create lock for this rule
+            lock = await self._get_or_create_lock(rule.rule_id)
                 
             async with lock:
                 try:
@@ -176,12 +189,8 @@ class RuleEngine:
             rule_context = event_context.copy()
             rule_context.update(rule.context)
             
-            # Acquire lock for this rule
-            lock = self._locks.get(rule_id)
-            if not lock:
-                # Create lock if it doesn't exist
-                lock = asyncio.Lock()
-                self._locks[rule_id] = lock
+            # Get or create lock for this rule
+            lock = await self._get_or_create_lock(rule_id)
                 
             async with lock:
                 try:
